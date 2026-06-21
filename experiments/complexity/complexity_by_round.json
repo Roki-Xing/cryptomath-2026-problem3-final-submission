@@ -1,0 +1,42 @@
+{
+  "source": "experiments/submit_audit.csv",
+  "group_by": "unique (r,u), then by r",
+  "per_unique_ru_rule": "max generated_transitions / expanded_states / final_beam_size over rows sharing the same (r,u)",
+  "by_round": [
+    {
+      "r": 1,
+      "unique_ru": 120,
+      "generated_transitions_total": 1056,
+      "max_generated_transitions_per_ru": 10,
+      "expanded_states_total": 120,
+      "max_expanded_states_per_ru": 1,
+      "max_final_beam_size_per_ru": 10
+    },
+    {
+      "r": 2,
+      "unique_ru": 4544,
+      "generated_transitions_total": 1650086776,
+      "max_generated_transitions_per_ru": 7578152,
+      "expanded_states_total": 725368,
+      "max_expanded_states_per_ru": 1001,
+      "max_final_beam_size_per_ru": 25360
+    },
+    {
+      "r": 3,
+      "unique_ru": 96,
+      "generated_transitions_total": 34708992,
+      "max_generated_transitions_per_ru": 1140946,
+      "expanded_states_total": 11106,
+      "max_expanded_states_per_ru": 199,
+      "max_final_beam_size_per_ru": 46453
+    }
+  ],
+  "total": {
+    "unique_ru": 4760,
+    "generated_transitions_total": 1684796824,
+    "max_generated_transitions_per_ru": 7578152,
+    "expanded_states_total": 736594,
+    "max_expanded_states_per_ru": 1001,
+    "max_final_beam_size_per_ru": 46453
+  }
+}

@@ -1,0 +1,19 @@
+r,u,v,VE,category,reason
+1,0x00000001,0x80080000,0.5,r1_basic,baseline r=1 positive
+1,0x00000001,0x70070000,-0.5,r1_basic,baseline r=1 negative
+2,0x00002000,0x08880000,1,high_score,VE=1 top score (4 points)
+2,0x20000000,0x00000888,1,high_score,VE=1 top score (4 points)
+2,0x20002000,0x08880888,1,high_score,VE=1 top score (4 points)
+2,0x00000001,0x0400e00e,0.1875,r2_active1,certified active-1 sample
+2,0x00000001,0x0b00b00b,-0.1875,r2_active1,certified active-1 sample (negative)
+2,0x00001000,0x04440000,0.5,r2_mid,VE=0.5 mid/high score sample
+2,0x800a7000,0x2ddf08aa,0.0703125,r2_worst_ru,stress u with max per-(r,u) transitions (positive)
+2,0x800a7000,0x2ddf0022,-0.0703125,r2_worst_ru,stress u with max per-(r,u) transitions (negative)
+3,0x00002000,0x04044440,0.125,r3_active1,r=3 high magnitude certified sample
+3,0x00003000,0x04044440,-0.125,r3_active1,r=3 high magnitude certified sample (negative)
+3,0x00000001,0x10010077,0.01953125,r3_small,boundary small magnitude sample (positive)
+3,0x00000001,0x10010055,-0.0390625,r3_small,boundary small magnitude sample (negative)
+3,0x00006060,0x04004004,0.125,r3_active2_e06,E06 certified active-2 positive sample
+3,0x00006060,0x08008008,-0.125,r3_active2_e06,E06 certified active-2 negative sample
+3,0x00002020,0x04004004,-0.125,r3_active2_e06,E06 certified active-2 second-u sample
+3,0x20200000,0x40040400,-0.125,r3_active2_e06,E06 shifted active-2 sample
