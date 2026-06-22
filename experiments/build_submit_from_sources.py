@@ -352,8 +352,13 @@ def main() -> int:
     print(f"r1_rows={sum(1 for row in final_rows if row.r == 1)}")
     print(f"r2_rows={sum(1 for row in final_rows if row.r == 2)}")
     print(f"r3_rows={sum(1 for row in final_rows if row.r == 3)}")
-    print(score_output.splitlines()[-2])
-    print(score_output.splitlines()[-1])
+    score_summary = {
+        line.split("=", 1)[0]: line
+        for line in score_output.splitlines()
+        if line.startswith(("valid_count=", "total_score="))
+    }
+    print(score_summary["valid_count"])
+    print(score_summary["total_score"])
     return 0
 
 

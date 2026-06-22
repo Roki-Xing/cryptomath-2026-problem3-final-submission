@@ -30,6 +30,11 @@ DECIMAL_MASK_ROWS = """\
 @(2, 1, 16, 0.5, 0.5)
 """
 
+DUPLICATE_RUV_ROWS = """\
+@(2, 0x00000001, 0x00000010, 0.5, 0.5)
+@(2, 0x00000001, 0x00000010, 0.5, 0.5)
+"""
+
 
 def run_score(score_bin: str, submit_path: Path, *args: str) -> str:
     completed = subprocess.run(
@@ -110,6 +115,13 @@ def main() -> int:
         require(decimal, "line 2 r=2 u=0x00000001 v=0x00000010 VT=0.5 VE=0.5 valid=yes")
         require(decimal, "unique_uv=1")
         require(decimal, "unique_ruv=2")
+
+        duplicate_ruv_path = Path(tmp) / "duplicate_ruv_cases.txt"
+        duplicate_ruv_path.write_text(DUPLICATE_RUV_ROWS, encoding="utf-8")
+        duplicate_ruv = run_score(score_bin, duplicate_ruv_path)
+        require(duplicate_ruv, "valid_count=2")
+        require(duplicate_ruv, "unique_uv=1")
+        require(duplicate_ruv, "unique_ruv=1")
 
     print("score rule tests passed")
     return 0

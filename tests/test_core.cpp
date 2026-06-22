@@ -44,20 +44,30 @@ int main() {
     const auto zero_round_beam = generic_bs.estimate(0, 0, 0, generic_params);
     assert(zero_round_beam.round_stats.empty());
     assert(zero_round_beam.ve == 1.0L);
-    const auto four_round_beam = generic_bs.estimate(4, 0, 0, generic_params);
+    const auto four_round_beam = generic_bs.estimate(4, 0x10000000u, std::nullopt, generic_params);
     assert(four_round_beam.round_stats.size() == 4);
-    assert(four_round_beam.ve == 1.0L);
+    assert(four_round_beam.expanded_states == 4);
+    assert(four_round_beam.final_beam.size() == 1);
+    for (int i = 0; i < 4; ++i) {
+        assert(four_round_beam.round_stats[i].round == i + 1);
+        assert(four_round_beam.round_stats[i].raw_next_terms == 1);
+    }
 
     const auto zero_round_exact = compute_exact_correlation(1, 1, 0, 16);
     assert(zero_round_exact.rounds == 0);
     assert(zero_round_exact.numerator == 16);
-    const auto four_round_exact = compute_exact_correlation(0, 0, 4, 1);
+    std::int64_t expected_four_round_numerator = 0;
+    for (Mask x = 0; x < 16; ++x) {
+        expected_four_round_numerator +=
+            (dot(0x1u, x) == dot(0x10u, permute(x, 4))) ? 1 : -1;
+    }
+    const auto four_round_exact = compute_exact_correlation(0x1u, 0x10u, 4, 16);
     assert(four_round_exact.rounds == 4);
-    assert(four_round_exact.numerator == 1);
-    const auto four_round_batch = compute_exact_batch({{0, 0}}, 4, 0, 1, 1);
+    assert(four_round_exact.numerator == expected_four_round_numerator);
+    const auto four_round_batch = compute_exact_batch({{0x1u, 0x10u}}, 4, 0, 16, 2);
     assert(four_round_batch.size() == 1);
     assert(four_round_batch[0].rounds == 4);
-    assert(four_round_batch[0].numerator == 1);
+    assert(four_round_batch[0].numerator == expected_four_round_numerator);
 
     // Inverse-transpose maps really are inverses of the transposes.
     std::mt19937 rng(1234567);
