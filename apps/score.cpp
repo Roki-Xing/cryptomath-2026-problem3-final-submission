@@ -4,6 +4,7 @@
 #include <iostream>
 #include <map>
 #include <regex>
+#include <set>
 #include <sstream>
 #include <string>
 #include <tuple>
@@ -158,10 +159,16 @@ int main(int argc, char** argv) {
 
         long double total = 0.0L;
         int valid_count = 0;
+        std::set<std::pair<Mask, Mask>> unique_uv;
+        std::set<std::tuple<int, Mask, Mask>> unique_ruv;
         for (const Row& row : rows) {
             if (!row.message.empty()) {
                 std::cout << "line " << row.lineno << ": " << row.message << "\n";
                 continue;
+            }
+            if (row.valid) {
+                unique_uv.emplace(row.u, row.v);
+                unique_ruv.emplace(row.r, row.u, row.v);
             }
             if (row.kept) {
                 total += row.score;
@@ -178,7 +185,9 @@ int main(int argc, char** argv) {
                       << " score=" << row.score << '\n';
         }
         std::cout << "valid_count=" << valid_count << "\n"
-                  << "total_score=" << total << "\n";
+                  << "total_score=" << total << "\n"
+                  << "unique_uv=" << unique_uv.size() << "\n"
+                  << "unique_ruv=" << unique_ruv.size() << "\n";
     } catch (const std::exception& e) {
         std::cerr << "error: " << e.what() << "\n";
         return 1;

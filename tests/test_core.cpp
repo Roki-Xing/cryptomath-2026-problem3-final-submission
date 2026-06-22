@@ -28,6 +28,37 @@ int main() {
     assert(get_nibble(0x12345678u, 7) == 0x8);
     assert(pack_nibbles(unpack_nibbles(0xdeadbeefu)) == 0xdeadbeefu);
 
+    // algorithm_generic_rounds: interfaces accept any non-negative round count.
+    const Mask generic_x = 0x12345678u;
+    assert(permute(generic_x, 0) == generic_x);
+    Mask four_rounds = generic_x;
+    for (int i = 0; i < 4; ++i) four_rounds = round_apply_state(four_rounds);
+    assert(permute(generic_x, 4) == four_rounds);
+
+    BeamSearch generic_bs;
+    BeamParams generic_params;
+    generic_params.beam_size = 1;
+    generic_params.max_sbox_transitions_per_state = 1;
+    generic_params.max_branch_per_nibble = 1;
+    generic_params.top_outputs = 1;
+    const auto zero_round_beam = generic_bs.estimate(0, 0, 0, generic_params);
+    assert(zero_round_beam.round_stats.empty());
+    assert(zero_round_beam.ve == 1.0L);
+    const auto four_round_beam = generic_bs.estimate(4, 0, 0, generic_params);
+    assert(four_round_beam.round_stats.size() == 4);
+    assert(four_round_beam.ve == 1.0L);
+
+    const auto zero_round_exact = compute_exact_correlation(1, 1, 0, 16);
+    assert(zero_round_exact.rounds == 0);
+    assert(zero_round_exact.numerator == 16);
+    const auto four_round_exact = compute_exact_correlation(0, 0, 4, 1);
+    assert(four_round_exact.rounds == 4);
+    assert(four_round_exact.numerator == 1);
+    const auto four_round_batch = compute_exact_batch({{0, 0}}, 4, 0, 1, 1);
+    assert(four_round_batch.size() == 1);
+    assert(four_round_batch[0].rounds == 4);
+    assert(four_round_batch[0].numerator == 1);
+
     // Inverse-transpose maps really are inverses of the transposes.
     std::mt19937 rng(1234567);
     for (int i = 0; i < 10000; ++i) {

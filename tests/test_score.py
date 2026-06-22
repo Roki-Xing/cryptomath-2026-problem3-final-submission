@@ -20,6 +20,16 @@ SUBMIT_ROWS = """\
 @(2, 0x00000006, 0x00000060, 0.5, 0.5)
 """
 
+NEGATIVE_VT_ROWS = """\
+@(1, 0x00000001, 0x00000010, -0.5, -0.625)
+@(1, 0x00000002, 0x00000020, -0.5, -0.626)
+"""
+
+DECIMAL_MASK_ROWS = """\
+@(1, 1, 16, 0.5, 0.5)
+@(2, 1, 16, 0.5, 0.5)
+"""
+
 
 def run_score(score_bin: str, submit_path: Path, *args: str) -> str:
     completed = subprocess.run(
@@ -56,17 +66,50 @@ def main() -> int:
         require(plain, "line 6 r=1 u=0x00000005 v=0x00000050 VT=0.25 VE=0.25 valid=yes kept=yes score=0")
         require(plain, "valid_count=4")
         require(plain, "total_score=5")
+        require(plain, "unique_uv=3")
+        require(plain, "unique_ruv=4")
+
+        explicit_none = run_score(score_bin, submit_path, "--dedup", "none")
+        if explicit_none != plain:
+            raise AssertionError("default dedup mode differs from --dedup none")
 
         positive = run_score(score_bin, submit_path, "--positive-only")
         require(positive, "line 6 r=1 u=0x00000005 v=0x00000050 VT=0.25 VE=0.25 valid=no kept=no score=0")
         require(positive, "valid_count=3")
         require(positive, "total_score=5")
+        require(positive, "unique_uv=2")
+        require(positive, "unique_ruv=3")
 
         dedup_uv = run_score(score_bin, submit_path, "--dedup", "uv", "--positive-only")
         require(dedup_uv, "line 7 r=1 u=0x00000006 v=0x00000060 VT=0.5 VE=0.5 valid=yes kept=no score=1")
         require(dedup_uv, "line 8 r=2 u=0x00000006 v=0x00000060 VT=0.5 VE=0.5 valid=yes kept=yes score=3")
         require(dedup_uv, "valid_count=2")
         require(dedup_uv, "total_score=4")
+        require(dedup_uv, "unique_uv=2")
+        require(dedup_uv, "unique_ruv=3")
+
+        dedup_ruv = run_score(score_bin, submit_path, "--dedup", "ruv", "--positive-only")
+        require(dedup_ruv, "line 7 r=1 u=0x00000006 v=0x00000060 VT=0.5 VE=0.5 valid=yes kept=yes score=1")
+        require(dedup_ruv, "line 8 r=2 u=0x00000006 v=0x00000060 VT=0.5 VE=0.5 valid=yes kept=yes score=3")
+        require(dedup_ruv, "valid_count=3")
+        require(dedup_ruv, "total_score=5")
+        require(dedup_ruv, "unique_uv=2")
+        require(dedup_ruv, "unique_ruv=3")
+
+        negative_path = Path(tmp) / "negative_vt_cases.txt"
+        negative_path.write_text(NEGATIVE_VT_ROWS, encoding="utf-8")
+        negative = run_score(score_bin, negative_path)
+        require(negative, "line 1 r=1 u=0x00000001 v=0x00000010 VT=-0.5 VE=-0.625 valid=yes")
+        require(negative, "line 2 r=1 u=0x00000002 v=0x00000020 VT=-0.5 VE=-0.626")
+        require(negative, "valid=no kept=no score=0")
+
+        decimal_path = Path(tmp) / "decimal_mask_cases.txt"
+        decimal_path.write_text(DECIMAL_MASK_ROWS, encoding="utf-8")
+        decimal = run_score(score_bin, decimal_path)
+        require(decimal, "line 1 r=1 u=0x00000001 v=0x00000010 VT=0.5 VE=0.5 valid=yes")
+        require(decimal, "line 2 r=2 u=0x00000001 v=0x00000010 VT=0.5 VE=0.5 valid=yes")
+        require(decimal, "unique_uv=1")
+        require(decimal, "unique_ruv=2")
 
     print("score rule tests passed")
     return 0
