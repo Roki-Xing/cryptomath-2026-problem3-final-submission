@@ -45,12 +45,22 @@ the same numeric value is written to the two fields required by the submission f
 
 ## Evidence In This Repo
 
+- **Frozen final-query baseline**:
+  - Generator: `experiments/freeze_baseline.py`
+  - Query coordinates: `experiments/frozen/final_queries.csv`
+  - Unique way-2 work units: `experiments/frozen/final_ru.csv`
+  - Metadata and hashes: `experiments/frozen/BASELINE.json`, `experiments/frozen/SHA256SUMS.txt`
+  - These files are derived from the frozen `submit.txt`; they do not run candidate search, estimator, or exact code.
+
 - **E01 full audit (way-2)**:
   - Audit CSV: `experiments/submit_audit.csv`
   - Summary: `experiments/audit/submit_audit_summary.md`
   - Manifest: `experiments/manifests/E01_audit_summary.md`
   - Historical manifest plus current summary record `certified_no_truncation` and reconstruction stats per submit
     row. Current final audit rows are 138338 and `ve_mismatch_rows=0`.
+  - Its provenance schema records `way2_executed=1`, `way2_value_source=estimator`,
+    `submitted_vt_field_source=submit.txt`, `exact_executed=0`, an empty `exact_command`, and
+    `exact_result_available=0`. It does not claim that submitted `VT` came from `exact_oracle`.
 
 - **E13 final integration**:
   - Manifest: `experiments/manifests/E13_final_integration.md`
@@ -62,6 +72,7 @@ the same numeric value is written to the two fields required by the submission f
   - Summary: `experiments/spotcheck/exact_spotcheck_summary.md`
   - Logs: `experiments/logs/E02_exact_spotcheck_r*.log`
   - Manifest: `experiments/manifests/E02_exact_spotcheck.md`
+  - This output has a separate schema and is not merged into the way-2 audit CSV.
 
 - **E04 toy reduced-domain exact compare (correctness sanity)**:
   - Script: `experiments/toy_exact_compare.py`
@@ -79,8 +90,12 @@ the same numeric value is written to the two fields required by the submission f
 
 ```bash
 make -j
+python3 -X utf8 experiments/freeze_baseline.py
 ./score --dedup uv --positive-only submit.txt
 python3 -X utf8 experiments/audit_submit.py --submit submit.txt --out experiments/submit_audit.csv \
   --beam 1000000 --trans 100000 --branch 16
 python3 -X utf8 experiments/spotcheck/run_exact_spotcheck.py --threads 16
 ```
+
+The full audit command above executes way 2 only. The exact spotcheck command is separate and writes only under
+`experiments/spotcheck/`.

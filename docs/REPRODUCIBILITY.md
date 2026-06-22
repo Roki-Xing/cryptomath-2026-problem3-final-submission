@@ -5,7 +5,8 @@ S-box correlation tables, linear-layer mask propagation, sparse DP, and certifie
 programs `exact_oracle` and `exact_batch_mt` are validation-only tools and are not used to generate submitted
 `VE`, submitted `VT`, or the final `submit.txt` source chain.
 
-The current final authority is `experiments/manifests/E13_final_integration.md`.
+The frozen query authority is `experiments/frozen/BASELINE.json`; the historical integration evidence remains
+`experiments/manifests/E13_final_integration.md`.
 
 ## Requirements
 
@@ -24,6 +25,29 @@ python3 experiments/check_submission.py --submit submit.txt
 
 `check_submission.py` performs score and summary-artifact checks by default. It does not run the full audit unless
 `--run-full-audit` is explicitly provided.
+
+## Freeze Final Query Baseline
+
+Generate deterministic query-only artifacts directly from the unchanged `submit.txt`:
+
+```bash
+python3 -X utf8 experiments/freeze_baseline.py \
+  --submit submit.txt \
+  --out-dir experiments/frozen
+(cd experiments/frozen && sha256sum -c SHA256SUMS.txt)
+```
+
+Expected output includes:
+
+```text
+submit_sha256=7b0f638ba8678462ee8d6c12bc0c5b89d7354b4a095b31330f3ba495acfe2e2e
+final_queries_rows=138338
+final_ru_rows=4760
+```
+
+`final_queries.csv` contains only `r,u,v`. `final_ru.csv` contains only unique `r,u`. Both use normalized
+eight-digit hexadecimal masks and deterministic numeric ordering. `BASELINE.json` records the frozen figures,
+source hash, artifact counts/hashes, and canonical generation command; it intentionally records no git metadata.
 
 ## Rebuild Submit
 
@@ -84,6 +108,21 @@ zero_v_rows=0
 zero_vt_rows=0
 zero_ve_rows=0
 ```
+
+This is a way-2-only audit. Its provenance columns are:
+
+```text
+way2_executed
+way2_value_source
+submitted_vt_field_source
+exact_executed
+exact_command
+exact_result_available
+```
+
+For the tracked audit, exact was not executed: `exact_executed=0`, `exact_command` is empty, and
+`exact_result_available=0`. The separate way-1 spotcheck remains under `experiments/spotcheck/` and uses a
+different CSV schema.
 
 ## Complexity Summary
 

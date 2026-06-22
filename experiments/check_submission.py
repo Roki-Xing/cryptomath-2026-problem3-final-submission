@@ -4,6 +4,8 @@
 from __future__ import annotations
 
 import argparse
+import csv
+import hashlib
 import json
 import subprocess
 import sys
@@ -28,9 +30,16 @@ REQUIRED_FILES = [
     "apps/exact_batch_mt.cpp",
     "apps/reduce_exact_parts.cpp",
     "apps/score.cpp",
+    "tests/test_audit_schema.py",
     "tests/test_core.cpp",
+    "tests/test_freeze_baseline.py",
     "tests/test_score.py",
     "experiments/audit_submit.py",
+    "experiments/freeze_baseline.py",
+    "experiments/frozen/BASELINE.json",
+    "experiments/frozen/SHA256SUMS.txt",
+    "experiments/frozen/final_queries.csv",
+    "experiments/frozen/final_ru.csv",
     "experiments/build_submit_from_sources.py",
     "experiments/build_submit_with_certified_r2.py",
     "experiments/run_ablation.py",
@@ -285,6 +294,22 @@ def load_json(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def csv_data_rows(path: Path, expected_header: list[str]) -> int:
+    with path.open("r", encoding="utf-8", newline="") as handle:
+        reader = csv.reader(handle)
+        header = next(reader)
+        require(header == expected_header, f"unexpected header in {path}: {header}")
+        return sum(1 for _ in reader)
+
+
 def require_file(root: Path, rel: str, tracked: set[str], have_git: bool) -> None:
     path = root / rel
     require(path.exists(), f"missing required file: {rel}")
@@ -330,6 +355,23 @@ def main() -> int:
     score_output = run(["./score", "--dedup", "uv", "--positive-only", args.submit])
     require(f"valid_count={EXPECTED_VALID_COUNT}" in score_output, "unexpected valid_count in score output")
     require(f"total_score={EXPECTED_TOTAL_SCORE}" in score_output, "unexpected total_score in score output")
+
+    frozen_dir = root / "experiments/frozen"
+    baseline = load_json(frozen_dir / "BASELINE.json")
+    require(baseline["source"]["sha256"] == sha256(root / args.submit), "frozen submit SHA-256 mismatch")
+    require(
+        csv_data_rows(frozen_dir / "final_queries.csv", ["r", "u", "v"]) == EXPECTED_VALID_COUNT,
+        "unexpected frozen query count",
+    )
+    require(
+        csv_data_rows(frozen_dir / "final_ru.csv", ["r", "u"]) == EXPECTED_UNIQUE_RU,
+        "unexpected frozen unique (r,u) count",
+    )
+    for name in ("final_queries.csv", "final_ru.csv"):
+        require(
+            baseline["artifacts"][name]["sha256"] == sha256(frozen_dir / name),
+            f"frozen artifact hash mismatch: {name}",
+        )
 
     audit_summary = load_json(root / "experiments/audit/submit_audit_summary.json")
     require(audit_summary["submit_rows"] == EXPECTED_VALID_COUNT, "unexpected submit_rows in audit summary")

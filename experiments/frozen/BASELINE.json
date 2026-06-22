@@ -1,0 +1,41 @@
+{
+  "artifacts": {
+    "final_queries.csv": {
+      "columns": [
+        "r",
+        "u",
+        "v"
+      ],
+      "data_rows": 138338,
+      "sha256": "44cef0f572d0201aed2e2d42e21deb6a5b8259743bf0a29b0665a332fbfdd93e"
+    },
+    "final_ru.csv": {
+      "columns": [
+        "r",
+        "u"
+      ],
+      "data_rows": 4760,
+      "sha256": "941879db58f4ad63b3fcc45b27a04713215f8c7920c77ad8a76015795ec78246"
+    }
+  },
+  "frozen_numbers": {
+    "certified_rows": 138338,
+    "exact_spotcheck_count": 18,
+    "exact_spotcheck_mismatch": 0,
+    "max_generated_transitions_per_ru": 7578152,
+    "total_score": "105843.622442471292742994",
+    "unique_ru": 4760,
+    "valid_count": 138338,
+    "way2_mismatch": 0
+  },
+  "generation": {
+    "command": "python3 -X utf8 experiments/freeze_baseline.py --submit submit.txt --out-dir experiments/frozen",
+    "ordering": "numeric ascending by (r,u,v); final_ru deduplicated then numeric ascending by (r,u)"
+  },
+  "schema_version": 1,
+  "source": {
+    "description": "Query coordinates parsed from the frozen submission file.",
+    "path": "submit.txt",
+    "sha256": "7b0f638ba8678462ee8d6c12bc0c5b89d7354b4a095b31330f3ba495acfe2e2e"
+  }
+}

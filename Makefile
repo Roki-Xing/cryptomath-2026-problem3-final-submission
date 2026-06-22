@@ -46,6 +46,8 @@ test_core: tests/test_core.cpp $(EXACT_OBJS)
 test: test_core score
 	./test_core
 	python3 tests/test_score.py ./score
+	python3 -X utf8 tests/test_freeze_baseline.py
+	python3 -X utf8 tests/test_audit_schema.py
 
 smoke: all
 	./estimator --r 1 --u 0x10000000 --top 8 --beam 10000 --trans 10000
