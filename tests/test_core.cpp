@@ -59,12 +59,13 @@ int main() {
     std::int64_t expected_four_round_numerator = 0;
     for (Mask x = 0; x < 16; ++x) {
         expected_four_round_numerator +=
-            (dot(0x1u, x) == dot(0x10u, permute(x, 4))) ? 1 : -1;
+            (dot(0x1u, x) == dot(0x100u, permute(x, 4))) ? 1 : -1;
     }
-    const auto four_round_exact = compute_exact_correlation(0x1u, 0x10u, 4, 16);
+    assert(expected_four_round_numerator == 8);
+    const auto four_round_exact = compute_exact_correlation(0x1u, 0x100u, 4, 16);
     assert(four_round_exact.rounds == 4);
     assert(four_round_exact.numerator == expected_four_round_numerator);
-    const auto four_round_batch = compute_exact_batch({{0x1u, 0x10u}}, 4, 0, 16, 2);
+    const auto four_round_batch = compute_exact_batch({{0x1u, 0x100u}}, 4, 0, 16, 2);
     assert(four_round_batch.size() == 1);
     assert(four_round_batch[0].rounds == 4);
     assert(four_round_batch[0].numerator == expected_four_round_numerator);
