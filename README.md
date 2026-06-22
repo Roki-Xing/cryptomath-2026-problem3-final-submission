@@ -52,7 +52,7 @@ total_score = 105843.622442471292742994
 - `experiments/build_submit_from_sources.py`: rebuilds the final `submit.txt` from way-2 certified source rows.
 - `score`: checks `@(r,u,v,VT,VE)` records and computes the final score.
 - `exact_oracle` / `exact_batch_mt`: way-1 validation-only spotcheck tools based on reference plaintext enumeration. They are not used to generate, rank, filter, or populate the submitted rows.
-- `search_candidates`: legacy combined miner/verifier. It is not part of the current final submit generation chain. The final `submit.txt` is rebuilt from way-2 certified source rows by `experiments/build_submit_from_sources.py`.
+- `search_candidates`: legacy research miner/verifier that emits candidate CSV only and never creates or modifies `submit.txt`. The final `submit.txt` is rebuilt from way-2 certified source rows by `experiments/build_submit_from_sources.py`.
 - `experiments/build_submit_with_certified_r2.py`: historical helper that builds a high-score draft submit file from full `r=1` rows and certified `r=2` candidate CSVs by writing the certified way-2 route-shell value into both submission fields required by the contest format. It is not the current final submit generation path.
 - `experiments/verify_top_candidates.py`: legacy validation helper for proxy-ranked CSV candidates. It is not part of the current final submit generation chain.
 

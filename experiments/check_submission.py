@@ -11,6 +11,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+from freeze_baseline import load_queries
+
 
 REQUIRED_FILES = [
     "Makefile",
@@ -34,6 +36,7 @@ REQUIRED_FILES = [
     "tests/test_core.cpp",
     "tests/test_freeze_baseline.py",
     "tests/test_score.py",
+    "tests/test_submission_integrity.py",
     "experiments/audit_submit.py",
     "experiments/freeze_baseline.py",
     "experiments/frozen/BASELINE.json",
@@ -262,6 +265,39 @@ EXPECTED_TOTAL_SCORE = "105843.622442471292742994"
 EXPECTED_UNIQUE_RU = 4760
 EXPECTED_MAX_TRANSITIONS = 7578152
 EXPECTED_TRANSITIONS_RATIO = 0.00176443
+EXPECTED_SUBMIT_SHA256 = "7b0f638ba8678462ee8d6c12bc0c5b89d7354b4a095b31330f3ba495acfe2e2e"
+EXPECTED_CERTIFIED_ROWS = 138338
+EXPECTED_WAY2_MISMATCH = 0
+EXPECTED_SPOTCHECK_COUNT = 18
+EXPECTED_SPOTCHECK_MISMATCH = 0
+
+EXPECTED_AUDIT_FIELDS = [
+    "r",
+    "u",
+    "v",
+    "VT",
+    "VE",
+    "valid",
+    "score",
+    "beam",
+    "trans",
+    "branch",
+    "mode",
+    "expanded_states",
+    "generated_transitions",
+    "final_beam_size",
+    "certified_no_truncation",
+    "estimator_ve",
+    "ve_matches_submit",
+    "way2_executed",
+    "way2_value_source",
+    "submitted_vt_field_source",
+    "exact_executed",
+    "exact_command",
+    "exact_result_available",
+    "estimator_command",
+    "round_stats",
+]
 
 
 def run(command: list[str]) -> str:
@@ -310,6 +346,95 @@ def csv_data_rows(path: Path, expected_header: list[str]) -> int:
         return sum(1 for _ in reader)
 
 
+def load_csv_rows(path: Path, expected_header: list[str]) -> list[list[str]]:
+    with path.open("r", encoding="utf-8", newline="") as handle:
+        reader = csv.reader(handle)
+        header = next(reader)
+        require(header == expected_header, f"unexpected header in {path}: {header}")
+        return list(reader)
+
+
+def verify_sha256_manifest(root: Path, manifest_path: Path) -> None:
+    entries: set[str] = set()
+    for line_number, line in enumerate(manifest_path.read_text(encoding="utf-8").splitlines(), start=1):
+        parts = line.split("  ", 1)
+        require(len(parts) == 2 and len(parts[0]) == 64, f"bad SHA256 line {line_number}: {line}")
+        expected, rel = parts
+        require(rel not in entries, f"duplicate SHA256 entry: {rel}")
+        entries.add(rel)
+        target = (root / rel).resolve()
+        require(target.is_relative_to(root.resolve()), f"SHA256 path escapes root: {rel}")
+        require(target.is_file(), f"SHA256 target missing: {rel}")
+        require(sha256(target) == expected, f"SHA256 mismatch: {rel}")
+    require(bool(entries), f"empty SHA256 manifest: {manifest_path}")
+
+
+def verify_frozen_baseline(root: Path, submit_path: Path) -> list[tuple[int, int, int]]:
+    frozen_dir = root / "experiments/frozen"
+    baseline = load_json(frozen_dir / "BASELINE.json")
+    expected_numbers = {
+        "certified_rows": EXPECTED_CERTIFIED_ROWS,
+        "exact_spotcheck_count": EXPECTED_SPOTCHECK_COUNT,
+        "exact_spotcheck_mismatch": EXPECTED_SPOTCHECK_MISMATCH,
+        "max_generated_transitions_per_ru": EXPECTED_MAX_TRANSITIONS,
+        "total_score": EXPECTED_TOTAL_SCORE,
+        "unique_ru": EXPECTED_UNIQUE_RU,
+        "valid_count": EXPECTED_VALID_COUNT,
+        "way2_mismatch": EXPECTED_WAY2_MISMATCH,
+    }
+    require(baseline["schema_version"] == 1, "unexpected frozen baseline schema")
+    require(baseline["source"]["path"] == "submit.txt", "unexpected frozen submit source path")
+    require(baseline["source"]["sha256"] == EXPECTED_SUBMIT_SHA256, "unexpected frozen submit SHA-256")
+    require(sha256(submit_path) == EXPECTED_SUBMIT_SHA256, "submit.txt differs from the frozen baseline")
+    require(baseline["frozen_numbers"] == expected_numbers, "unexpected frozen baseline numbers")
+
+    queries = load_queries(submit_path)
+    expected_queries = [(query.r, query.u, query.v) for query in queries]
+    expected_query_rows = [
+        [str(r), f"0x{u:08x}", f"0x{v:08x}"]
+        for r, u, v in expected_queries
+    ]
+    frozen_query_rows = load_csv_rows(frozen_dir / "final_queries.csv", ["r", "u", "v"])
+    require(frozen_query_rows == expected_query_rows, "frozen queries do not match submit.txt")
+
+    expected_ru = sorted({(r, u) for r, u, _ in expected_queries})
+    expected_ru_rows = [[str(r), f"0x{u:08x}"] for r, u in expected_ru]
+    frozen_ru_rows = load_csv_rows(frozen_dir / "final_ru.csv", ["r", "u"])
+    require(frozen_ru_rows == expected_ru_rows, "frozen (r,u) rows do not match submit.txt")
+
+    for name, columns, data_rows in (
+        ("final_queries.csv", ["r", "u", "v"], EXPECTED_VALID_COUNT),
+        ("final_ru.csv", ["r", "u"], EXPECTED_UNIQUE_RU),
+    ):
+        metadata = baseline["artifacts"][name]
+        require(metadata["columns"] == columns, f"unexpected frozen columns: {name}")
+        require(metadata["data_rows"] == data_rows, f"unexpected frozen row count: {name}")
+        require(metadata["sha256"] == sha256(frozen_dir / name), f"frozen artifact hash mismatch: {name}")
+
+    verify_sha256_manifest(frozen_dir, frozen_dir / "SHA256SUMS.txt")
+    return expected_queries
+
+
+def verify_audit_provenance(path: Path, expected_queries: list[tuple[int, int, int]]) -> None:
+    with path.open("r", encoding="utf-8", newline="") as handle:
+        reader = csv.DictReader(handle)
+        require(reader.fieldnames == EXPECTED_AUDIT_FIELDS, f"unexpected audit schema: {reader.fieldnames}")
+        rows = list(reader)
+    require(len(rows) == EXPECTED_VALID_COUNT, "unexpected audit CSV row count")
+    audit_queries = [(int(row["r"]), int(row["u"], 0), int(row["v"], 0)) for row in rows]
+    require(audit_queries == expected_queries, "audit coordinates do not match frozen queries")
+    for line_number, row in enumerate(rows, start=2):
+        require(row["way2_executed"] == "1", f"way-2 not executed at audit line {line_number}")
+        require(row["way2_value_source"] == "estimator", f"unexpected way-2 source at audit line {line_number}")
+        require(
+            row["submitted_vt_field_source"] == "submit.txt",
+            f"unexpected submitted VT source at audit line {line_number}",
+        )
+        require(row["exact_executed"] == "0", f"unexpected exact execution at audit line {line_number}")
+        require(row["exact_command"] == "", f"unexpected exact command at audit line {line_number}")
+        require(row["exact_result_available"] == "0", f"unexpected exact result at audit line {line_number}")
+
+
 def require_file(root: Path, rel: str, tracked: set[str], have_git: bool) -> None:
     path = root / rel
     require(path.exists(), f"missing required file: {rel}")
@@ -356,22 +481,8 @@ def main() -> int:
     require(f"valid_count={EXPECTED_VALID_COUNT}" in score_output, "unexpected valid_count in score output")
     require(f"total_score={EXPECTED_TOTAL_SCORE}" in score_output, "unexpected total_score in score output")
 
-    frozen_dir = root / "experiments/frozen"
-    baseline = load_json(frozen_dir / "BASELINE.json")
-    require(baseline["source"]["sha256"] == sha256(root / args.submit), "frozen submit SHA-256 mismatch")
-    require(
-        csv_data_rows(frozen_dir / "final_queries.csv", ["r", "u", "v"]) == EXPECTED_VALID_COUNT,
-        "unexpected frozen query count",
-    )
-    require(
-        csv_data_rows(frozen_dir / "final_ru.csv", ["r", "u"]) == EXPECTED_UNIQUE_RU,
-        "unexpected frozen unique (r,u) count",
-    )
-    for name in ("final_queries.csv", "final_ru.csv"):
-        require(
-            baseline["artifacts"][name]["sha256"] == sha256(frozen_dir / name),
-            f"frozen artifact hash mismatch: {name}",
-        )
+    expected_queries = verify_frozen_baseline(root, root / args.submit)
+    verify_audit_provenance(root / "experiments/submit_audit.csv", expected_queries)
 
     audit_summary = load_json(root / "experiments/audit/submit_audit_summary.json")
     require(audit_summary["submit_rows"] == EXPECTED_VALID_COUNT, "unexpected submit_rows in audit summary")
@@ -402,8 +513,10 @@ def main() -> int:
     spotcheck_summary = root / "experiments/spotcheck/exact_spotcheck_summary.json"
     if spotcheck_summary.exists():
         spotcheck = load_json(spotcheck_summary)
-        require(spotcheck["mismatch_count"] == 0, "exact spotcheck has mismatches")
-        require(16 <= int(spotcheck["count"]) <= 18, "unexpected exact spotcheck count")
+        require(spotcheck["mismatch_count"] == EXPECTED_SPOTCHECK_MISMATCH, "exact spotcheck has mismatches")
+        require(int(spotcheck["count"]) == EXPECTED_SPOTCHECK_COUNT, "unexpected exact spotcheck count")
+
+    verify_sha256_manifest(root, root / "SHA256SUMS.txt")
 
     if args.run_full_audit:
         audit_output = run(
