@@ -1,0 +1,10 @@
+{
+  "schemaVersion": "aegis.schema.v0",
+  "candidateDocs": [
+    "/mnt/c/Users/Xing/Desktop/PR 1：冻结基线与修复 provenance.md",
+    "bench/way1/PROTOCOL.md",
+    "bench/way1/SUMMARY.md"
+  ],
+  "whyRelevant": "定义 Stage-A 必需矩阵和禁止 Stage-B 的边界",
+  "missingAuthority": []
+}

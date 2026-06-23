@@ -180,11 +180,36 @@ A2 uses the committed A0 anchors for `r1/Q64/frozen`,
 layouts, manifest-bound reduction, and semantic comparison with single-shard
 results.
 
+Run the required sanitizer and compiler/optimization matrix after A2 passes:
+
+```bash
+python3 -X utf8 bench/way1/run_stage_toolchain.py \
+  --suite all \
+  --threads 8 \
+  --out-dir bench/way1/stage_toolchain
+```
+
+The toolchain gate uses the committed A0 `Q=64` real frozen-subset queries.
+It covers:
+
+- UBSan at `r=1,2,3`, 16-bit domains, all variants, and threads 1/8;
+- ASan at `r=1,2,3`, 14-bit domains, all variants, and one thread;
+- TSan at `r=1,2,3`, 12-bit domains, grouped variants, and four threads;
+- GCC and Clang at `-O0` and `-O3` on 12-bit domains, comparing exact
+  numerator/denominator maps without treating `-O0` timings as benchmark data.
+
+Every build and run records compiler identity, flags, command, actual program
+and query hashes, output hashes, timing, RSS, exit status, and sanitizer logs.
+The output directory contains `MANIFEST.json`, `SUMMARY.json`, compile/run
+logs, raw exact results, and an independent `SHA256SUMS.txt`.
+
 ## CI and immutable submission
 
-CI builds and tests with GCC and Clang. `make test` exercises all three
-variants, thread/order invariance, manifest-bound reduction corruption cases,
-and deterministic query-family generation. It checks the frozen submit SHA
+CI builds and tests with GCC and Clang. A separate toolchain job executes the
+complete sanitizer and optimization matrix and uploads its evidence directory.
+`make test` exercises all three variants, thread/order invariance,
+manifest-bound reduction corruption cases, deterministic query-family
+generation, and the toolchain matrix contract. It checks the frozen submit SHA
 before and after the suite.
 
 The immutable submission requirements are:

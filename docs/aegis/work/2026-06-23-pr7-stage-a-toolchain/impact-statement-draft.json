@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "aegis.schema.v0",
+  "affectedLayers": [
+    "benchmark verification"
+  ],
+  "owners": [
+    "bench/way1"
+  ],
+  "invariants": [
+    "submit.txt SHA256 保持 7b0f638ba8678462ee8d6c12bc0c5b89d7354b4a095b31330f3ba495acfe2e2e"
+  ],
+  "compatBoundary": "不修改算法、不调用 exact dyadic backend、不运行完整 2^32 域",
+  "nonGoals": [
+    "Stage B、性能 GO 决策、submit 变更"
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "aegis.schema.v0",
+  "taskId": "2026-06-23-pr7-stage-a-toolchain",
+  "taskIntentRef": "docs/aegis/work/2026-06-23-pr7-stage-a-toolchain/task-intent-draft.json",
+  "baselineRefs": [
+    "bench/way1/PROTOCOL.md"
+  ],
+  "scopeStatus": "仅新增验证 runner、CI 和协议",
+  "compatStatus": "未改算法或 submit.txt",
+  "retirementStatus": "无旧路径替换；复用现有 A0 查询与 timeout helper",
+  "newRiskSignals": [
+    "本机无 clang++，完整矩阵需 GitHub runner"
+  ],
+  "decision": "needs-verification"
+}

@@ -255,7 +255,11 @@ def verify_submit(expected: str) -> None:
         raise ValueError(f"submit SHA mismatch: expected {expected}, got {actual}")
 
 
-def run_with_timeout(command: list[str], timeout_seconds: float) -> tuple[int, str, str, float]:
+def run_with_timeout(
+    command: list[str],
+    timeout_seconds: float,
+    environment: dict[str, str] | None = None,
+) -> tuple[int, str, str, float]:
     started = time.perf_counter()
     process = subprocess.Popen(
         command,
@@ -264,6 +268,7 @@ def run_with_timeout(command: list[str], timeout_seconds: float) -> tuple[int, s
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         start_new_session=True,
+        env=environment,
     )
     try:
         stdout, stderr = process.communicate(timeout=timeout_seconds)

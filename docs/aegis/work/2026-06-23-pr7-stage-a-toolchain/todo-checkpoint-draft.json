@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "aegis.schema.v0",
+  "taskId": "2026-06-23-pr7-stage-a-toolchain",
+  "currentTodo": "提交工具链基础设施并运行真实矩阵",
+  "completedTodos": [
+    "确认 A2 推送与 Draft PR 状态",
+    "按指导文档固化 69 点工具链矩阵",
+    "矩阵契约测试完成 RED/GREEN"
+  ],
+  "activeSlice": "基础设施提交前验证",
+  "evidenceRefs": [
+    "tests/test_way1_stage_toolchain.py: 69 点矩阵测试通过",
+    "bench/way1/run_stage_toolchain.py"
+  ],
+  "blockedOn": null,
+  "nextStep": "更新 SHA 清单、运行 make test、提交并推送",
+  "updatedAt": "2026-06-23"
+}

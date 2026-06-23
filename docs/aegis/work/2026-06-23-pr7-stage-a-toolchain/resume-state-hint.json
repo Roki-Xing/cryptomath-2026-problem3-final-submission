@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "aegis.schema.v0",
+  "taskId": "2026-06-23-pr7-stage-a-toolchain",
+  "lastCheckpointRef": "docs/aegis/work/2026-06-23-pr7-stage-a-toolchain/todo-checkpoint-draft.json",
+  "resumeInstruction": "从 git status 和 test_way1_stage_toolchain.py 开始，禁止 Stage B",
+  "knownPartialWork": [
+    "确认 A2 推送与 Draft PR 状态",
+    "按指导文档固化 69 点工具链矩阵",
+    "矩阵契约测试完成 RED/GREEN"
+  ],
+  "mustReadBeforeContinuing": [
+    "docs/aegis/work/2026-06-23-pr7-stage-a-toolchain/10-intent.md",
+    "docs/aegis/work/2026-06-23-pr7-stage-a-toolchain/20-checkpoint.md",
+    "docs/aegis/work/2026-06-23-pr7-stage-a-toolchain/todo-checkpoint-draft.json"
+  ],
+  "unsafeToAssume": [
+    "CI sanitizer 尚未运行，不得宣称 STAGE_A_PASS"
+  ]
+}
