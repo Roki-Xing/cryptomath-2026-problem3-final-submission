@@ -529,7 +529,8 @@ def tracked_files() -> tuple[set[str], bool]:
     """
     root = Path.cwd()
     if (root / ".git").exists():
-        return set(run(["git", "ls-files"]).splitlines()), True
+        output = run(["git", "-c", "core.quotePath=false", "ls-files", "-z"])
+        return {path for path in output.split("\0") if path}, True
     present = {
         str(path.relative_to(root))
         for path in root.rglob("*")

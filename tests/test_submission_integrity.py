@@ -6,6 +6,7 @@ from __future__ import annotations
 import csv
 import hashlib
 import importlib.util
+import os
 import subprocess
 import sys
 import tempfile
@@ -121,6 +122,22 @@ def main() -> int:
             lambda: CHECK.verify_sha256_manifest(tmp_path, manifest),
             "tampered SHA256 target was accepted",
         )
+
+        unicode_repo = tmp_path / "unicode_repo"
+        unicode_repo.mkdir()
+        unicode_path = unicode_repo / "参赛论文.md"
+        unicode_path.write_text("evidence\n", encoding="utf-8")
+        subprocess.run(["git", "init", "-q"], cwd=unicode_repo, check=True)
+        subprocess.run(["git", "config", "core.quotePath", "true"], cwd=unicode_repo, check=True)
+        subprocess.run(["git", "add", "参赛论文.md"], cwd=unicode_repo, check=True)
+        previous_cwd = Path.cwd()
+        os.chdir(unicode_repo)
+        try:
+            tracked, have_git = CHECK.tracked_files()
+        finally:
+            os.chdir(previous_cwd)
+        assert have_git
+        assert tracked == {"参赛论文.md"}
 
         audit_path = tmp_path / "audit.csv"
         row = {field: "" for field in CHECK.EXPECTED_AUDIT_FIELDS}
