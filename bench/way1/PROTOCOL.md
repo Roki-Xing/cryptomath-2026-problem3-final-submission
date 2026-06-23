@@ -94,6 +94,10 @@ python3 -X utf8 bench/way1/run_protocol.py \
   --compiler-id gcc \
   --compiler-version "$(g++ --version | head -n 1)" \
   --compiler-flags="-O3 -std=c++17 -Wall -Wextra -pedantic -pthread" \
+  --cpu-model "$(lscpu | sed -n 's/^Model name:[[:space:]]*//p')" \
+  --ram-bytes "$(awk '/MemTotal/ {print $2 * 1024}' /proc/meminfo)" \
+  --numa "$(lscpu | sed -n 's/^NUMA node(s):[[:space:]]*//p')-node" \
+  --kernel "$(uname -r)" \
   --cpu-affinity unbound \
   --submit-sha256 7b0f638ba8678462ee8d6c12bc0c5b89d7354b4a095b31330f3ba495acfe2e2e \
   --out /tmp/pr7-r2-q64-results.csv \
@@ -143,6 +147,17 @@ timeout, OOM, or nonzero exit.
 Stage A1, Stage A2, sanitizer matrices, optimization/compiler comparisons, and
 artifact aggregation remain required before `STAGE_A_PASS`. A0 passing alone
 does not authorize Stage B.
+
+Run the complete A0 matrix only from a clean tracked worktree with the three
+benchmark executables already built:
+
+```bash
+python3 -X utf8 bench/way1/run_stage_a0.py --threads 8
+```
+
+The orchestrator fails closed on any missing matrix point or semantic
+difference and writes `MANIFEST.json`, `SUMMARY.json`, query/results/artifact
+directories, and `SHA256SUMS.txt` under `bench/way1/stage_a0/`.
 
 ## CI and immutable submission
 

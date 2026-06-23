@@ -90,6 +90,14 @@ def runner_command(
         "--compiler-version",
         "test-version",
         "--compiler-flags=-O3 -std=c++17",
+        "--cpu-model",
+        "test-cpu",
+        "--ram-bytes",
+        "8589934592",
+        "--numa",
+        "1-node",
+        "--kernel",
+        "test-kernel",
         "--cpu-affinity",
         "unbound",
         "--submit-sha256",
@@ -226,6 +234,10 @@ def main() -> None:
         assert {row["threads"] for row in shuffled_rows} == {"2"}
         assert {row["order"] for row in canonical_rows} == {"canonical"}
         assert {row["order"] for row in shuffled_rows} == {"shuffled"}
+        assert {row["timing_metric_origin"] for row in canonical_rows} == {"MEASURED"}
+        assert {row["counter_metric_origin"] for row in canonical_rows} == {
+            "DETERMINISTIC_ALGORITHMIC_COUNT"
+        }
         required_fields = set(
             json.loads(SCHEMA.read_text(encoding="utf-8"))["required_fields"]
         )

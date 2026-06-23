@@ -10,12 +10,22 @@ import json
 import math
 import statistics
 import subprocess
+import sys
 from collections import Counter, defaultdict
 from dataclasses import dataclass
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+from query_family_graph import (  # noqa: E402
+    havel_hakimi,
+    keyed_digest,
+    repair_graphical,
+    resampled_weights,
+    scaled_degrees,
+)
 
 
 @dataclass(frozen=True)
@@ -56,11 +66,6 @@ def source_sha256(query_path: Path, ru_path: Path) -> str:
         digest.update(path.read_bytes())
         digest.update(b"\0")
     return digest.hexdigest()
-
-
-def keyed_digest(seed: str, *parts: object) -> bytes:
-    payload = seed + "".join(f"\0{part}" for part in parts)
-    return hashlib.sha256(payload.encode()).digest()
 
 
 def load_queries(path: Path, rounds: int) -> list[Query]:
@@ -212,131 +217,6 @@ def frozen_subset(rows: list[Query], count: int, seed: str, profile: str) -> lis
     if len(selected) != count:
         raise ValueError("unable to fill frozen subset")
     return selected
-
-
-def resampled_weights(source_degrees: list[int], count: int) -> list[int]:
-    ordered = sorted(source_degrees)
-    if count == 1:
-        return [ordered[len(ordered) // 2]]
-    return [
-        ordered[round(index * (len(ordered) - 1) / (count - 1))]
-        for index in range(count)
-    ]
-
-
-def scaled_degrees(weights: list[int], total: int, cap: int) -> list[int]:
-    if len(weights) > total or total > len(weights) * cap:
-        raise ValueError("degree target is outside graphical capacity")
-    degrees = [1] * len(weights)
-    remaining = total - len(weights)
-    while remaining:
-        candidates = [index for index, value in enumerate(degrees) if value < cap]
-        if not candidates:
-            raise ValueError("degree scaling exhausted capacity")
-        weight_sum = sum(weights[index] for index in candidates)
-        shares = {
-            index: remaining * weights[index] / weight_sum for index in candidates
-        }
-        added = 0
-        for index in candidates:
-            increment = min(cap - degrees[index], int(shares[index]))
-            degrees[index] += increment
-            added += increment
-        remaining -= added
-        if remaining:
-            ranked = sorted(
-                candidates,
-                key=lambda index: (
-                    -(shares[index] - int(shares[index])),
-                    -weights[index],
-                    index,
-                ),
-            )
-            for index in ranked:
-                if remaining == 0:
-                    break
-                if degrees[index] < cap:
-                    degrees[index] += 1
-                    remaining -= 1
-    return sorted(degrees, reverse=True)
-
-
-def gale_ryser(left: list[int], right: list[int]) -> bool:
-    left = sorted(left, reverse=True)
-    right = sorted(right, reverse=True)
-    if sum(left) != sum(right):
-        return False
-    return all(
-        sum(left[:k]) <= sum(min(k, degree) for degree in right)
-        for k in range(1, len(left) + 1)
-    )
-
-
-def repair_graphical(left: list[int], right: list[int]) -> tuple[list[int], list[int]]:
-    original_left = sorted(left, reverse=True)
-    original_right = sorted(right, reverse=True)
-    left = sorted(left, reverse=True)
-    right = sorted(right, reverse=True)
-    for _ in range(10000):
-        if gale_ryser(left, right):
-            histogram_l1 = sum(
-                abs(before - after)
-                for before, after in zip(original_left, left, strict=True)
-            ) + sum(
-                abs(before - after)
-                for before, after in zip(original_right, right, strict=True)
-            )
-            if histogram_l1 > 0.05 * (sum(left) + sum(right)):
-                raise ValueError(
-                    "Gale-Ryser repair exceeds the 5% degree-histogram L1 limit"
-                )
-            return left, right
-        source = next((i for i, value in enumerate(left) if value > 1), None)
-        target = next(
-            (i for i in range(len(left) - 1, -1, -1) if left[i] < len(right)),
-            None,
-        )
-        if source is None or target is None or source == target:
-            source = next((i for i, value in enumerate(right) if value > 1), None)
-            target = next(
-                (i for i in range(len(right) - 1, -1, -1) if right[i] < len(left)),
-                None,
-            )
-            if source is None or target is None or source == target:
-                break
-            right[source] -= 1
-            right[target] += 1
-            right.sort(reverse=True)
-        else:
-            left[source] -= 1
-            left[target] += 1
-            left.sort(reverse=True)
-    raise ValueError("unable to repair degree sequences to Gale-Ryser feasibility")
-
-
-def havel_hakimi(left: list[int], right: list[int], seed: str) -> list[tuple[int, int]]:
-    remaining = list(right)
-    edges: list[tuple[int, int]] = []
-    left_order = sorted(
-        range(len(left)),
-        key=lambda index: (-left[index], keyed_digest(seed, "left", index)),
-    )
-    for u_index in left_order:
-        candidates = sorted(
-            (index for index, degree in enumerate(remaining) if degree > 0),
-            key=lambda index: (
-                -remaining[index],
-                keyed_digest(seed, "right", u_index, index),
-            ),
-        )
-        if len(candidates) < left[u_index]:
-            raise ValueError("Havel-Hakimi construction exhausted right vertices")
-        for v_index in candidates[: left[u_index]]:
-            edges.append((u_index, v_index))
-            remaining[v_index] -= 1
-    if any(remaining):
-        raise ValueError("Havel-Hakimi construction left residual degree")
-    return edges
 
 
 def synthetic_mask(seed: str, side: str, index: int, used: set[int]) -> int:

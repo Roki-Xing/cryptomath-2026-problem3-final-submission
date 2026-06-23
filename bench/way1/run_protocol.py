@@ -40,15 +40,18 @@ RESULT_FIELDS = [
     "plaintext_count",
     "threads",
     "wall_seconds",
+    "process_wall_seconds",
     "user_cpu_seconds",
     "system_cpu_seconds",
     "peak_rss_kib",
+    "timing_metric_origin",
     "logical_query_updates",
     "query_updates_per_second",
     "plaintexts_per_second",
     "u_parity_evaluations",
     "v_parity_evaluations",
     "permutation_evaluations",
+    "counter_metric_origin",
     "program_commit",
     "program_sha256",
     "input_sha256",
@@ -56,6 +59,10 @@ RESULT_FIELDS = [
     "compiler_id",
     "compiler_version",
     "compiler_flags",
+    "cpu_model",
+    "ram_bytes",
+    "numa",
+    "kernel",
     "cpu_affinity",
     "timeout_seconds",
     "max_rss_kib",
@@ -87,6 +94,10 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--compiler-id", required=True)
     parser.add_argument("--compiler-version", required=True)
     parser.add_argument("--compiler-flags", required=True)
+    parser.add_argument("--cpu-model", required=True)
+    parser.add_argument("--ram-bytes", type=int, required=True)
+    parser.add_argument("--numa", required=True)
+    parser.add_argument("--kernel", required=True)
     parser.add_argument("--cpu-affinity", default="")
     parser.add_argument("--submit-sha256", required=True)
     parser.add_argument("--out", type=Path, required=True)
@@ -312,9 +323,14 @@ def main() -> None:
                 args.compiler_id,
                 args.compiler_version,
                 args.compiler_flags,
+                args.cpu_model,
+                args.numa,
+                args.kernel,
             )
         ):
             raise ValueError("query and compiler provenance fields must be non-empty")
+        if args.ram_bytes <= 0:
+            raise ValueError("--ram-bytes must be positive")
         if args.domain_bits is not None and args.end is not None:
             raise ValueError("--domain-bits and --end are mutually exclusive")
         if args.domain_bits is not None:
@@ -454,9 +470,11 @@ def main() -> None:
                         "plaintext_count": plaintext_count,
                         "threads": args.threads,
                         "wall_seconds": f"{wall_seconds:.9f}",
+                        "process_wall_seconds": timing["wall_seconds"],
                         "user_cpu_seconds": timing["user_cpu_seconds"],
                         "system_cpu_seconds": timing["system_cpu_seconds"],
                         "peak_rss_kib": timing["peak_rss_kib"],
+                        "timing_metric_origin": "MEASURED",
                         "logical_query_updates": logical_updates,
                         "query_updates_per_second": (
                             f"{logical_updates / wall_seconds:.9f}"
@@ -473,6 +491,7 @@ def main() -> None:
                         "permutation_evaluations": metadata[
                             "permutation_evaluations"
                         ],
+                        "counter_metric_origin": "DETERMINISTIC_ALGORITHMIC_COUNT",
                         "program_commit": commit,
                         "program_sha256": program_sha,
                         "input_sha256": input_sha,
@@ -480,6 +499,10 @@ def main() -> None:
                         "compiler_id": args.compiler_id,
                         "compiler_version": args.compiler_version,
                         "compiler_flags": args.compiler_flags,
+                        "cpu_model": args.cpu_model,
+                        "ram_bytes": args.ram_bytes,
+                        "numa": args.numa,
+                        "kernel": args.kernel,
                         "cpu_affinity": args.cpu_affinity or "unbound",
                         "timeout_seconds": args.timeout_seconds,
                         "max_rss_kib": args.max_rss_kib,
