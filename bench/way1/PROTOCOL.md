@@ -169,6 +169,17 @@ python3 -X utf8 bench/way1/run_stage_a1.py --threads 8
 A1 uses `(Q,bits)=(8,22),(64,20),(512,17),(4096,14),(16384,12)`,
 all available families in canonical order, plus shuffled `Q=512` cases.
 
+Run the Stage A2 anchor shard matrix after A1 passes:
+
+```bash
+python3 -X utf8 bench/way1/run_stage_a2.py --threads 8
+```
+
+A2 uses the committed A0 anchors for `r1/Q64/frozen`,
+`r2/Q512/frozen`, and `r3/Q512/synthetic`; it covers 1/2/7/16 shard
+layouts, manifest-bound reduction, and semantic comparison with single-shard
+results.
+
 ## CI and immutable submission
 
 CI builds and tests with GCC and Clang. `make test` exercises all three

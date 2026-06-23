@@ -1,6 +1,6 @@
 2d81c301608596ca45119ae12807aac2f1886746e9914b9db293f684521b2ee1  ./.github/workflows/ci.yml
 1f139e56119b2da7ba3417fb7e8ab0f6b2ae347fdbe960da25ab0c9c1437a645  ./FINAL_CHECK.md
-d5bd953d96ef468a38853abdd67ebb9026dd3ad4cff807f3c3ee527e5f3fee78  ./Makefile
+40bae0f52a5371b7f5c1d5ee7c5a2c30704e8b3cd4695bbc3e254a69a87c8cec  ./Makefile
 c45428d4c03bf9be845246391a71fcad3830f4462ff7728415dc58e89beea540  ./PACKAGE_SOURCE_COMMIT.txt
 c06770bd857626c38ffe36c65ebbea23fd42b502862cdde5d7da1c1402d442dd  ./README.md
 239c7b51e1b6193606022dca467a8b9dca0ec6ce8591071ec235c1e65bbe3948  ./REPORT.md
@@ -18,8 +18,8 @@ d10251aa2a7aba81248333ccedde940bb503ee262e5261bb1ed0c1b615313ea9  ./apps/exact_b
 7890a994172c34ed1bbb7ba8f218abf3b2dc7ecc0bcb61c2402f379f515f675a  ./apps/reduce_exact_parts.cpp
 7b489deb49f6c20df865f477da3b780415234733da1c83c0ee45d536f689c5f7  ./apps/score.cpp
 0b42fe23202c13c64a77d5471cf63c5811c53a56301c2821f855fbbb0f10d094  ./apps/search_candidates.cpp
-2629769bc572b73646a29ccb9f26e6e88a9efb214a1a259119da0dd5396cdd4c  ./bench/way1/PROTOCOL.md
-37e4c32bd1089d39b1538d3e77871d27c68b3df277ce1d9fe1eb915e29ff12c3  ./bench/way1/SHA256SUMS.txt
+f3c1b8b27ba072268103472aff6aed3a6c89aca93d3a3d92f72a3debfd3f0a11  ./bench/way1/PROTOCOL.md
+59c9bd54f61c1bd1e4ed3fdd8f1b90791653e4018706df85ce5361035f93f30b  ./bench/way1/SHA256SUMS.txt
 8efbd43d6ac5a22bd552ee43a714dce5d5401712846bda7978e3a018982a2f21  ./bench/way1/SUMMARY.md
 d17add149df36e638f179044ff2ed58df54cc4e10be6e196a604474298935364  ./bench/way1/benchmark_schema.json
 7a2dac1ab0169ef2cf4aeb38844cf622dcbdacce53834610437930c6accdb5d7  ./bench/way1/build_forecast.py
@@ -32,6 +32,7 @@ e2780e8fe1104d74b4c1ff0c8bc566c6baec97846fe0b889ab273edbf1410458  ./bench/way1/r
 3693a1ec7da9983340c30100a7e8a63566c86b6c4730fcb21231a50e9e1b3f69  ./bench/way1/run_protocol.py
 18737e28de6c8e6e2f77fb338b1c83b037264c5698aa662d39fff9043e431786  ./bench/way1/run_stage_a0.py
 f8a45dc7cce9ddcace9f94e6a44826a3dc367c9194603eb159ec83e6a1726db1  ./bench/way1/run_stage_a1.py
+900f92d8464660b251d71d35c337420aaa23b7d7f9e58e14641b6ae603d07adf  ./bench/way1/run_stage_a2.py
 de5d8ff3fe269dd11740f9d5fdb7f9ae25d4cf617c0c68099fe2d36cf0d16fce  ./bench/way1/stage_a0/MANIFEST.json
 3d930d299b9ef6c78b91f9d692f58dee124ac35d862bc515e25fda951d772ca4  ./bench/way1/stage_a0/SHA256SUMS.txt
 61b298f294bc8c6a5f63a4bf7c88dafd9e1cc592ba1badb76b801d1051ccbdb7  ./bench/way1/stage_a0/SUMMARY.json
@@ -1841,6 +1842,7 @@ bd82d9f97ff2c97aeb66b5d264966b499f76c96e08d01deec71b7cd0a7c3a834  ./tests/test_s
 b8993d990525b732c5617d7206ab375823ee91035e5cf6743b059782a6607364  ./tests/test_way1_query_families.py
 8bd1ab123fe901bc3b514c656d71f9b6153d5d466a718653d3e8c78fa1ec8130  ./tests/test_way1_stage_a0.py
 371742833d3899c60039601f9a9c68b2b20e97394440b6845cb4ab9a9f194138  ./tests/test_way1_stage_a1.py
+de0ec4c9117ddb7bde21a94fbfa23bc2cdb171c25a9006e43a014cb9d10937b7  ./tests/test_way1_stage_a2.py
 5fd78906f979fd0ac63f8ded92548c0ddca56fdd1985fdf5f9c9ba82af0ea46b  ./参赛论文/figures/fig1_certified_sparse_transition.pdf
 0536b84687186f079ff2b8f87874f067f40f6d31378fbf0098c4893e1a9bc3b0  ./参赛论文/figures/fig1_certified_sparse_transition.svg
 61797fdb9563c1ec8527e0db9af3a2d19ede7c92e7120ac249d98f88403efa1d  ./参赛论文/figures/fig2_linear_hull_aggregation.pdf
