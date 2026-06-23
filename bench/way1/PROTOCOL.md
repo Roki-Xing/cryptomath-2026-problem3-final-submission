@@ -1,111 +1,166 @@
 # Exact way-1 batch benchmark protocol
 
-## Purpose
+## Status and scope
 
-This benchmark determines whether full Strategy-B way-1 validation is feasible.
-It does not generate submitted `VT` fields and does not modify `submit.txt`.
+PR7 remains Draft with decision `KEEP_DRAFT_NO_GO_PENDING`. This benchmark
+evaluates exact way-1 batch implementations. It does not generate submitted
+`VT` fields, call the exact-dyadic route-shell backend, or modify `submit.txt`.
+No Stage-B or full-domain run is authorized before the complete Stage-A gate
+passes.
 
-## Fixed constraints
+`bench/way1/results.csv`, `forecast.json`, and the original 27-row summary are
+pre-P0 historical smoke artifacts. They do not satisfy
+`way1-benchmark-results-v2` and must not be presented as Stage-A results.
 
-- Query coordinates come only from
-  `experiments/frozen/final_queries.csv`.
-- Benchmark programs read `r,u,v`; they do not read frozen `VE`, score, or
-  candidate-source fields.
-- Signed integer numerator is authoritative. Decimal values are not benchmark
-  outputs.
-- No GPU or FWHT implementation is part of this PR.
-- A full \(2^{32}\) run requires the explicit `--allow-full-domain` flag.
-- Domains above \(2^{28}\) require the explicit `--allow-large-domain` flag.
-- `submit.txt` is immutable.
+## Frozen inputs and query families
 
-The frozen `r=1` set contains only 288 rows. Therefore query counts above 288
-cannot be represented by unique frozen `r=1` queries and must be reported as
-unsupported rather than synthesized.
+The generator may read only:
+
+- `experiments/frozen/final_queries.csv`;
+- `experiments/frozen/final_ru.csv`.
+
+It may use only `r,u,v`, source row identity, and derived degree statistics.
+It must not read `VT`, `VE`, score, way-1 outputs, or candidate provenance.
+
+Generate a real frozen subset:
+
+```bash
+python3 -X utf8 bench/way1/generate_query_family.py \
+  --source experiments/frozen/final_queries.csv \
+  --ru-source experiments/frozen/final_ru.csv \
+  --family frozen-subset \
+  --profile uv_core \
+  --r 2 --count 64 --seed stage-a0-v1 \
+  --out /tmp/pr7-r2-q64-frozen.csv \
+  --metadata-out /tmp/pr7-r2-q64-frozen.json
+```
+
+Supported families are:
+
+- `uniform`: deterministic SHA-ordered frozen rows;
+- `frozen-subset`: real frozen edges with `uv_core` or `u_stratified` stars;
+- `synthetic-frozen-shaped`: explicitly synthetic masks with frozen-derived
+  bipartite degree shape.
+
+Requests larger than a round's frozen set fail closed. In particular,
+`r=1,Q=512,frozen-subset` is `SKIP_UNAVAILABLE`, not an implicit synthetic
+case. Every query metadata artifact records the raw and semantic query hashes,
+source hash, generator commit, family/profile/seed, cardinalities, and degree
+histograms.
 
 ## Implementations
 
-- `current`: computes input and output parity per query.
-- `grouped_u`: computes input parity once per unique \(u\), while output parity
-  remains per query.
-- `grouped_uv`: computes input parity once per unique \(u\) and output parity
-  once per unique \(v\).
+- `current`: input and output parity per query.
+- `grouped_u`: input parity once per unique \(u\).
+- `grouped_uv`: input parity once per unique \(u\) and output parity once per
+  unique \(v\).
 
-All implementations evaluate `permute(x,r)` once per plaintext and produce the
-same exact numerator for every query.
+All variants evaluate `permute(x,r)` once per plaintext and must produce the
+same exact signed integer numerator and denominator for each query key.
 
-## Query generation
+## Runner provenance and guards
 
-```bash
-python3 -X utf8 bench/way1/generate_queries.py \
-  --source experiments/frozen/final_queries.csv \
-  --r 2 --count 64 --seed pr7-frozen-v1 \
-  --out /tmp/pr7_r2_q64.csv
-```
+The runner requires query family/profile/seed/order, timeout, RSS budget,
+compiler identity/version/flags, CPU affinity, and the frozen `submit.txt`
+SHA. It checks the submit SHA before and after every child run, kills the
+entire child process group on timeout, and rejects cross-variant semantic
+result differences.
 
-Selection is deterministic SHA-256 ordering over the fixed seed and source row
-identity. Requests larger than the available frozen set fail closed.
+Each child output embeds the actual query and executable SHA-256. The runner
+also writes a `way1-shard-manifest-v1` sidecar containing:
 
-## Stage A: bounded correctness and throughput
+- actual query file SHA-256;
+- actual executable SHA-256;
+- actual raw output SHA-256;
+- half-open range;
+- complete command;
+- exit status.
 
-Start with \(2^{12}\), then use domain bits 16, 20, 24, and 28 only after the
-smaller run passes. Run each round separately.
+Example bounded run:
 
 ```bash
 python3 -X utf8 bench/way1/run_protocol.py \
-  --queries /tmp/pr7_r2_q64.csv \
-  --r 2 --domain-bits 16 --threads 8 --repeats 3 \
-  --out /tmp/pr7_r2_q64_n16_results.csv \
-  --artifacts-dir /tmp/pr7_r2_q64_n16_artifacts
+  --queries /tmp/pr7-r2-q64-frozen.csv \
+  --query-family frozen-subset \
+  --query-profile uv_core \
+  --seed stage-a0-v1 \
+  --order canonical \
+  --r 2 --domain-bits 16 \
+  --threads 1 \
+  --variants current,grouped_u,grouped_uv \
+  --repeats 1 \
+  --timeout-seconds 120 \
+  --max-rss-kib 1048576 \
+  --compiler-id gcc \
+  --compiler-version "$(g++ --version | head -n 1)" \
+  --compiler-flags="-O3 -std=c++17 -Wall -Wextra -pedantic -pthread" \
+  --cpu-affinity unbound \
+  --submit-sha256 7b0f638ba8678462ee8d6c12bc0c5b89d7354b4a095b31330f3ba495acfe2e2e \
+  --out /tmp/pr7-r2-q64-results.csv \
+  --artifacts-dir /tmp/pr7-r2-q64-artifacts
 ```
 
-The runner rejects numerator disagreement across implementations or repeats.
-It records wall time, CPU time, peak RSS, logical query updates, parity counts,
-program/input/output hashes, and exit status.
+## Manifest-bound shard reduction
 
-## Sharding and reduction
-
-Each shard covers a half-open interval and embeds its query SHA-256. Reduce
-only shards from the same implementation and query file:
+The reducer accepts sidecar manifests, recomputes each raw shard hash, and
+cross-checks implementation, query hash, program hash, range, row order, and
+denominator before summing:
 
 ```bash
 python3 -X utf8 bench/way1/reduce_shards.py \
-  --expected-start 0 --expected-end 65536 \
+  --expected-start 0 \
+  --expected-end 65536 \
+  --expected-query-sha256 "$QUERY_SHA" \
+  --expected-program-sha256 "$PROGRAM_SHA" \
   --out /tmp/reduced.csv \
-  /tmp/shard_*.csv
+  /tmp/shards/part-*.manifest.json
 ```
 
-The reducer rejects empty ranges, gaps, overlaps, duplicates, query hash
-changes, implementation changes, row-order changes, and denominator mismatch.
+The corruption suite rejects missing, duplicate, overlapping, and gapped
+shards; range drift; query/program hash drift; denominator drift; row
+replacement/reordering; implementation mixing; and raw-output tampering.
 
-## Stage B/C full-domain progression
+## Stage A0 matrix
 
-Full-domain work is manual and gated:
+Stage A0 is bounded to:
 
-1. start with \(Q=8\) for each \(r\);
-2. compare all implementations and 2/4/8-shard grouped winners;
-3. require repeated numerator equality and acceptable variance;
-4. continue to \(Q=64\) and then \(Q=512\) only if resources permit;
-5. do not automatically start full-domain \(Q\ge4096\).
+| Parameter | Values |
+| --- | --- |
+| `r` | 1, 2, 3 |
+| `Q` | 64, 512 |
+| domain bits | 16 |
+| families | uniform, frozen-subset, synthetic-frozen-shaped |
+| variants | current, grouped_u, grouped_uv |
+| threads | 1, `T` |
+| order | canonical, seeded shuffled |
+| repeats | 1 |
 
-No full-domain command is part of `make test` or CI.
+Per-variant limits are 120 seconds for `Q=64`, 300 seconds for `Q=512`, and
+1 GiB peak RSS. The matrix stops immediately on numerator/denominator
+disagreement, thread/order disagreement, sanitizer failure, submit/hash drift,
+timeout, OOM, or nonzero exit.
 
-## Forecast semantics
+Stage A1, Stage A2, sanitizer matrices, optimization/compiler comparisons, and
+artifact aggregation remain required before `STAGE_A_PASS`. A0 passing alone
+does not authorize Stage B.
 
-```bash
-python3 -X utf8 bench/way1/build_forecast.py \
-  --results bench/way1/results.csv \
-  --out bench/way1/forecast.json
+## CI and immutable submission
+
+CI builds and tests with GCC and Clang. `make test` exercises all three
+variants, thread/order invariance, manifest-bound reduction corruption cases,
+and deterministic query-family generation. It checks the frozen submit SHA
+before and after the suite.
+
+The immutable submission requirements are:
+
+```text
+submit_sha256 = 7b0f638ba8678462ee8d6c12bc0c5b89d7354b4a095b31330f3ba495acfe2e2e
+valid_count = 138338
+total_score = 105843.622442471292742994
 ```
 
-Until the prescribed matrix, full-domain comparisons, repeated-run variance,
-and holdout thresholds are complete, the only valid decision is
-`NO_GO_PENDING`. Initial proportional projections are planning signals, not
-confirmed completion-time claims and not a validated 95% prediction interval.
+## Decision rule
 
-## Final GO requirements
-
-The final PR7 gate requires all Stage A-D correctness and forecasting
-conditions from the hardening protocol, including full-domain cross-variant
-numerator equality, shard recovery testing, validated holdout errors, a 95%
-prediction interval, and explicit resource budgets. Only then may PR7 report
-`GO`; otherwise it reports `NO_GO`.
+PR7 may report only `STAGE_A_PASS` or `STAGE_A_FAIL` after the complete
+Stage-A protocol. Until then its status remains `KEEP_DRAFT_NO_GO_PENDING`.
+It must not report Strategy-B `GO` or start a full \(2^{32}\) run.

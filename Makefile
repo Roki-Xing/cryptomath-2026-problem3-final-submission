@@ -93,6 +93,7 @@ test: test_core test_linear_mask_basis test_exact_cartesian test_exact_dyadic te
 	python3 -X utf8 tests/test_dyadic_bounds.py
 	python3 -X utf8 tests/test_exact_shard_reduction.py
 	python3 -X utf8 tests/test_way1_benchmark_protocol.py
+	python3 -X utf8 tests/test_way1_query_families.py
 	@test "$$(sha256sum submit.txt | cut -d' ' -f1)" = "7b0f638ba8678462ee8d6c12bc0c5b89d7354b4a095b31330f3ba495acfe2e2e"
 
 smoke: all

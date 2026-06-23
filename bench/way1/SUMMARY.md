@@ -1,13 +1,13 @@
-# PR7 initial benchmark status
+# PR7 pre-P0 benchmark snapshot
 
 ## Decision
 
 `NO_GO_PENDING`
 
-This is a framework and Stage-A smoke checkpoint, not the final PR7 Go/No-Go
-decision. It does not satisfy the required Q/domain matrix, full-domain
-cross-implementation comparisons, holdout prediction-error thresholds, or a
-validated 95% prediction interval.
+This file describes the original 27-row smoke artifact and is retained only as
+historical evidence. `results.csv` predates the manifest-bound P0 provenance
+changes and does not satisfy `way1-benchmark-results-v2`. It is not a Stage-A
+result and cannot support a Strategy-B decision.
 
 ## Executed scope
 
@@ -48,13 +48,8 @@ target, and they are not suitable for choosing a winning implementation.
 `forecast.json` must not be cited as a confirmed runtime estimate. Its decision
 remains `NO_GO_PENDING`, and its extrapolation warning is part of the artifact.
 
-## Required next measurements
+## Current protocol authority
 
-1. Complete the bounded Stage-A matrix for available frozen query counts and
-   domain bits 16, 20, 24, and 28.
-2. Add frozen-shaped cases with repeated \(u\) and repeated \(v\) before
-   selecting a grouped implementation.
-3. Run full-domain \(Q=8\) only after explicit resource approval, then progress
-   to \(Q=64\) and \(Q=512\) conditionally.
-4. Establish repeated-run variance, validated holdouts, resource budgets, and
-   a real 95% prediction interval before changing the decision.
+The current P0 contract and Stage-A gates are defined by `PROTOCOL.md` and
+`benchmark_schema.json`. No full-domain run is authorized before the complete
+Stage-A protocol reports `STAGE_A_PASS`.

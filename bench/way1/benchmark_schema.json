@@ -1,13 +1,19 @@
 {
-  "schema": "way1-benchmark-results-v1",
+  "schema": "way1-benchmark-results-v2",
   "authority": {
     "numerator": "signed int64 exact sum over the visited plaintext interval",
     "timing": "/usr/bin/time process measurements",
-    "query_source": "experiments/frozen/final_queries.csv only"
+    "query_source": "experiments/frozen/final_queries.csv and experiments/frozen/final_ru.csv only",
+    "legacy_results": "bench/way1/results.csv is a pre-P0 smoke snapshot and does not satisfy this schema"
   },
   "required_fields": [
     "run_id",
     "implementation",
+    "query_family",
+    "query_profile",
+    "seed",
+    "order",
+    "semantic_query_sha256",
     "r",
     "Q",
     "unique_u",
@@ -30,6 +36,13 @@
     "program_sha256",
     "input_sha256",
     "output_sha256",
+    "compiler_id",
+    "compiler_version",
+    "compiler_flags",
+    "cpu_affinity",
+    "timeout_seconds",
+    "max_rss_kib",
+    "submit_sha256",
     "exit_status"
   ],
   "implementations": [
@@ -43,11 +56,18 @@
     3
   ],
   "planned_query_counts": [
-    8,
     64,
     512,
     4096,
     16384
   ],
-  "automatic_full_domain_runs": false
+  "automatic_full_domain_runs": false,
+  "required_query_orders": [
+    "canonical",
+    "shuffled"
+  ],
+  "required_thread_modes": [
+    "1",
+    "T"
+  ]
 }

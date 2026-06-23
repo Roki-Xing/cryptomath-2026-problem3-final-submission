@@ -22,6 +22,7 @@ struct Args {
     int rounds = -1;
     std::string queries_path;
     std::string query_sha256;
+    std::string program_sha256;
     std::optional<std::string> out_path;
     std::uint64_t start = 0;
     std::optional<std::uint64_t> end;
@@ -54,6 +55,7 @@ inline bool valid_sha256(const std::string& value) {
 inline void usage(const char* program) {
     std::cerr << "Usage: " << program
               << " --r R --queries FILE --query-sha256 HEX"
+              << " --program-sha256 HEX"
               << " --start A --end B [--threads N] [--out FILE]\n";
 }
 
@@ -64,6 +66,9 @@ inline Args parse_args(int argc, char** argv) {
         if (option == "--r") args.rounds = std::stoi(require_arg(i, argc, argv, option));
         else if (option == "--queries") args.queries_path = require_arg(i, argc, argv, option);
         else if (option == "--query-sha256") args.query_sha256 = require_arg(i, argc, argv, option);
+        else if (option == "--program-sha256") {
+            args.program_sha256 = require_arg(i, argc, argv, option);
+        }
         else if (option == "--out") args.out_path = require_arg(i, argc, argv, option);
         else if (option == "--threads") {
             args.threads = static_cast<std::size_t>(
@@ -83,6 +88,10 @@ inline Args parse_args(int argc, char** argv) {
     if (args.queries_path.empty()) throw std::invalid_argument("missing --queries");
     if (!valid_sha256(args.query_sha256)) {
         throw std::invalid_argument("--query-sha256 must be 64 lowercase hexadecimal characters");
+    }
+    if (!valid_sha256(args.program_sha256)) {
+        throw std::invalid_argument(
+            "--program-sha256 must be 64 lowercase hexadecimal characters");
     }
     if (!args.end.has_value()) throw std::invalid_argument("missing --end");
     return args;
@@ -138,9 +147,10 @@ inline int run(int argc,
             output = &file;
         }
 
-        *output << "# schema=way1-exact-shard-v1\n";
+        *output << "# schema=way1-exact-shard-v2\n";
         *output << "# implementation=" << implementation << '\n';
         *output << "# query_sha256=" << args.query_sha256 << '\n';
+        *output << "# program_sha256=" << args.program_sha256 << '\n';
         *output << "# range_start=" << args.start << '\n';
         *output << "# range_end=" << *args.end << '\n';
         *output << "# plaintext_count=" << metrics.plaintext_count << '\n';
