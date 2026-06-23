@@ -1,0 +1,153 @@
+{
+  "decision": "NO_GO_PENDING",
+  "extrapolation_warning": "These projections extrapolate beyond the measured domain and query count and must not be presented as confirmed completion times.",
+  "go_gate_passed": false,
+  "prediction_basis": "Direct proportional scaling of measured logical query-update throughput.",
+  "prediction_interval": "The conservative bound uses the slowest measured throughput sample. It is not a validated 95% prediction interval until repeated Stage B/C runs and holdout checks are complete.",
+  "projections": [
+    {
+      "center_rate_query_updates_per_second": 140184519.5659844,
+      "center_wall_seconds": 8823.731643676756,
+      "conservative_rate_query_updates_per_second": 130118653.46281664,
+      "conservative_upper_wall_seconds": 9506.327865600586,
+      "implementation": "current",
+      "measured_plaintext_counts": [
+        65536
+      ],
+      "measured_q": [
+        8
+      ],
+      "r": 1,
+      "sample_count": 3
+    },
+    {
+      "center_rate_query_updates_per_second": 141887057.2935201,
+      "center_wall_seconds": 8717.853515625,
+      "conservative_rate_query_updates_per_second": 138611568.08275083,
+      "conservative_upper_wall_seconds": 8923.862548828125,
+      "implementation": "grouped_u",
+      "measured_plaintext_counts": [
+        65536
+      ],
+      "measured_q": [
+        8
+      ],
+      "r": 1,
+      "sample_count": 3
+    },
+    {
+      "center_rate_query_updates_per_second": 98378748.78544463,
+      "center_wall_seconds": 12573.351425170898,
+      "conservative_rate_query_updates_per_second": 96880749.32757989,
+      "conservative_upper_wall_seconds": 12767.764389038086,
+      "implementation": "grouped_uv",
+      "measured_plaintext_counts": [
+        65536
+      ],
+      "measured_q": [
+        8
+      ],
+      "r": 1,
+      "sample_count": 3
+    },
+    {
+      "center_rate_query_updates_per_second": 106677908.9699888,
+      "center_wall_seconds": 3632998.3654899597,
+      "conservative_rate_query_updates_per_second": 89016325.6870063,
+      "conservative_upper_wall_seconds": 4353815.616750717,
+      "implementation": "current",
+      "measured_plaintext_counts": [
+        65536
+      ],
+      "measured_q": [
+        8
+      ],
+      "r": 2,
+      "sample_count": 3
+    },
+    {
+      "center_rate_query_updates_per_second": 97997152.61565056,
+      "center_wall_seconds": 3954815.61022377,
+      "conservative_rate_query_updates_per_second": 85484406.07253467,
+      "conservative_upper_wall_seconds": 4533700.200162888,
+      "implementation": "grouped_u",
+      "measured_plaintext_counts": [
+        65536
+      ],
+      "measured_q": [
+        8
+      ],
+      "r": 2,
+      "sample_count": 3
+    },
+    {
+      "center_rate_query_updates_per_second": 75847978.43749541,
+      "center_wall_seconds": 5109703.342208862,
+      "conservative_rate_query_updates_per_second": 74839771.52514789,
+      "conservative_upper_wall_seconds": 5178538.910846711,
+      "implementation": "grouped_uv",
+      "measured_plaintext_counts": [
+        65536
+      ],
+      "measured_q": [
+        8
+      ],
+      "r": 2,
+      "sample_count": 3
+    },
+    {
+      "center_rate_query_updates_per_second": 78404911.98510815,
+      "center_wall_seconds": 2619218.1215629578,
+      "conservative_rate_query_updates_per_second": 78061296.46762805,
+      "conservative_upper_wall_seconds": 2630747.5738134384,
+      "implementation": "current",
+      "measured_plaintext_counts": [
+        65536
+      ],
+      "measured_q": [
+        8
+      ],
+      "r": 3,
+      "sample_count": 3
+    },
+    {
+      "center_rate_query_updates_per_second": 79437539.05691226,
+      "center_wall_seconds": 2585170.295165062,
+      "conservative_rate_query_updates_per_second": 77114013.57970248,
+      "conservative_upper_wall_seconds": 2663064.1663942337,
+      "implementation": "grouped_u",
+      "measured_plaintext_counts": [
+        65536
+      ],
+      "measured_q": [
+        8
+      ],
+      "r": 3,
+      "sample_count": 3
+    },
+    {
+      "center_rate_query_updates_per_second": 57186599.11466914,
+      "center_wall_seconds": 3591043.521912575,
+      "conservative_rate_query_updates_per_second": 55374145.11248029,
+      "conservative_upper_wall_seconds": 3708582.1528043747,
+      "implementation": "grouped_uv",
+      "measured_plaintext_counts": [
+        65536
+      ],
+      "measured_q": [
+        8
+      ],
+      "r": 3,
+      "sample_count": 3
+    }
+  ],
+  "reason": "Stage A smoke data does not satisfy the required Q/domain matrix, full-domain cross-implementation checks, or holdout error gates.",
+  "required_before_go": [
+    "complete the prescribed r/Q/domain benchmark matrix",
+    "verify full-domain Q=8 and Q=64 numerator equality",
+    "obtain repeated-run variance and a validated 95% interval",
+    "pass Q=512 and Q=16384 holdout error thresholds",
+    "record available hours, RAM, disk, and planned shard efficiency"
+  ],
+  "schema": "way1-full-run-projection-v1"
+}
