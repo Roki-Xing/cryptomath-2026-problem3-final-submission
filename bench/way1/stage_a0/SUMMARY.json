@@ -1,0 +1,16 @@
+{
+  "available_query_artifacts": 17,
+  "elapsed_seconds": 87.741985,
+  "nonzero_exit_count": 0,
+  "oom_count": 0,
+  "query_spec_count": 18,
+  "result_row_count": 204,
+  "run_case_count": 68,
+  "schema": "way1-stage-a0-summary-v1",
+  "semantic_mismatch_count": 0,
+  "skip_unavailable_count": 1,
+  "status": "STAGE_A0_PASS",
+  "submit_sha256_after": "7b0f638ba8678462ee8d6c12bc0c5b89d7354b4a095b31330f3ba495acfe2e2e",
+  "submit_sha256_before": "7b0f638ba8678462ee8d6c12bc0c5b89d7354b4a095b31330f3ba495acfe2e2e",
+  "timeout_count": 0
+}

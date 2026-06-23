@@ -1,0 +1,25 @@
+{
+  "Q": 512,
+  "family": "UNIFORM_SYNTHETIC",
+  "generator_commit": "1e4f62f5223445c0e27e53a065ebd2877429fd73",
+  "profile": "sha-order",
+  "query_file_sha256": "e0e91a71c7cbd71aee2a8b0e99685221892ffad450f3625a26aeb858927a008b",
+  "seed": "stage-a0-v1",
+  "semantic_query_sha256": "7034e49b20b15781b90f3b347ed4f23e9faa900f9178f4567fa599d9c566d0df",
+  "source_sha256": "2ac82a72e75e3f8a374def5cb292ee777da4e304c1437f0a334e5509db6b6797",
+  "synthetic": true,
+  "u_degree_histogram": {
+    "1": 512
+  },
+  "u_degree_max": 1,
+  "u_degree_median": 1.0,
+  "u_degree_p95": 1,
+  "unique_u": 512,
+  "unique_v": 512,
+  "v_degree_histogram": {
+    "1": 512
+  },
+  "v_degree_max": 1,
+  "v_degree_median": 1.0,
+  "v_degree_p95": 1
+}
