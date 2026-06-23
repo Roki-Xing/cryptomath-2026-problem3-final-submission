@@ -97,16 +97,18 @@ def validate_ru_source(path: Path, rounds: int) -> None:
             raise ValueError(f"final_ru.csv has no rows for r={rounds}")
 
 
-def uniform_subset(rows: list[Query], count: int, seed: str) -> list[Query]:
-    if count > len(rows):
-        raise ValueError(f"requested {count} queries but only {len(rows)} are available")
-    return sorted(
-        rows,
-        key=lambda query: (
-            keyed_digest(seed, "uniform", query.row_id, query.r, query.u, query.v),
-            query.row_id,
-        ),
-    )[:count]
+def uniform_queries(rows: list[Query], count: int, seed: str) -> list[Query]:
+    used_u: set[int] = set()
+    used_v: set[int] = set()
+    return [
+        Query(
+            row_id=index + 1,
+            r=rows[0].r,
+            u=synthetic_mask(seed, "uniform-u", index, used_u),
+            v=synthetic_mask(seed, "uniform-v", index, used_v),
+        )
+        for index in range(count)
+    ]
 
 
 def frozen_subset(rows: list[Query], count: int, seed: str, profile: str) -> list[Query]:
@@ -331,9 +333,9 @@ def main() -> None:
         ).hexdigest()
 
         if args.family == "uniform":
-            rows = uniform_subset(source_rows, args.count, family_seed)
-            family_name = "UNIFORM_FROZEN"
-            synthetic = False
+            rows = uniform_queries(source_rows, args.count, family_seed)
+            family_name = "UNIFORM_SYNTHETIC"
+            synthetic = True
         elif args.family == "frozen-subset":
             rows = frozen_subset(source_rows, args.count, family_seed, args.profile)
             family_name = "FROZEN_SUBSET"

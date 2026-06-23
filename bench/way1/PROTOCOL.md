@@ -37,7 +37,8 @@ python3 -X utf8 bench/way1/generate_query_family.py \
 
 Supported families are:
 
-- `uniform`: deterministic SHA-ordered frozen rows;
+- `uniform`: seeded synthetic nonzero masks with `unique_u=unique_v=Q`, marked
+  `synthetic=true`, used as the no-reuse baseline;
 - `frozen-subset`: real frozen edges with `uv_core` or `u_stratified` stars;
 - `synthetic-frozen-shaped`: explicitly synthetic masks with frozen-derived
   bipartite degree shape.

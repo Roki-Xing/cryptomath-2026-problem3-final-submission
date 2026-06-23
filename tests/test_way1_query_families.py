@@ -190,16 +190,18 @@ def main() -> None:
             tmp_path,
             family="uniform",
             profile="sha-order",
-            rounds=2,
-            count=64,
+            rounds=1,
+            count=512,
             seed="stage-a0-v1",
             name="uniform",
         )
         assert completed.returncode == 0, completed.stderr
         uniform_metadata = assert_metadata(
-            uniform_meta, uniform, synthetic=False, count=64
+            uniform_meta, uniform, synthetic=True, count=512
         )
-        assert uniform_metadata["family"] == "UNIFORM_FROZEN"
+        assert uniform_metadata["family"] == "UNIFORM_SYNTHETIC"
+        assert uniform_metadata["unique_u"] == 512
+        assert uniform_metadata["unique_v"] == 512
 
     print("way-1 query family tests passed")
 
