@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import bisect
 import hashlib
+import heapq
 
 
 def keyed_digest(seed: str, *parts: object) -> bytes:
@@ -59,13 +61,20 @@ def scaled_degrees(weights: list[int], total: int, cap: int) -> list[int]:
 
 def gale_ryser(left: list[int], right: list[int]) -> bool:
     left = sorted(left, reverse=True)
-    right = sorted(right, reverse=True)
+    right = sorted(right)
     if sum(left) != sum(right):
         return False
-    return all(
-        sum(left[:k]) <= sum(min(k, degree) for degree in right)
-        for k in range(1, len(left) + 1)
-    )
+    right_prefix = [0]
+    for degree in right:
+        right_prefix.append(right_prefix[-1] + degree)
+    left_prefix = 0
+    for k, degree in enumerate(left, start=1):
+        left_prefix += degree
+        split = bisect.bisect_left(right, k)
+        conjugate_prefix = right_prefix[split] + (len(right) - split) * k
+        if left_prefix > conjugate_prefix:
+            return False
+    return True
 
 
 def repair_graphical(left: list[int], right: list[int]) -> tuple[list[int], list[int]]:
@@ -111,25 +120,28 @@ def repair_graphical(left: list[int], right: list[int]) -> tuple[list[int], list
 
 
 def havel_hakimi(left: list[int], right: list[int], seed: str) -> list[tuple[int, int]]:
-    remaining = list(right)
+    heap = [
+        (-degree, keyed_digest(seed, "right", index), index)
+        for index, degree in enumerate(right)
+        if degree > 0
+    ]
+    heapq.heapify(heap)
     edges: list[tuple[int, int]] = []
     left_order = sorted(
         range(len(left)),
         key=lambda index: (-left[index], keyed_digest(seed, "left", index)),
     )
     for u_index in left_order:
-        candidates = sorted(
-            (index for index, degree in enumerate(remaining) if degree > 0),
-            key=lambda index: (
-                -remaining[index],
-                keyed_digest(seed, "right", u_index, index),
-            ),
-        )
-        if len(candidates) < left[u_index]:
+        if len(heap) < left[u_index]:
             raise ValueError("Havel-Hakimi construction exhausted right vertices")
-        for v_index in candidates[: left[u_index]]:
+        selected: list[tuple[int, bytes, int]] = []
+        for _ in range(left[u_index]):
+            negative_degree, tie_break, v_index = heapq.heappop(heap)
             edges.append((u_index, v_index))
-            remaining[v_index] -= 1
-    if any(remaining):
+            selected.append((negative_degree + 1, tie_break, v_index))
+        for entry in selected:
+            if entry[0] < 0:
+                heapq.heappush(heap, entry)
+    if heap:
         raise ValueError("Havel-Hakimi construction left residual degree")
     return edges
