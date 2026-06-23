@@ -116,10 +116,6 @@ int main(int argc, char** argv) {
         fout << std::setprecision(24);
         fout << "r,u,v,VE,proxy_score,VT,valid,score,status\n";
 
-        std::ostringstream submit_rows;
-        submit_rows << std::setprecision(24);
-        std::size_t verified_positive_rows = 0;
-
         for (int r = args.r_start; r <= args.r_end; ++r) {
             for (Mask u : us) {
                 auto res = bs.estimate(r, u, std::nullopt, args.params);
@@ -147,25 +143,12 @@ int main(int argc, char** argv) {
                          << score_of_estimate(r, it.value) << ',';
                     if (have_vt) fout << vt << ',' << (ok ? 1 : 0) << ',' << sc << ',' << status << '\n';
                     else fout << ",0,0," << status << '\n';
-                    if (ok && sc > 0.0L) {
-                        submit_rows << "@(" << r << ", " << hex32(u) << ", " << hex32(it.mask)
-                                    << ", " << vt << ", " << it.value << ")\n";
-                        ++verified_positive_rows;
-                    }
                 }
             }
         }
 
-        if (verified_positive_rows > 0) {
-            std::ofstream submit("submit.txt");
-            if (!submit) throw std::runtime_error("cannot open output: submit.txt");
-            submit << submit_rows.str();
-            std::cerr << "wrote " << args.out << " and submit.txt with "
-                      << verified_positive_rows << " verified positive-score rows\n";
-        } else {
-            std::cerr << "wrote " << args.out
-                      << "; submit.txt unchanged because no verified positive-score rows were found\n";
-        }
+        std::cerr << "wrote research candidate CSV " << args.out
+                  << "; this tool never emits or modifies submit.txt\n";
     } catch (const std::exception& e) {
         std::cerr << "error: " << e.what() << "\n";
         return 1;

@@ -1,0 +1,29 @@
+name: submission-gates
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - "hardening/**"
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and test
+        run: |
+          make clean
+          make -j2
+          make test
+      - name: Rebuild frozen submission
+        run: |
+          python3 -X utf8 experiments/build_submit_from_sources.py --out /tmp/submit_rebuilt.txt
+          cmp submit.txt /tmp/submit_rebuilt.txt
+      - name: Run release gate
+        run: |
+          ./score --dedup uv --positive-only submit.txt | tee /tmp/score.log
+          grep -Fx "valid_count=138338" /tmp/score.log
+          grep -Fx "total_score=105843.622442471292742994" /tmp/score.log
+          python3 -X utf8 experiments/check_submission.py --submit submit.txt

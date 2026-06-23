@@ -32,6 +32,10 @@
 
 ## 证据链
 
+- `experiments/frozen/BASELINE.json`：绑定仓库、源提交、`submit.txt` SHA-256/Git blob、冻结工具提交和固定生成时间。
+- `experiments/frozen/final_queries.csv`、`final_ru.csv`：确定性冻结查询坐标与唯一 `(r,u)` 工作单元。
+- `experiments/frozen/final_values_snapshot.csv`：分离历史 submitted-field snapshot、frozen way-2 `VE` 和尚未执行的 future way-1 字段。
+- `experiments/frozen/SHA256SUMS.txt`：冻结 artifact 的独立哈希清单。
 - `experiments/submit_audit.csv` 与 `experiments/audit/`：全量审计。
 - `experiments/complexity/`：复杂度总表和按轮汇总。
 - `experiments/spotcheck/`：18 条 validation-only 精确抽样，其中 E06 为 4 条。
@@ -39,6 +43,7 @@
 - `experiments/toy/`：缩小域 exact-vs-DP 对照。
 - `experiments/manifests/E13_final_integration.md`：最终权威口径。
 - `docs/CLAIMS_AND_EVIDENCE.md`：论文声明到 artifact 的映射。
+- `.github/workflows/ci.yml`：在 pull request 和 hardening/main push 上执行构建、测试、重建、评分与包检查。
 
 ## Final gate
 

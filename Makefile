@@ -46,11 +46,14 @@ test_core: tests/test_core.cpp $(EXACT_OBJS)
 test: test_core score
 	./test_core
 	python3 tests/test_score.py ./score
+	python3 -X utf8 tests/test_freeze_baseline.py
+	python3 -X utf8 tests/test_audit_schema.py
+	python3 -X utf8 tests/test_submission_integrity.py
 
 smoke: all
 	./estimator --r 1 --u 0x10000000 --top 8 --beam 10000 --trans 10000
 	@tmp=$$(mktemp -d); \
-	  (cd $$tmp && $(CURDIR)/search_candidates --r-start 1 --r-end 1 --max-active 1 --max-u 4 --top-v 4 --one-round-fast-vt --beam 10000 --trans 10000 --out candidates_r1.csv && $(CURDIR)/score submit.txt); \
+	  (cd $$tmp && $(CURDIR)/search_candidates --r-start 1 --r-end 1 --max-active 1 --max-u 4 --top-v 4 --one-round-fast-vt --beam 10000 --trans 10000 --out candidates_r1.csv && test -s candidates_r1.csv && test ! -e submit.txt); \
 	  rm -rf $$tmp
 
 clean:
