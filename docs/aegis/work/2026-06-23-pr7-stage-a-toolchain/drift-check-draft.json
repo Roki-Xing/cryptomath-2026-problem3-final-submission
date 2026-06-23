@@ -3,13 +3,13 @@
   "taskId": "2026-06-23-pr7-stage-a-toolchain",
   "taskIntentRef": "docs/aegis/work/2026-06-23-pr7-stage-a-toolchain/task-intent-draft.json",
   "baselineRefs": [
-    "bench/way1/PROTOCOL.md"
+    "bench/way1/STAGE_A_SUMMARY.json"
   ],
-  "scopeStatus": "仅新增验证 runner、CI 和协议",
-  "compatStatus": "未改算法或 submit.txt",
-  "retirementStatus": "无旧路径替换；复用现有 A0 查询与 timeout helper",
+  "scopeStatus": "Stage-A 证据完整，本地 final gate 通过",
+  "compatStatus": "submit SHA/score 不变，算法和 Stage B 未触碰",
+  "retirementStatus": "pre-P0 smoke 仅历史保留并已降权",
   "newRiskSignals": [
-    "本机无 clang++，完整矩阵需 GitHub runner"
+    "等待最终证据提交 HEAD 的 GitHub CI"
   ],
   "decision": "needs-verification"
 }

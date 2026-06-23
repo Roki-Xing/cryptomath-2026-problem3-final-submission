@@ -1,0 +1,6 @@
+command=["g++", "-Iinclude", "-Iapps", "-O1", "-g", "-fsanitize=undefined", "-fno-sanitize-recover=all", "-fno-omit-frame-pointer", "-std=c++17", "-Wall", "-Wextra", "-pedantic", "-pthread", "/home/runner/work/cryptomath-2026-problem3-final-submission/cryptomath-2026-problem3-final-submission/apps/exact_batch_grouped_uv.cpp", "/home/runner/work/cryptomath-2026-problem3-final-submission/cryptomath-2026-problem3-final-submission/src/sbox_corr.cpp", "/home/runner/work/cryptomath-2026-problem3-final-submission/cryptomath-2026-problem3-final-submission/src/linear_layer.cpp", "/home/runner/work/cryptomath-2026-problem3-final-submission/cryptomath-2026-problem3-final-submission/src/beam_search.cpp", "/home/runner/work/cryptomath-2026-problem3-final-submission/cryptomath-2026-problem3-final-submission/src/exact.cpp", "-o", "/tmp/way1-toolchain-fojm4gjd/ubsan_gpp_o1_grouped_uv"]
+exit_status=0
+wall_seconds=6.636194
+stdout:
+
+stderr:

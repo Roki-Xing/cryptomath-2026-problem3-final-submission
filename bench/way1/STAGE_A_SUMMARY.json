@@ -1,0 +1,66 @@
+{
+  "ci": {
+    "pull_request_run_id": 28031330588,
+    "pull_request_run_url": "https://github.com/Roki-Xing/cryptomath-2026-problem3-final-submission/actions/runs/28031330588",
+    "push_run_id": 28031329201,
+    "push_run_url": "https://github.com/Roki-Xing/cryptomath-2026-problem3-final-submission/actions/runs/28031329201"
+  },
+  "decision": "STAGE_A_PASS",
+  "gates": {
+    "all_artifacts_independently_hashed": true,
+    "all_query_families_passed": true,
+    "canonical_shuffled_equivalent": true,
+    "gcc_clang_ci_passed": true,
+    "no_nonzero_exit_timeout_or_oom": true,
+    "no_signed_overflow_or_sanitizer_diagnostic": true,
+    "program_query_raw_semantic_hashes_bound": true,
+    "reducer_corruption_cases_passed": 12,
+    "repeated_u_v_queries_passed": true,
+    "schema_complete": true,
+    "shard_reduction_equivalent": true,
+    "single_multithread_equivalent": true,
+    "submit_sha256_unchanged": true,
+    "variant_semantic_equivalence": true
+  },
+  "non_goals": {
+    "full_2_32_run_started": false,
+    "stage_b_authorized": false,
+    "strategy_b_decision": "NO_GO_PENDING_STAGE_B"
+  },
+  "schema": "way1-stage-a-aggregate-v1",
+  "source_head_commit": "abefde8643701d4f83c43cd8a527b70d5a268f3b",
+  "stages": {
+    "a0": {
+      "status": "STAGE_A0_PASS",
+      "summary_path": "stage_a0/SUMMARY.json",
+      "summary_sha256": "61b298f294bc8c6a5f63a4bf7c88dafd9e1cc592ba1badb76b801d1051ccbdb7"
+    },
+    "a1": {
+      "status": "STAGE_A1_PASS",
+      "summary_path": "stage_a1/SUMMARY.json",
+      "summary_sha256": "dedd6b6ea65d5f57a69f88c297b94b85f40780f50fafa8af054de188c2dacda0"
+    },
+    "a2": {
+      "status": "STAGE_A2_PASS",
+      "summary_path": "stage_a2/SUMMARY.json",
+      "summary_sha256": "cbccb31f04de76fa416c3fcfa2a5949fed07c1f1541fb8a2c7407b5922ba1f9c"
+    },
+    "toolchain": {
+      "asan_cases": 9,
+      "matrix_case_count": 69,
+      "optimization_cases": 36,
+      "sanitizer_diagnostic_count": 0,
+      "semantic_mismatch_count": 0,
+      "status": "STAGE_TOOLCHAIN_PASS",
+      "summary_path": "stage_toolchain/SUMMARY.json",
+      "summary_sha256": "f3df1d0ed29a16199c13bf71d311d84e317a8529564bfd33a53ddd0127a7d91f",
+      "tsan_cases": 6,
+      "ubsan_cases": 18
+    }
+  },
+  "submission": {
+    "sha256": "7b0f638ba8678462ee8d6c12bc0c5b89d7354b4a095b31330f3ba495acfe2e2e",
+    "total_score": "105843.622442471292742994",
+    "valid_count": 138338
+  }
+}

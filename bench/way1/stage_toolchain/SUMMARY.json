@@ -1,0 +1,15 @@
+{
+  "elapsed_seconds": 111.944821,
+  "matrix_case_count": 69,
+  "nonzero_exit_count": 0,
+  "oom_count": 0,
+  "sanitizer_diagnostic_count": 0,
+  "schema": "way1-stage-toolchain-summary-v1",
+  "semantic_group_count": 12,
+  "semantic_mismatch_count": 0,
+  "status": "STAGE_TOOLCHAIN_PASS",
+  "submit_sha256_after": "7b0f638ba8678462ee8d6c12bc0c5b89d7354b4a095b31330f3ba495acfe2e2e",
+  "submit_sha256_before": "7b0f638ba8678462ee8d6c12bc0c5b89d7354b4a095b31330f3ba495acfe2e2e",
+  "suite": "all",
+  "timeout_count": 0
+}

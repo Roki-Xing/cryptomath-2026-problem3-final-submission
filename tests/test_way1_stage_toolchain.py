@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 import sys
 from collections import Counter
 from pathlib import Path
@@ -11,6 +12,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "bench" / "way1" / "run_stage_toolchain.py"
+AGGREGATE = ROOT / "bench" / "way1" / "STAGE_A_SUMMARY.json"
 
 
 def load_module():
@@ -76,6 +78,24 @@ def main() -> None:
     groups = module.semantic_groups(specs)
     assert len(groups) == 12
     assert all(len(group) >= 2 for group in groups.values())
+
+    aggregate = json.loads(AGGREGATE.read_text(encoding="utf-8"))
+    assert aggregate["decision"] == "STAGE_A_PASS"
+    assert aggregate["non_goals"]["full_2_32_run_started"] is False
+    assert aggregate["non_goals"]["stage_b_authorized"] is False
+    assert aggregate["submission"] == {
+        "sha256": module.DEFAULT_SUBMIT_SHA,
+        "total_score": "105843.622442471292742994",
+        "valid_count": 138338,
+    }
+    for stage in aggregate["stages"].values():
+        summary_path = ROOT / "bench" / "way1" / stage["summary_path"]
+        assert module.sha256_file(summary_path) == stage["summary_sha256"]
+        summary = json.loads(summary_path.read_text(encoding="utf-8"))
+        assert summary["status"] == stage["status"]
+    assert aggregate["stages"]["toolchain"]["matrix_case_count"] == 69
+    assert aggregate["stages"]["toolchain"]["semantic_mismatch_count"] == 0
+    assert aggregate["stages"]["toolchain"]["sanitizer_diagnostic_count"] == 0
 
     print("way-1 Stage-A toolchain matrix tests passed")
 

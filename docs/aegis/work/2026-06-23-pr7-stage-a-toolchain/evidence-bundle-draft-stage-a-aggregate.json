@@ -1,0 +1,8 @@
+{
+  "schemaVersion": "aegis.schema.v0",
+  "artifactKey": "stage-a-aggregate",
+  "type": "manifest",
+  "source": "bench/way1/STAGE_A_SUMMARY.json",
+  "summary": "A0/A1/A2/toolchain 14 项协议闸门聚合为 STAGE_A_PASS",
+  "verifier": "python3 -X utf8 tests/test_way1_stage_toolchain.py"
+}

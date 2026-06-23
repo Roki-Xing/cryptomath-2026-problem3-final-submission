@@ -2,13 +2,12 @@
 
 ## Decision
 
-`KEEP_DRAFT_NO_GO_PENDING`
+`STAGE_A_PASS`
 
-Stage A0, Stage A1, and Stage A2 passed. A0 ran at commit
-`1e4f62f5223445c0e27e53a065ebd2877429fd73`. This is not
-`STAGE_A_PASS`: sanitizer, compiler/optimization, and aggregate
-artifact gates remain incomplete. Stage B and every full \(2^{32}\) run remain
-prohibited.
+Stage A0, Stage A1, Stage A2, and the complete toolchain matrix passed. The
+machine-readable authority is `STAGE_A_SUMMARY.json`. This is a bounded
+correctness, provenance, and implementation-consistency result only. It does
+not authorize Stage B, a full \(2^{32}\) run, or a Strategy-B `GO` decision.
 
 ## Stage A0 result
 
@@ -85,6 +84,47 @@ The A1 evidence is under `stage_a1/` with its own `MANIFEST.json`,
 
 The A2 evidence is under `stage_a2/`; every raw shard is bound to actual query,
 program, and output hashes by a sidecar manifest before reduction.
+
+## Toolchain result
+
+GitHub Actions pull-request run
+[`28031330588`](https://github.com/Roki-Xing/cryptomath-2026-problem3-final-submission/actions/runs/28031330588)
+and push run
+[`28031329201`](https://github.com/Roki-Xing/cryptomath-2026-problem3-final-submission/actions/runs/28031329201)
+both passed the GCC, Clang, release, and Stage-A toolchain jobs.
+
+The committed CI artifact under `stage_toolchain/` contains:
+
+- 69 matrix cases and 12 semantic comparison groups;
+- 18 UBSan cases at `Q=64`, 16-bit domains, threads 1/8;
+- 9 ASan cases at `Q=64`, 14-bit domains, one thread;
+- 6 TSan cases at `Q=64`, 12-bit domains, four threads;
+- 36 GCC/Clang `-O0/-O3` cases at `Q=64`, 12-bit domains;
+- zero semantic mismatches, sanitizer diagnostics, timeouts, OOMs, or nonzero
+  exits;
+- unchanged submit SHA before and after the complete matrix.
+
+The CI artifact has its own `MANIFEST.json`, `SUMMARY.json`, compile logs,
+exact result files, timing files, sanitizer stderr logs, and
+`SHA256SUMS.txt`. Local WSL execution independently passed UBSan and ASan; its
+TSan runtime could not reserve the shadow mapping, so the committed Ubuntu CI
+artifact is the TSan authority.
+
+## Stage-A gate closure
+
+All 14 protocol gates are satisfied:
+
+- exact numerator/denominator maps match across all three variants;
+- single-thread, multi-thread, canonical, and shuffled results match;
+- uniform, frozen-subset, and synthetic-frozen-shaped families pass,
+  including repeated-\(u\) and repeated-\(v\) cases;
+- all shard layouts reduce to the same semantic result and all 12 corruption
+  cases are rejected;
+- UBSan, ASan, TSan, GCC/Clang, and `-O0/-O3` comparisons pass;
+- query, program, raw-output, semantic-output, stage, and repository hashes
+  are recorded and independently checked;
+- no timeout, OOM, abnormal exit, schema omission, or submit SHA change was
+  observed.
 
 ## Historical smoke
 

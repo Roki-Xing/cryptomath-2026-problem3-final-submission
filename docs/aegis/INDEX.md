@@ -16,3 +16,8 @@ Entries are workspace records, not authoritative runtime decisions.
 | 2026-06-23 | artifact | docs/aegis/work/2026-06-23-pr7-stage-a-toolchain/drift-check-draft.json | PR7 Stage-A 工具链验证 drift check draft |
 | 2026-06-23 | artifact | docs/aegis/work/2026-06-23-pr7-stage-a-toolchain/resume-state-hint.json | 2026-06-23-pr7-stage-a-toolchain resume state hint |
 | 2026-06-23 | artifact | docs/aegis/work/2026-06-23-pr7-stage-a-toolchain/evidence-bundle-draft-toolchain-matrix-test.json | 2026-06-23-pr7-stage-a-toolchain evidence toolchain-matrix-test |
+| 2026-06-23 | artifact | docs/aegis/work/2026-06-23-pr7-stage-a-toolchain/evidence-bundle-draft-github-toolchain-run.json | 2026-06-23-pr7-stage-a-toolchain evidence github-toolchain-run |
+| 2026-06-23 | artifact | docs/aegis/work/2026-06-23-pr7-stage-a-toolchain/evidence-bundle-draft-stage-a-aggregate.json | 2026-06-23-pr7-stage-a-toolchain evidence stage-a-aggregate |
+| 2026-06-23 | artifact | docs/aegis/work/2026-06-23-pr7-stage-a-toolchain/evidence-bundle-draft-final-release-gates.json | 2026-06-23-pr7-stage-a-toolchain evidence final-release-gates |
+| 2026-06-23 | artifact | docs/aegis/work/2026-06-23-pr7-stage-a-toolchain/gate-input-pack.json | 2026-06-23-pr7-stage-a-toolchain gate input pack |
+| 2026-06-23 | work | docs/aegis/work/2026-06-23-pr7-stage-a-toolchain/proof-bundle.md | 2026-06-23-pr7-stage-a-toolchain proof bundle |

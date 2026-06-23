@@ -2,11 +2,11 @@
 
 ## Status and scope
 
-PR7 remains Draft with decision `KEEP_DRAFT_NO_GO_PENDING`. This benchmark
-evaluates exact way-1 batch implementations. It does not generate submitted
-`VT` fields, call the exact-dyadic route-shell backend, or modify `submit.txt`.
-No Stage-B or full-domain run is authorized before the complete Stage-A gate
-passes.
+PR7 remains Draft for integration review. Its bounded benchmark decision is
+`STAGE_A_PASS`, recorded in `STAGE_A_SUMMARY.json`. This benchmark evaluates
+exact way-1 batch implementations. It does not generate submitted `VT` fields,
+call the exact-dyadic route-shell backend, or modify `submit.txt`. This update
+does not authorize a Stage-B or full-domain run.
 
 `bench/way1/results.csv`, `forecast.json`, and the original 27-row summary are
 pre-P0 historical smoke artifacts. They do not satisfy
@@ -222,6 +222,6 @@ total_score = 105843.622442471292742994
 
 ## Decision rule
 
-PR7 may report only `STAGE_A_PASS` or `STAGE_A_FAIL` after the complete
-Stage-A protocol. Until then its status remains `KEEP_DRAFT_NO_GO_PENDING`.
-It must not report Strategy-B `GO` or start a full \(2^{32}\) run.
+PR7 reports `STAGE_A_PASS` only after the complete protocol is satisfied and
+the aggregate evidence is committed. This result is not a Strategy-B `GO` and
+does not start or authorize a full \(2^{32}\) run.
