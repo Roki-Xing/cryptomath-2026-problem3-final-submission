@@ -10,7 +10,7 @@ EXACT_DYADIC_OBJS := $(BUILD_DIR)/sbox_corr.o $(BUILD_DIR)/linear_layer.o \
 
 .PHONY: all clean test smoke
 
-all: estimator estimator_exact exact_oracle exact_batch_mt reduce_exact_parts search_candidates candidate_miner_approx enumerate_r1_positive score test_core test_linear_mask_basis test_exact_cartesian test_exact_dyadic
+all: estimator estimator_exact exact_oracle exact_batch_mt exact_batch_current exact_batch_grouped_u exact_batch_grouped_uv reduce_exact_parts search_candidates candidate_miner_approx enumerate_r1_positive score test_core test_linear_mask_basis test_exact_cartesian test_exact_dyadic test_exact_batch_grouping
 
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
@@ -29,6 +29,15 @@ exact_oracle: apps/exact_oracle.cpp $(EXACT_OBJS)
 
 exact_batch_mt: apps/exact_batch_mt.cpp $(EXACT_OBJS)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $^
+
+exact_batch_current: apps/exact_batch_current.cpp $(EXACT_OBJS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -Iapps -o $@ $^
+
+exact_batch_grouped_u: apps/exact_batch_grouped_u.cpp $(EXACT_OBJS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -Iapps -o $@ $^
+
+exact_batch_grouped_uv: apps/exact_batch_grouped_uv.cpp $(EXACT_OBJS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -Iapps -o $@ $^
 
 reduce_exact_parts: apps/reduce_exact_parts.cpp
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $^
@@ -57,12 +66,16 @@ test_exact_cartesian: tests/test_exact_cartesian.cpp $(BUILD_DIR)/exact_cartesia
 test_exact_dyadic: tests/test_exact_dyadic.cpp $(EXACT_DYADIC_OBJS)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $^
 
-test: test_core test_linear_mask_basis test_exact_cartesian test_exact_dyadic estimator_exact score
+test_exact_batch_grouping: tests/test_exact_batch_grouping.cpp $(EXACT_OBJS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $^
+
+test: test_core test_linear_mask_basis test_exact_cartesian test_exact_dyadic test_exact_batch_grouping estimator_exact exact_batch_current exact_batch_grouped_u exact_batch_grouped_uv score
 	@test "$$(sha256sum submit.txt | cut -d' ' -f1)" = "7b0f638ba8678462ee8d6c12bc0c5b89d7354b4a095b31330f3ba495acfe2e2e"
 	./test_core
 	./test_linear_mask_basis
 	./test_exact_cartesian
 	./test_exact_dyadic
+	./test_exact_batch_grouping
 	@tmp=$$(mktemp); \
 	  ./estimator_exact --r 2 --u 0x00002000 --v 0x08880000 --backend cpp_int --out $$tmp; \
 	  grep -F '"certified_exact_dyadic": true' $$tmp >/dev/null; \
@@ -78,6 +91,8 @@ test: test_core test_linear_mask_basis test_exact_cartesian test_exact_dyadic es
 	python3 -X utf8 tests/test_official_spec.py
 	python3 -X utf8 tests/test_walsh_spectrum.py
 	python3 -X utf8 tests/test_dyadic_bounds.py
+	python3 -X utf8 tests/test_exact_shard_reduction.py
+	python3 -X utf8 tests/test_way1_benchmark_protocol.py
 	@test "$$(sha256sum submit.txt | cut -d' ' -f1)" = "7b0f638ba8678462ee8d6c12bc0c5b89d7354b4a095b31330f3ba495acfe2e2e"
 
 smoke: all
@@ -88,5 +103,5 @@ smoke: all
 
 clean:
 	rm -rf $(BUILD_DIR)
-	rm -f estimator estimator_exact exact_oracle exact_batch_mt reduce_exact_parts search_candidates candidate_miner_approx enumerate_r1_positive score test_core test_linear_mask_basis test_exact_cartesian test_exact_dyadic
+	rm -f estimator estimator_exact exact_oracle exact_batch_mt exact_batch_current exact_batch_grouped_u exact_batch_grouped_uv reduce_exact_parts search_candidates candidate_miner_approx enumerate_r1_positive score test_core test_linear_mask_basis test_exact_cartesian test_exact_dyadic test_exact_batch_grouping
 	rm -f candidates.csv candidates_approx.csv exact_verified.csv exact_part_*.csv smoke_*.csv submit_r1_full.txt

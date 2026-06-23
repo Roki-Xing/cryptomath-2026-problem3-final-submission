@@ -1,0 +1,53 @@
+{
+  "schema": "way1-benchmark-results-v1",
+  "authority": {
+    "numerator": "signed int64 exact sum over the visited plaintext interval",
+    "timing": "/usr/bin/time process measurements",
+    "query_source": "experiments/frozen/final_queries.csv only"
+  },
+  "required_fields": [
+    "run_id",
+    "implementation",
+    "r",
+    "Q",
+    "unique_u",
+    "unique_v",
+    "domain_start",
+    "domain_end",
+    "plaintext_count",
+    "threads",
+    "wall_seconds",
+    "user_cpu_seconds",
+    "system_cpu_seconds",
+    "peak_rss_kib",
+    "logical_query_updates",
+    "query_updates_per_second",
+    "plaintexts_per_second",
+    "u_parity_evaluations",
+    "v_parity_evaluations",
+    "permutation_evaluations",
+    "program_commit",
+    "program_sha256",
+    "input_sha256",
+    "output_sha256",
+    "exit_status"
+  ],
+  "implementations": [
+    "current",
+    "grouped_u",
+    "grouped_uv"
+  ],
+  "rounds": [
+    1,
+    2,
+    3
+  ],
+  "planned_query_counts": [
+    8,
+    64,
+    512,
+    4096,
+    16384
+  ],
+  "automatic_full_domain_runs": false
+}
