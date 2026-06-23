@@ -4,9 +4,9 @@
 
 `KEEP_DRAFT_NO_GO_PENDING`
 
-Stage A0 passed at commit
+Stage A0 and Stage A1 passed. A0 ran at commit
 `1e4f62f5223445c0e27e53a065ebd2877429fd73`. This is not
-`STAGE_A_PASS`: A1, A2, sanitizer, compiler/optimization, and aggregate
+`STAGE_A_PASS`: A2, sanitizer, compiler/optimization, and aggregate
 artifact gates remain incomplete. Stage B and every full \(2^{32}\) run remain
 prohibited.
 
@@ -49,6 +49,26 @@ The submit SHA before and after A0 was:
 - `stage_a0/artifacts/`: materialized order, raw outputs, time files, and
   sidecar manifests;
 - `stage_a0/SHA256SUMS.txt`: independent hashes for every A0 artifact.
+
+## Stage A1 result
+
+- query specifications: 45;
+- generated query artifacts: 42;
+- explicit unavailable cases: 3;
+- run cases: 50;
+- result rows: 150;
+- Q values: 8, 64, 512, 4096, 16384;
+- domain bits: 22, 20, 17, 14, 12 respectively;
+- canonical cases: 42;
+- additional shuffled `Q=512` cases: 8;
+- semantic mismatch count: 0;
+- timeout/OOM/nonzero exit counts: 0;
+- maximum observed wall time: 0.149288822 seconds;
+- maximum observed peak RSS: 6656 KiB;
+- elapsed orchestration time: 105.361217 seconds.
+
+The A1 evidence is under `stage_a1/` with its own `MANIFEST.json`,
+`SUMMARY.json`, queries, result/artifact directories, and `SHA256SUMS.txt`.
 
 ## Historical smoke
 

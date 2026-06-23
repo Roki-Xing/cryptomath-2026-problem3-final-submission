@@ -1,0 +1,39 @@
+{
+  "Q": 4096,
+  "family": "SYNTHETIC_FROZEN_SHAPED",
+  "generator_commit": "d0d9813304cc8391689edeb612d095b31fc431c2",
+  "profile": "uv_core",
+  "query_file_sha256": "c487f25c025010836eb09bf0a4ee4e40c3d7351e7592af4719f41a8c4d88bff7",
+  "seed": "stage-a1-v1",
+  "semantic_query_sha256": "c30f12eea555b8bf4a40874ea4704b8a7abd35cb1f28efb0514c3127dfcbdae5",
+  "source_sha256": "2ac82a72e75e3f8a374def5cb292ee777da4e304c1437f0a334e5509db6b6797",
+  "synthetic": true,
+  "u_degree_histogram": {
+    "219": 1,
+    "283": 1,
+    "521": 1,
+    "615": 1,
+    "67": 1,
+    "713": 1,
+    "809": 1,
+    "869": 1
+  },
+  "u_degree_max": 869,
+  "u_degree_median": 568.0,
+  "u_degree_p95": 869,
+  "unique_u": 8,
+  "unique_v": 1338,
+  "v_degree_histogram": {
+    "1": 44,
+    "2": 710,
+    "3": 148,
+    "4": 238,
+    "5": 58,
+    "6": 73,
+    "7": 28,
+    "8": 39
+  },
+  "v_degree_max": 8,
+  "v_degree_median": 2.0,
+  "v_degree_p95": 7
+}
