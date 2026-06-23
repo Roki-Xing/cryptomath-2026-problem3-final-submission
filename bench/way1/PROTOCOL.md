@@ -160,6 +160,15 @@ The orchestrator fails closed on any missing matrix point or semantic
 difference and writes `MANIFEST.json`, `SUMMARY.json`, query/results/artifact
 directories, and `SHA256SUMS.txt` under `bench/way1/stage_a0/`.
 
+Run the prescribed A1 safe-domain matrix only after A0 passes:
+
+```bash
+python3 -X utf8 bench/way1/run_stage_a1.py --threads 8
+```
+
+A1 uses `(Q,bits)=(8,22),(64,20),(512,17),(4096,14),(16384,12)`,
+all available families in canonical order, plus shuffled `Q=512` cases.
+
 ## CI and immutable submission
 
 CI builds and tests with GCC and Clang. `make test` exercises all three
