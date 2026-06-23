@@ -264,10 +264,13 @@ def main() -> int:
                 "certified_no_truncation",
                 "estimator_ve",
                 "ve_matches_submit",
-                "ve_source",
-                "vt_source",
-                "estimator_command",
+                "way2_executed",
+                "way2_value_source",
+                "submitted_vt_field_source",
+                "exact_executed",
                 "exact_command",
+                "exact_result_available",
+                "estimator_command",
                 "round_stats",
             ]
         )
@@ -300,10 +303,13 @@ def main() -> int:
                     int(bundle.certified_no_truncation),
                     f"{estimator_ve:.24g}",
                     int(matches),
+                    1,
                     "estimator",
-                    "exact_oracle",
+                    str(Path(args.submit)),
+                    0,
+                    "",
+                    0,
                     bundle.command,
-                    f"./exact_oracle --r {row.r} --u {row.u} --v {row.v}",
                     bundle.round_stats,
                 ]
             )

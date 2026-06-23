@@ -1,11 +1,12 @@
 # Reproducibility
 
-This repository provides a reproducible **way-2** pipeline to generate `submit.txt` from algorithmic sources:
-S-box correlation tables, linear-layer mask propagation, sparse DP, and certified candidate CSVs. The **way-1**
-programs `exact_oracle` and `exact_batch_mt` are validation-only tools and are not used to generate submitted
-`VE`, submitted `VT`, or the final `submit.txt` source chain.
+This repository provides a reproducible **way-2** pipeline to generate `submit.txt`
+from algorithmic sources. The current historical `VT` field is frozen as a
+submitted-field snapshot; this repository does not claim that it was produced
+by an actually executed way-1 run. See `docs/VT_VE_COMPLIANCE.md`.
 
-The current final authority is `experiments/manifests/E13_final_integration.md`.
+The frozen query authority is `experiments/frozen/BASELINE.json`; the historical integration evidence remains
+`experiments/manifests/E13_final_integration.md`.
 
 ## Requirements
 
@@ -24,6 +25,50 @@ python3 experiments/check_submission.py --submit submit.txt
 
 `check_submission.py` performs score and summary-artifact checks by default. It does not run the full audit unless
 `--run-full-audit` is explicitly provided.
+
+## Freeze Final Query Baseline
+
+Generate deterministic query-only artifacts directly from the unchanged `submit.txt`:
+
+```bash
+python3 -X utf8 experiments/freeze_baseline.py \
+  --submit submit.txt \
+  --submit-path-label submit.txt \
+  --out-dir experiments/frozen \
+  --repository Roki-Xing/cryptomath-2026-problem3-final-submission \
+  --source-commit b4fd4061877660a4eefbd2ea88e8170a708e2da1 \
+  --freeze-tool-commit 310916db55b8fde9de4bb882b30099ad1081e46a \
+  --generated-at 2026-06-23T01:36:23Z
+(cd experiments/frozen && sha256sum -c SHA256SUMS.txt)
+```
+
+Expected output includes:
+
+```text
+submit_sha256=7b0f638ba8678462ee8d6c12bc0c5b89d7354b4a095b31330f3ba495acfe2e2e
+final_queries_rows=138338
+final_ru_rows=4760
+final_values_snapshot_rows=138338
+```
+
+`final_queries.csv` contains only `r,u,v`. `final_ru.csv` contains only unique `r,u`. Both use normalized
+eight-digit hexadecimal masks and deterministic numeric ordering.
+`final_values_snapshot.csv` stores stable row IDs, the original submitted `VT`
+field text, the original way-2 `VE` text, and empty future way-1 fields marked
+`NOT_EXECUTED`. It preserves decimal strings without float parsing or
+reformatting.
+
+`BASELINE.json` records:
+
+- repository and source submit path;
+- source commit `b4fd4061877660a4eefbd2ea88e8170a708e2da1`;
+- submit SHA-256 and Git blob SHA;
+- freeze-tool commit `310916db55b8fde9de4bb882b30099ad1081e46a`;
+- fixed generation time `2026-06-23T01:36:23Z`;
+- artifact schemas, counts, hashes, and canonical generation command.
+
+The timestamp and commits are explicit fixed inputs. Re-running the exact command
+therefore reproduces byte-identical artifacts and hashes.
 
 ## Rebuild Submit
 
@@ -84,6 +129,21 @@ zero_v_rows=0
 zero_vt_rows=0
 zero_ve_rows=0
 ```
+
+This is a way-2-only audit. Its provenance columns are:
+
+```text
+way2_executed
+way2_value_source
+submitted_vt_field_source
+exact_executed
+exact_command
+exact_result_available
+```
+
+For the tracked audit, exact was not executed: `exact_executed=0`, `exact_command` is empty, and
+`exact_result_available=0`. The separate way-1 spotcheck remains under `experiments/spotcheck/` and uses a
+different CSV schema.
 
 ## Complexity Summary
 
