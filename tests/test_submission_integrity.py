@@ -110,8 +110,12 @@ def main() -> int:
         manifest = tmp_path / "SHA256SUMS.txt"
         payload.write_text("frozen\n", encoding="utf-8")
         digest = hashlib.sha256(payload.read_bytes()).hexdigest()
-        manifest.write_text(f"{digest}  payload.txt\n", encoding="utf-8")
-        CHECK.verify_sha256_manifest(tmp_path, manifest)
+        manifest.write_text(f"{digest}  ./payload.txt\n", encoding="utf-8")
+        CHECK.verify_sha256_manifest(tmp_path, manifest, {"payload.txt"})
+        expect_failure(
+            lambda: CHECK.verify_sha256_manifest(tmp_path, manifest, {"payload.txt", "missing.txt"}),
+            "incomplete SHA256 coverage was accepted",
+        )
         payload.write_text("tampered\n", encoding="utf-8")
         expect_failure(
             lambda: CHECK.verify_sha256_manifest(tmp_path, manifest),

@@ -16,26 +16,45 @@
       ],
       "data_rows": 4760,
       "sha256": "941879db58f4ad63b3fcc45b27a04713215f8c7920c77ad8a76015795ec78246"
+    },
+    "final_values_snapshot.csv": {
+      "columns": [
+        "row_id",
+        "r",
+        "u",
+        "v",
+        "submitted_vt_field_snapshot",
+        "frozen_way2_ve",
+        "future_way1_vt",
+        "future_way1_numerator",
+        "future_way1_status"
+      ],
+      "data_rows": 138338,
+      "sha256": "4e62da6ab4be3a9b9625aea104e4128296fd52ba0ea9ff76384dfae9000bbe91"
     }
   },
   "frozen_numbers": {
     "certified_rows": 138338,
-    "exact_spotcheck_count": 18,
-    "exact_spotcheck_mismatch": 0,
+    "frozen_self_score_valid_count": 138338,
     "max_generated_transitions_per_ru": 7578152,
     "total_score": "105843.622442471292742994",
     "unique_ru": 4760,
-    "valid_count": 138338,
+    "way1_full_domain_spotcheck_count": 18,
+    "way1_full_domain_spotcheck_mismatch": 0,
     "way2_mismatch": 0
   },
   "generation": {
-    "command": "python3 -X utf8 experiments/freeze_baseline.py --submit submit.txt --out-dir experiments/frozen",
-    "ordering": "numeric ascending by (r,u,v); final_ru deduplicated then numeric ascending by (r,u)"
+    "command": "python3 -X utf8 experiments/freeze_baseline.py --submit submit.txt --submit-path-label submit.txt --out-dir experiments/frozen --repository Roki-Xing/cryptomath-2026-problem3-final-submission --source-commit b4fd4061877660a4eefbd2ea88e8170a708e2da1 --freeze-tool-commit 310916db55b8fde9de4bb882b30099ad1081e46a --generated-at 2026-06-23T01:36:23Z",
+    "freeze_tool_commit": "310916db55b8fde9de4bb882b30099ad1081e46a",
+    "generated_at_utc": "2026-06-23T01:36:23Z",
+    "ordering": "numeric ascending by (r,u,v); final_ru deduplicated then numeric ascending by (r,u); row_id assigned after query sorting"
   },
-  "schema_version": 1,
+  "schema_version": 2,
   "source": {
-    "description": "Query coordinates parsed from the frozen submission file.",
-    "path": "submit.txt",
-    "sha256": "7b0f638ba8678462ee8d6c12bc0c5b89d7354b4a095b31330f3ba495acfe2e2e"
+    "repository": "Roki-Xing/cryptomath-2026-problem3-final-submission",
+    "submit_blob_sha": "8629bc86a3ff2f38c050d5b46a0be377b6bcbe7c",
+    "submit_path": "submit.txt",
+    "submit_sha256": "7b0f638ba8678462ee8d6c12bc0c5b89d7354b4a095b31330f3ba495acfe2e2e",
+    "submit_source_commit": "b4fd4061877660a4eefbd2ea88e8170a708e2da1"
   }
 }
