@@ -21,3 +21,4 @@ Entries are workspace records, not authoritative runtime decisions.
 | 2026-06-23 | artifact | docs/aegis/work/2026-06-23-pr7-stage-a-toolchain/evidence-bundle-draft-final-release-gates.json | 2026-06-23-pr7-stage-a-toolchain evidence final-release-gates |
 | 2026-06-23 | artifact | docs/aegis/work/2026-06-23-pr7-stage-a-toolchain/gate-input-pack.json | 2026-06-23-pr7-stage-a-toolchain gate input pack |
 | 2026-06-23 | work | docs/aegis/work/2026-06-23-pr7-stage-a-toolchain/proof-bundle.md | 2026-06-23-pr7-stage-a-toolchain proof bundle |
+| 2026-06-23 | artifact | docs/aegis/work/2026-06-23-pr7-stage-a-toolchain/evidence-bundle-draft-ci-output-path-regression.json | 2026-06-23-pr7-stage-a-toolchain evidence ci-output-path-regression |

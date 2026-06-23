@@ -13,6 +13,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "bench" / "way1" / "run_stage_toolchain.py"
 AGGREGATE = ROOT / "bench" / "way1" / "STAGE_A_SUMMARY.json"
+WORKFLOW = ROOT / ".github" / "workflows" / "ci.yml"
 
 
 def load_module():
@@ -96,6 +97,10 @@ def main() -> None:
     assert aggregate["stages"]["toolchain"]["matrix_case_count"] == 69
     assert aggregate["stages"]["toolchain"]["semantic_mismatch_count"] == 0
     assert aggregate["stages"]["toolchain"]["sanitizer_diagnostic_count"] == 0
+
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    assert "--out-dir /tmp/stage_toolchain" in workflow
+    assert "path: /tmp/stage_toolchain" in workflow
 
     print("way-1 Stage-A toolchain matrix tests passed")
 

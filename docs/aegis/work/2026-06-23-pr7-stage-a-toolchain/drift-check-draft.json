@@ -3,13 +3,13 @@
   "taskId": "2026-06-23-pr7-stage-a-toolchain",
   "taskIntentRef": "docs/aegis/work/2026-06-23-pr7-stage-a-toolchain/task-intent-draft.json",
   "baselineRefs": [
-    "bench/way1/STAGE_A_SUMMARY.json"
+    ".github/workflows/ci.yml"
   ],
-  "scopeStatus": "Stage-A 证据完整，本地 final gate 通过",
-  "compatStatus": "submit SHA/score 不变，算法和 Stage B 未触碰",
-  "retirementStatus": "pre-P0 smoke 仅历史保留并已降权",
+  "scopeStatus": "仅修 CI 临时输出路径",
+  "compatStatus": "runner 护栏、算法、submit 均未改变",
+  "retirementStatus": "废止 CI 写入已提交 artifact 目录的路径",
   "newRiskSignals": [
-    "等待最终证据提交 HEAD 的 GitHub CI"
+    "等待修复提交的 GitHub CI"
   ],
   "decision": "needs-verification"
 }

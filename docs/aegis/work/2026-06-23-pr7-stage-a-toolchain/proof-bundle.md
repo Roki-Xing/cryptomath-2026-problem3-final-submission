@@ -17,6 +17,7 @@ This proof bundle is an advisory Aegis Method Pack record. It does not determine
 
 ## Evidence Bundle Refs
 
+- docs/aegis/work/2026-06-23-pr7-stage-a-toolchain/evidence-bundle-draft-ci-output-path-regression.json
 - docs/aegis/work/2026-06-23-pr7-stage-a-toolchain/evidence-bundle-draft-final-release-gates.json
 - docs/aegis/work/2026-06-23-pr7-stage-a-toolchain/evidence-bundle-draft-github-toolchain-run.json
 - docs/aegis/work/2026-06-23-pr7-stage-a-toolchain/evidence-bundle-draft-stage-a-aggregate.json
@@ -24,7 +25,7 @@ This proof bundle is an advisory Aegis Method Pack record. It does not determine
 
 ## Drift Check
 
-- Scope status: Stage-A 证据完整，本地 final gate 通过
-- Compatibility status: submit SHA/score 不变，算法和 Stage B 未触碰
-- Retirement status: pre-P0 smoke 仅历史保留并已降权
+- Scope status: 仅修 CI 临时输出路径
+- Compatibility status: runner 护栏、算法、submit 均未改变
+- Retirement status: 废止 CI 写入已提交 artifact 目录的路径
 - Advisory decision: needs-verification

@@ -79,3 +79,25 @@
 - New risk signals:
 - 等待最终证据提交 HEAD 的 GitHub CI
 - Advisory decision: needs-verification
+
+## Checkpoint Update
+
+- Current todo: 修复最终 CI 输出目录并重跑
+- Active slice: 最小 CI 配置修复
+- Completed todos:
+- 确认失败根因为已提交证据目录非空
+- 添加 workflow 输出路径回归测试并完成 RED/GREEN
+- Evidence refs:
+- run 28032128091 job 82975376585: non-empty output directory
+- tests/test_way1_stage_toolchain.py workflow path assertion
+- Blocked on: none
+- Next step: 提交临时目录修复并等待 CI
+
+## DriftCheckDraft
+
+- Scope status: 仅修 CI 临时输出路径
+- Compatibility status: runner 护栏、算法、submit 均未改变
+- Retirement status: 废止 CI 写入已提交 artifact 目录的路径
+- New risk signals:
+- 等待修复提交的 GitHub CI
+- Advisory decision: needs-verification

@@ -34,3 +34,11 @@ artifacts and CI run remain the verification authority.
 - Source: local final gate output
 - Summary: clean build、make test、submit rebuild/cmp、score、check_submission 和三层 SHA 均通过
 - Verifier: CPLUS_INCLUDE_PATH=/tmp/boost-headers/usr/include make test && python3 -X utf8 experiments/build_submit_from_sources.py --out /tmp/submit_rebuilt.txt && cmp submit.txt /tmp/submit_rebuilt.txt && ./score --dedup uv --positive-only submit.txt && python3 -X utf8 experiments/check_submission.py --submit submit.txt
+
+## EvidenceBundleDraft
+
+- Artifact key: ci-output-path-regression
+- Type: test
+- Source: tests/test_way1_stage_toolchain.py
+- Summary: CI 必须写入 /tmp/stage_toolchain，避免与提交证据目录冲突
+- Verifier: python3 -X utf8 tests/test_way1_stage_toolchain.py

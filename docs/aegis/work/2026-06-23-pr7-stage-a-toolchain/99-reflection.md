@@ -17,6 +17,10 @@ Stage B.
   `7b0f638ba8678462ee8d6c12bc0c5b89d7354b4a095b31330f3ba495acfe2e2e`.
 - Score remained `138338` valid rows and
   `105843.622442471292742994`.
+- After committing the CI artifact, a rerun exposed that the workflow still
+  targeted the now-nonempty evidence directory. The workflow alone was moved
+  to `/tmp/stage_toolchain`; the runner's fail-closed directory guard remains
+  unchanged and is covered by a regression assertion.
 
 ## Drift
 

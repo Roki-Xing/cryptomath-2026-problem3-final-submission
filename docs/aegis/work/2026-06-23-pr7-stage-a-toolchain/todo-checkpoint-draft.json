@@ -1,21 +1,17 @@
 {
   "schemaVersion": "aegis.schema.v0",
   "taskId": "2026-06-23-pr7-stage-a-toolchain",
-  "currentTodo": "提交并等待最终 CI",
+  "currentTodo": "修复最终 CI 输出目录并重跑",
   "completedTodos": [
-    "干净构建与 make test 通过",
-    "submit 重建逐字节一致",
-    "final score 与 check_submission 通过",
-    "三层 SHA 清单通过"
+    "确认失败根因为已提交证据目录非空",
+    "添加 workflow 输出路径回归测试并完成 RED/GREEN"
   ],
-  "activeSlice": "提交 Stage-A 证据",
+  "activeSlice": "最小 CI 配置修复",
   "evidenceRefs": [
-    "make test: exit 0",
-    "cmp submit.txt /tmp/submit_rebuilt.txt: exit 0",
-    "score: 138338 / 105843.622442471292742994",
-    "check_submission.py: submission package checks passed"
+    "run 28032128091 job 82975376585: non-empty output directory",
+    "tests/test_way1_stage_toolchain.py workflow path assertion"
   ],
   "blockedOn": null,
-  "nextStep": "commit、push、等待最终 GitHub checks",
+  "nextStep": "提交临时目录修复并等待 CI",
   "updatedAt": "2026-06-23"
 }

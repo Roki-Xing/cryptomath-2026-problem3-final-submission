@@ -2,12 +2,10 @@
   "schemaVersion": "aegis.schema.v0",
   "taskId": "2026-06-23-pr7-stage-a-toolchain",
   "lastCheckpointRef": "docs/aegis/work/2026-06-23-pr7-stage-a-toolchain/todo-checkpoint-draft.json",
-  "resumeInstruction": "确认最终 HEAD 的 GCC/Clang/stage-a-toolchain CI 全绿后更新 PR 描述",
+  "resumeInstruction": "确认 /tmp/stage_toolchain job 通过，runner 非空目录护栏保持不变",
   "knownPartialWork": [
-    "干净构建与 make test 通过",
-    "submit 重建逐字节一致",
-    "final score 与 check_submission 通过",
-    "三层 SHA 清单通过"
+    "确认失败根因为已提交证据目录非空",
+    "添加 workflow 输出路径回归测试并完成 RED/GREEN"
   ],
   "mustReadBeforeContinuing": [
     "docs/aegis/work/2026-06-23-pr7-stage-a-toolchain/10-intent.md",
@@ -15,6 +13,6 @@
     "docs/aegis/work/2026-06-23-pr7-stage-a-toolchain/todo-checkpoint-draft.json"
   ],
   "unsafeToAssume": [
-    "当前本地通过不替代最终提交 HEAD 的 CI"
+    "前一轮失败不是 sanitizer 失败"
   ]
 }

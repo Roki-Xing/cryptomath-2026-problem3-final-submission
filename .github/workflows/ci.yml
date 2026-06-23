@@ -54,11 +54,11 @@ jobs:
           python3 -X utf8 bench/way1/run_stage_toolchain.py \
             --suite all \
             --threads 8 \
-            --out-dir bench/way1/stage_toolchain
+            --out-dir /tmp/stage_toolchain
       - name: Upload Stage-A toolchain evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: stage-a-toolchain-${{ github.run_id }}-${{ github.run_attempt }}
-          path: bench/way1/stage_toolchain
+          path: /tmp/stage_toolchain
           if-no-files-found: error
