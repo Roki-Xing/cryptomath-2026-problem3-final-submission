@@ -115,6 +115,12 @@ Thus
 W[b,a]\in\{0,\pm4,\pm8,16\}.
 \]
 
+Each input-mask column satisfies the local Parseval identity
+
+\[
+\forall a,\qquad \sum_b W[b,a]^2=256.
+\]
+
 Define
 
 \[
@@ -320,7 +326,7 @@ The maximum absolute column sum of a one-round 32-bit correlation matrix is
 \(3^8\), so
 
 \[
-|A_t|_1\le3^{8t},
+\|A_t\|_1\le3^{8t},
 \qquad
 \sum_m|N_t[m]|\le2^{16t}3^{8t}=B^t.
 \]

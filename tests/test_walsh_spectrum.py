@@ -87,6 +87,12 @@ def main() -> None:
     assert abs_column_sums == EXPECTED_ABS_COLUMN_SUMS
     assert max(value // 16 for value in abs_column_sums) == 3
 
+    column_square_sums = [
+        sum(frozen[output_mask][input_mask] ** 2 for output_mask in range(16))
+        for input_mask in range(16)
+    ]
+    assert column_square_sums == [256] * 16
+
     q_values = {value // 4 for row in frozen for value in row}
     assert q_values == {-2, -1, 0, 1, 2, 4}
     assert 4**8 == 2**16
