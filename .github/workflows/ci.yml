@@ -10,9 +10,26 @@ on:
 jobs:
   verify:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - compiler: gcc
+            cxx: g++
+          - compiler: clang
+            cxx: clang++
     steps:
       - uses: actions/checkout@v4
-      - name: Build and test
+      - name: Prepare Boost headers
+        run: |
+          mkdir -p /tmp/boost-deb /tmp/boost-headers
+          cd /tmp/boost-deb
+          apt-get download libboost1.83-dev
+          dpkg-deb -x libboost1.83-dev_*.deb /tmp/boost-headers
+          echo "CPLUS_INCLUDE_PATH=/tmp/boost-headers/usr/include" >> "$GITHUB_ENV"
+      - name: Build and test (${{ matrix.compiler }})
+        env:
+          CXX: ${{ matrix.cxx }}
         run: |
           make clean
           make -j2
