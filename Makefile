@@ -8,7 +8,7 @@ EXACT_OBJS := $(APPROX_OBJS) $(BUILD_DIR)/exact.o
 
 .PHONY: all clean test smoke
 
-all: estimator exact_oracle exact_batch_mt reduce_exact_parts search_candidates candidate_miner_approx enumerate_r1_positive score test_core
+all: estimator exact_oracle exact_batch_mt reduce_exact_parts search_candidates candidate_miner_approx enumerate_r1_positive score test_core test_linear_mask_basis
 
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
@@ -43,13 +43,19 @@ score: apps/score.cpp $(APPROX_OBJS)
 test_core: tests/test_core.cpp $(EXACT_OBJS)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $^
 
-test: test_core score
+test_linear_mask_basis: tests/test_linear_mask_basis.cpp $(BUILD_DIR)/linear_layer.o
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $^
+
+test: test_core test_linear_mask_basis score
 	./test_core
+	./test_linear_mask_basis
 	python3 tests/test_score.py ./score
 	python3 -X utf8 tests/test_freeze_baseline.py
 	python3 -X utf8 tests/test_audit_schema.py
 	python3 -X utf8 tests/test_submission_integrity.py
 	python3 -X utf8 tests/test_official_spec.py
+	python3 -X utf8 tests/test_walsh_spectrum.py
+	python3 -X utf8 tests/test_dyadic_bounds.py
 
 smoke: all
 	./estimator --r 1 --u 0x10000000 --top 8 --beam 10000 --trans 10000
@@ -59,5 +65,5 @@ smoke: all
 
 clean:
 	rm -rf $(BUILD_DIR)
-	rm -f estimator exact_oracle exact_batch_mt reduce_exact_parts search_candidates candidate_miner_approx enumerate_r1_positive score test_core
+	rm -f estimator exact_oracle exact_batch_mt reduce_exact_parts search_candidates candidate_miner_approx enumerate_r1_positive score test_core test_linear_mask_basis
 	rm -f candidates.csv candidates_approx.csv exact_verified.csv exact_part_*.csv smoke_*.csv submit_r1_full.txt
