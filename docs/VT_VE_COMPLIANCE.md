@@ -1,5 +1,10 @@
 # VT/VE Provenance Status
 
+`docs/OFFICIAL_SPEC_INTERPRETATION.md` is the canonical authority for
+classifying official, conservative, and unresolved statements. This file
+records the repository's frozen-value provenance implementation and does not
+expand the official claims defined there.
+
 ## Status
 
 **UNRESOLVED official provenance question.**

@@ -257,6 +257,7 @@ FORBIDDEN_TRACKED = {
 
 REQUIRED_FINAL_FILES = [
     "docs/REPRODUCIBILITY.md",
+    "docs/OFFICIAL_SPEC_INTERPRETATION.md",
     "docs/VT_VE_COMPLIANCE.md",
     "docs/EXPERIMENTS.md",
     "experiments/manifests/E13_final_integration.md",
