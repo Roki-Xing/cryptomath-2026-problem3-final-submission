@@ -4,9 +4,9 @@
 
 `KEEP_DRAFT_NO_GO_PENDING`
 
-Stage A0 and Stage A1 passed. A0 ran at commit
+Stage A0, Stage A1, and Stage A2 passed. A0 ran at commit
 `1e4f62f5223445c0e27e53a065ebd2877429fd73`. This is not
-`STAGE_A_PASS`: A2, sanitizer, compiler/optimization, and aggregate
+`STAGE_A_PASS`: sanitizer, compiler/optimization, and aggregate
 artifact gates remain incomplete. Stage B and every full \(2^{32}\) run remain
 prohibited.
 
@@ -69,6 +69,22 @@ The submit SHA before and after A0 was:
 
 The A1 evidence is under `stage_a1/` with its own `MANIFEST.json`,
 `SUMMARY.json`, queries, result/artifact directories, and `SHA256SUMS.txt`.
+
+## Stage A2 result
+
+- anchor cases: `r1/Q64/frozen`, `r2/Q512/frozen`,
+  `r3/Q512/synthetic`;
+- matrix cases: 31;
+- raw shards: 172;
+- layouts: 1, 2, 7, and 16 shards;
+- implementations: `current`, `grouped_u`, `grouped_uv`;
+- reducer corruption cases passed: 12;
+- semantic mismatch count: 0;
+- timeout/OOM/nonzero exit counts: 0;
+- elapsed orchestration time: 6.887331 seconds.
+
+The A2 evidence is under `stage_a2/`; every raw shard is bound to actual query,
+program, and output hashes by a sidecar manifest before reduction.
 
 ## Historical smoke
 
