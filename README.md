@@ -95,6 +95,7 @@ Under these conditions, the sparse dynamic program keeps every nonzero linear ro
 - `FINAL_CHECK.md`: final score, audit, complexity, and spotcheck gate.
 - `docs/EXPERIMENTS.md`: experiment index including E06 final integration.
 - `docs/REPRODUCIBILITY.md`: quick rebuild, full audit, complexity summary, exact spotcheck, and toy-check instructions.
+- `docs/OFFICIAL_SPEC_INTERPRETATION.md`: canonical machine-readable classification of official, conservative, and unresolved statements.
 - `docs/VT_VE_COMPLIANCE.md`: unresolved provenance status and the separated frozen-value schema.
 - `experiments/manifests/E13_final_integration.md`: final authority after E06; supersedes historical pre-E06 snapshots for final numbers.
 

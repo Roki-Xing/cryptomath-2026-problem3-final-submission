@@ -43,6 +43,7 @@
 - `experiments/toy/`：缩小域 exact-vs-DP 对照。
 - `experiments/manifests/E13_final_integration.md`：最终权威口径。
 - `docs/CLAIMS_AND_EVIDENCE.md`：论文声明到 artifact 的映射。
+- `docs/OFFICIAL_SPEC_INTERPRETATION.md`：官方明确、仓库保守解释与未决问题的唯一分类入口。
 - `.github/workflows/ci.yml`：在 pull request 和 hardening/main push 上执行构建、测试、重建、评分与包检查。
 
 ## Final gate

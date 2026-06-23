@@ -49,6 +49,7 @@ test: test_core score
 	python3 -X utf8 tests/test_freeze_baseline.py
 	python3 -X utf8 tests/test_audit_schema.py
 	python3 -X utf8 tests/test_submission_integrity.py
+	python3 -X utf8 tests/test_official_spec.py
 
 smoke: all
 	./estimator --r 1 --u 0x10000000 --top 8 --beam 10000 --trans 10000

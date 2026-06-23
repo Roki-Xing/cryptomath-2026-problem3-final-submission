@@ -1,47 +1,41 @@
 # Official Specification Interpretation
 
-This document separates confirmed evaluator behavior from repository compatibility
-choices and unresolved provenance questions. It does not claim that compatibility
-behavior is part of the official specification.
+This document is the canonical repository authority for classifying statements
+as official, conservative repository behavior, or unresolved. It does not turn
+repository behavior into an official rule.
 
-## Officially Confirmed
+## Source Boundary
 
-- The submitted tuple has five fields: `r`, `u`, `v`, `VT`, and `VE`.
-- A nonzero correlation pair satisfies the tolerance check when
-  `abs(VE - VT) <= 0.25 * abs(VT)`. The absolute value around `VT` is required
-  for negative correlations.
-- Hexadecimal mask fields such as `0x00000001` are accepted for `u` and `v`.
+The official challenge landing page identifies Challenge 3 as "矩阵连乘元素的逼近":
+<https://www.cmathc.org.cn/mcm/st/434.html>.
 
-## Conservative Repository Interpretations
+Source file: not checked into this repository.
 
-- Score deduplication and reporting are treated as distinct concerns. Reporting
-  both `unique_uv` and `unique_ruv` does not select a deduplication policy.
-- The parser also accepts decimal `u` and `v` fields. This is a compatibility
-  behavior of `parse_mask`, not a claim that decimal masks are required by the
-  official format. The frozen `submit.txt` remains unchanged.
-- Algorithm interfaces accept any non-negative round count. Tests cover `r=0`
-  and `r=4` with deliberately small resource bounds. Resource exhaustion or a
-  caller-selected bound may stop a computation, but the interface must not
-  reject a request solely because `r` is outside `1..3`.
-- `score` computes both uniqueness statistics over records that are valid after
-  parsing and active validity filters, but before the selected deduplication is
-  applied:
-  - `unique_uv` counts distinct `(u, v)` pairs and ignores `r`.
-  - `unique_ruv` counts distinct `(r, u, v)` triples.
-  - `--positive-only` is an active validity filter, so non-positive-score rows
-    are excluded from both statistics when that option is present.
-  - Malformed or otherwise invalid rows are excluded from both statistics.
-- `--dedup none` remains the default. Explicit `--dedup uv` and
-  `--dedup ruv` retain their existing best-score selection behavior and remain
-  the only controls that change which valid rows contribute to `valid_count`
-  and `total_score`.
+Page: unavailable in the checked-in artifacts.
 
-## Not Yet Established by the Official Material
+The detailed evaluator and complexity statements below follow the official
+analysis excerpt cited by the supplied review guidance. Because the original
+analysis file is not packaged here, its page-level citation cannot be
+independently verified from this repository. This limitation does not authorize
+stronger claims.
 
-- The allowed provenance for `VT` has not been established here. In particular,
-  this repository must not describe `VT` as coming from `exact_oracle` unless
-  that exact computation was actually executed and recorded.
-- Acceptance of a numerically matching `VT` does not by itself prove that its
-  generation method is officially permitted.
-- The repository therefore treats `VT` source authorization as unresolved and
-  keeps way-1 execution evidence separate from way-2 estimates.
+## OFFICIAL_EXPLICIT
+
+- **`OFFICIAL_EXPLICIT-FIVE-FIELDS`**: The submitted tuple has five fields: `r`, `u`, `v`, `VT`, and `VE`.
+- **`OFFICIAL_EXPLICIT-NEGATIVE-INTERVAL`**: A nonzero correlation pair satisfies the tolerance check when `abs(VE - VT) <= 0.25 * abs(VT)`. The absolute value around `VT` is required for negative correlations.
+- **`OFFICIAL_EXPLICIT-HEX-MASKS`**: The official code reads hexadecimal mask fields. The repository regression uses `@(1, 0x000ee0f0, 0x08088880, 0.5, 0.5)` as a parsing-only example; it does not assert that `0.5` is the true correlation for that mask pair.
+- **`OFFICIAL_EXPLICIT-COMPLEXITY`**: Way 2 must have complexity strictly lower than way 1.
+
+## CONSERVATIVE_INTERPRETATION
+
+- **`CONSERVATIVE_INTERPRETATION-DECIMAL-MASKS`**: `parse_mask` also accepts decimal `u` and `v` fields for compatibility. This is not a claim that decimal masks are required by the official format, and the frozen `submit.txt` remains unchanged.
+- **`CONSERVATIVE_INTERPRETATION-UNIQUENESS-REPORTING`**: `score` reports both `unique_uv` and `unique_ruv` over parsed rows that remain valid after active filters and before selected deduplication. Reporting both statistics does not select an official deduplication key.
+- **`CONSERVATIVE_INTERPRETATION-GENERIC-ROUNDS`**: Algorithm interfaces accept any non-negative round count. `r=0` is an internal identity-map test only and is not claimed as an official competition round count. Tests cover `r=4` with deliberately bounded work. Interface applicability for arbitrary `r` does not imply no-truncation, exact certification, acceptable accuracy, or lower measured cost for every `r`.
+- **`CONSERVATIVE_INTERPRETATION-DEDUP-MODES`**: `--dedup none` remains the repository default. Explicit `--dedup uv` and `--dedup ruv` retain their existing best-score selection behavior; these are local controls, not an assertion of the official deduplication policy.
+
+## UNRESOLVED
+
+- **`UNRESOLVED-VT-PROVENANCE`**: The allowed provenance for `VT` has not been established. A numerically matching value does not prove that its generation method is officially permitted, and the repository must not describe `VT` as way-1 output unless that computation was actually executed and recorded.
+- **`UNRESOLVED-DEDUP-KEY`**: The official material available in this repository does not establish whether duplicate handling is keyed by `(u,v)`, `(r,u,v)`, or another evaluator-specific rule.
+- **`UNRESOLVED-COMPLEXITY-UNIT`**: The official material does not fully specify whether the required comparison unit is a single `(r,u,v)`, a fixed-`(r,u)` multi-output run, a whole submitted batch, an asymptotic operation count, or wall-clock resource usage. Repository transition counts are evidence for a stated local unit, not an official acceptance ruling.
+- **`UNRESOLVED-SOURCE-PAGINATION`**: The original official analysis filename and page number are not present in the checked-in artifact set; they must be added only from a verified source, never inferred.
