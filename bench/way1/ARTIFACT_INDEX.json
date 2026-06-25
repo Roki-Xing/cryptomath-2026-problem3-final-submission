@@ -1,0 +1,87 @@
+{
+  "schema": "way1-stage-a-artifact-index-v2",
+  "decision": "STAGE_A_PASS",
+  "stage_b_authorized": false,
+  "full_2_32_run_started": false,
+  "strategy_b_decision": "NO_GO_PENDING_STAGE_B",
+  "submit_sha256": "7b0f638ba8678462ee8d6c12bc0c5b89d7354b4a095b31330f3ba495acfe2e2e",
+  "entries": [
+    {
+      "category": "REQUIRED_SUMMARY",
+      "paths": [
+        "bench/way1/STAGE_A_SUMMARY.json",
+        "bench/way1/SUMMARY.md",
+        "bench/way1/PROTOCOL.md",
+        "bench/way1/benchmark_schema.json",
+        "bench/way1/stage_a0/SUMMARY.json",
+        "bench/way1/stage_a1/SUMMARY.json",
+        "bench/way1/stage_a2/SUMMARY.json",
+        "bench/way1/stage_toolchain/SUMMARY.json"
+      ],
+      "include_in_submission_package": true
+    },
+    {
+      "category": "REQUIRED_MANIFEST",
+      "paths": [
+        "bench/way1/MANIFEST.json",
+        "bench/way1/CI_EVIDENCE.json",
+        "bench/way1/ARTIFACT_INDEX.json",
+        "bench/way1/ARTIFACT_RETENTION_PLAN.md",
+        "bench/way1/SHA256SUMS.txt",
+        "bench/way1/stage_a0/MANIFEST.json",
+        "bench/way1/stage_a0/SHA256SUMS.txt",
+        "bench/way1/stage_a1/MANIFEST.json",
+        "bench/way1/stage_a1/SHA256SUMS.txt",
+        "bench/way1/stage_a2/MANIFEST.json",
+        "bench/way1/stage_a2/SHA256SUMS.txt",
+        "bench/way1/stage_toolchain/MANIFEST.json",
+        "bench/way1/stage_toolchain/SHA256SUMS.txt"
+      ],
+      "include_in_submission_package": true
+    },
+    {
+      "category": "RAW_REPRODUCIBILITY_EVIDENCE",
+      "paths": [
+        "bench/way1/stage_a0/queries/**",
+        "bench/way1/stage_a0/results/**",
+        "bench/way1/stage_a0/artifacts/**",
+        "bench/way1/stage_a1/queries/**",
+        "bench/way1/stage_a1/results/**",
+        "bench/way1/stage_a1/artifacts/**",
+        "bench/way1/stage_a2/r*_*/**",
+        "bench/way1/stage_toolchain/compile/**",
+        "bench/way1/stage_toolchain/results/**"
+      ],
+      "file_counts": {
+        "bench/way1/stage_a0": 853,
+        "bench/way1/stage_a1": 687,
+        "bench/way1/stage_a2": 550,
+        "bench/way1/stage_toolchain": 230
+      },
+      "include_in_submission_package": false,
+      "overlap_policy": "required summary and manifest files are allowlisted separately and are never excluded by parent raw directories"
+    },
+    {
+      "category": "CI_ONLY",
+      "paths": [
+        "/tmp/stage_toolchain",
+        "https://github.com/Roki-Xing/cryptomath-2026-problem3-final-submission/actions/runs/28031329201",
+        "https://github.com/Roki-Xing/cryptomath-2026-problem3-final-submission/actions/runs/28031330588",
+        "https://github.com/Roki-Xing/cryptomath-2026-problem3-final-submission/actions/runs/28032401682",
+        "https://github.com/Roki-Xing/cryptomath-2026-problem3-final-submission/actions/runs/28032406708"
+      ],
+      "include_in_submission_package": false
+    },
+    {
+      "category": "EXCLUDE_FROM_SUBMISSION_PACKAGE",
+      "paths": [
+        "bench/way1/results.csv",
+        "bench/way1/forecast.json",
+        "bench/way1/__pycache__/**",
+        "bench/way1/stage_toolchain/*.tmp",
+        "bench/way1/stage_toolchain/**/*.tmp"
+      ],
+      "include_in_submission_package": false
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "schema": "way1-stage-a-manifest-v2",
+  "decision": "STAGE_A_PASS",
+  "summary": "bench/way1/STAGE_A_SUMMARY.json",
+  "summary_markdown": "bench/way1/SUMMARY.md",
+  "ci_evidence": "bench/way1/CI_EVIDENCE.json",
+  "artifact_index": "bench/way1/ARTIFACT_INDEX.json",
+  "artifact_retention_plan": "bench/way1/ARTIFACT_RETENTION_PLAN.md",
+  "sha256sums": "bench/way1/SHA256SUMS.txt",
+  "stage_a_evidence_commit": "4b26302e5aa0c60b66bf2c11f29b50e3bc88fb8e",
+  "stage_toolchain_source_head_commit": "abefde8643701d4f83c43cd8a527b70d5a268f3b",
+  "stage_toolchain_execution_commit": "04fb504250796c1d13261f4cedec1e06bca17a3a",
+  "stage_toolchain_execution_commit_kind": "ci_synthetic_merge",
+  "ci_attested_commit": "5fbff142a72557060a45d490aaf4094dadaf8af1",
+  "integration_head_commit": "5fbff142a72557060a45d490aaf4094dadaf8af1",
+  "integration_head_role": "pre_closeout_integration_evidence_head",
+  "final_push_ci_run_id": 28032401682,
+  "final_pr_ci_run_id": 28032406708,
+  "stage_b_authorized": false,
+  "full_2_32_run_started": false,
+  "strategy_b_decision": "NO_GO_PENDING_STAGE_B",
+  "submission": {
+    "sha256": "7b0f638ba8678462ee8d6c12bc0c5b89d7354b4a095b31330f3ba495acfe2e2e",
+    "valid_count": 138338,
+    "total_score": "105843.622442471292742994"
+  }
+}

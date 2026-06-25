@@ -1,0 +1,8 @@
+{
+  "schemaVersion": "aegis.schema.v0",
+  "artifactKey": "ci-output-path-regression",
+  "type": "test",
+  "source": "tests/test_way1_stage_toolchain.py",
+  "summary": "CI 必须写入 /tmp/stage_toolchain，避免与提交证据目录冲突",
+  "verifier": "python3 -X utf8 tests/test_way1_stage_toolchain.py"
+}

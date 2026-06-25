@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "aegis.schema.v0",
+  "taskId": "2026-06-23-pr7-stage-a-toolchain",
+  "currentTodo": "修复最终 CI 输出目录并重跑",
+  "completedTodos": [
+    "确认失败根因为已提交证据目录非空",
+    "添加 workflow 输出路径回归测试并完成 RED/GREEN"
+  ],
+  "activeSlice": "最小 CI 配置修复",
+  "evidenceRefs": [
+    "run 28032128091 job 82975376585: non-empty output directory",
+    "tests/test_way1_stage_toolchain.py workflow path assertion"
+  ],
+  "blockedOn": null,
+  "nextStep": "提交临时目录修复并等待 CI",
+  "updatedAt": "2026-06-23"
+}

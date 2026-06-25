@@ -1,0 +1,23 @@
+# schema=way1-exact-shard-v2
+# implementation=grouped_u
+# query_sha256=9791ebbd5a20a1c1a2d0f765a0388992a8a306a0dee7be940c42f791f9d90367
+# program_sha256=a9994bf381cd700ff9f4491bc1d548e29b7801930573f7a7f2b9cff524c96943
+# range_start=0
+# range_end=4194304
+# plaintext_count=4194304
+# permutation_evaluations=4194304
+# u_parity_evaluations=33554432
+# v_parity_evaluations=33554432
+# logical_query_updates=33554432
+# unique_u=8
+# unique_v=8
+# threads=8
+r,u,v,numerator,denominator
+1,0x109a23ce,0x3fa5af8b,0,4194304
+1,0x383dca66,0xd22bc70b,0,4194304
+1,0x1d7384eb,0xe82f1de3,0,4194304
+1,0x7f431798,0x5a9722f0,0,4194304
+1,0x96a0bd55,0x4da45dc1,0,4194304
+1,0x5005d13c,0x07c82a8e,0,4194304
+1,0x7c6858eb,0x2f7f5093,2048,4194304
+1,0x647f2490,0xd4e1a857,0,4194304

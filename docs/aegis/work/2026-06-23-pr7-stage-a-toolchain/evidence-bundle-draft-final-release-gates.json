@@ -1,0 +1,8 @@
+{
+  "schemaVersion": "aegis.schema.v0",
+  "artifactKey": "final-release-gates",
+  "type": "test",
+  "source": "local final gate output",
+  "summary": "clean build、make test、submit rebuild/cmp、score、check_submission 和三层 SHA 均通过",
+  "verifier": "CPLUS_INCLUDE_PATH=/tmp/boost-headers/usr/include make test && python3 -X utf8 experiments/build_submit_from_sources.py --out /tmp/submit_rebuilt.txt && cmp submit.txt /tmp/submit_rebuilt.txt && ./score --dedup uv --positive-only submit.txt && python3 -X utf8 experiments/check_submission.py --submit submit.txt"
+}

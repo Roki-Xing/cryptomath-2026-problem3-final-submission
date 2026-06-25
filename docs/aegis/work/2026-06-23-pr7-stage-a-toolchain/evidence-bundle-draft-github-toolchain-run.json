@@ -1,0 +1,8 @@
+{
+  "schemaVersion": "aegis.schema.v0",
+  "artifactKey": "github-toolchain-run",
+  "type": "ci",
+  "source": "https://github.com/Roki-Xing/cryptomath-2026-problem3-final-submission/actions/runs/28031330588",
+  "summary": "69 点 UBSan/ASan/TSan/GCC/Clang O0/O3 矩阵通过，0 mismatch，submit SHA 不变",
+  "verifier": "gh run view 28031330588 --json status,conclusion,jobs"
+}

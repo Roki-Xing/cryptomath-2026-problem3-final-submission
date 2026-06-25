@@ -1,0 +1,25 @@
+{
+  "Q": 8,
+  "family": "SYNTHETIC_FROZEN_SHAPED",
+  "generator_commit": "d0d9813304cc8391689edeb612d095b31fc431c2",
+  "profile": "uv_core",
+  "query_file_sha256": "d0f4a6c676dc0e530dda0023eef7b89e9b46ad99363625cbe55da88a94c07dff",
+  "seed": "stage-a1-v1",
+  "semantic_query_sha256": "06b7be13e484f857f3ecd2076858351b6c3812d1911173a11a86ab85c20e385d",
+  "source_sha256": "2ac82a72e75e3f8a374def5cb292ee777da4e304c1437f0a334e5509db6b6797",
+  "synthetic": true,
+  "u_degree_histogram": {
+    "1": 8
+  },
+  "u_degree_max": 1,
+  "u_degree_median": 1.0,
+  "u_degree_p95": 1,
+  "unique_u": 8,
+  "unique_v": 8,
+  "v_degree_histogram": {
+    "1": 8
+  },
+  "v_degree_max": 1,
+  "v_degree_median": 1.0,
+  "v_degree_p95": 1
+}

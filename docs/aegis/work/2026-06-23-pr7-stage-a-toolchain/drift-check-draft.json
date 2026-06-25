@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "aegis.schema.v0",
+  "taskId": "2026-06-23-pr7-stage-a-toolchain",
+  "taskIntentRef": "docs/aegis/work/2026-06-23-pr7-stage-a-toolchain/task-intent-draft.json",
+  "baselineRefs": [
+    ".github/workflows/ci.yml"
+  ],
+  "scopeStatus": "仅修 CI 临时输出路径",
+  "compatStatus": "runner 护栏、算法、submit 均未改变",
+  "retirementStatus": "废止 CI 写入已提交 artifact 目录的路径",
+  "newRiskSignals": [
+    "等待修复提交的 GitHub CI"
+  ],
+  "decision": "needs-verification"
+}

@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "aegis.schema.v0",
+  "requestedOutcome": "完成 PR7 Stage-A sanitizer、编译器优化一致性和最终证据闸门",
+  "goal": "完成 PR7 Stage-A sanitizer、编译器优化一致性和最终证据闸门",
+  "successEvidence": [
+    "UBSan、ASan、TSan、GCC/Clang O0/O3 全部语义一致，submit SHA 不变，完整回归通过"
+  ],
+  "stopCondition": "完成全部证据后结束；依赖缺失则 needs-verification；禁止进入 Stage B",
+  "nonGoals": [
+    "Stage B、性能 GO 决策、submit 变更"
+  ],
+  "scope": "bench/way1 工具链验证、CI、证据汇总和 PR 文档",
+  "changeKinds": [
+    "verification"
+  ],
+  "riskHints": [
+    "TSan 运行环境兼容性和 CI 产物取回"
+  ]
+}

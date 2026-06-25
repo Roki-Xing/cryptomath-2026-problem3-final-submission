@@ -26,11 +26,49 @@ struct ExactResult {
     bool truncated = false;
 };
 
+enum class ExactBatchVariant {
+    Current,
+    GroupedU,
+    GroupedUV,
+};
+
+struct ExactBatchMetrics {
+    std::uint64_t plaintext_count = 0;
+    std::uint64_t permutation_evaluations = 0;
+    std::uint64_t u_parity_evaluations = 0;
+    std::uint64_t v_parity_evaluations = 0;
+    std::uint64_t logical_query_updates = 0;
+    std::size_t unique_u = 0;
+    std::size_t unique_v = 0;
+};
+
 ExactResult compute_exact_correlation(Mask u, Mask v, int rounds, std::optional<std::uint64_t> limit = std::nullopt);
 std::vector<ExactResult> compute_exact_batch(const std::vector<ExactBatchQuery>& queries,
                                              int rounds,
                                              std::uint64_t start,
                                              std::uint64_t end,
                                              std::size_t threads);
+std::vector<ExactResult> compute_exact_batch_variant(
+    const std::vector<ExactBatchQuery>& queries,
+    int rounds,
+    std::uint64_t start,
+    std::uint64_t end,
+    std::size_t threads,
+    ExactBatchVariant variant,
+    ExactBatchMetrics* metrics = nullptr);
+std::vector<ExactResult> compute_exact_batch_grouped_u(
+    const std::vector<ExactBatchQuery>& queries,
+    int rounds,
+    std::uint64_t start,
+    std::uint64_t end,
+    std::size_t threads,
+    ExactBatchMetrics* metrics = nullptr);
+std::vector<ExactResult> compute_exact_batch_grouped_uv(
+    const std::vector<ExactBatchQuery>& queries,
+    int rounds,
+    std::uint64_t start,
+    std::uint64_t end,
+    std::size_t threads,
+    ExactBatchMetrics* metrics = nullptr);
 
 } // namespace hs

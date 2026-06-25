@@ -1,0 +1,29 @@
+{
+  "Q": 64,
+  "family": "FROZEN_SUBSET",
+  "generator_commit": "d0d9813304cc8391689edeb612d095b31fc431c2",
+  "profile": "uv_core",
+  "query_file_sha256": "d7fd8fd71d3b124357ff79b9fd0941a5255bde335d24a8c44fea00d462de3752",
+  "seed": "stage-a1-v1",
+  "semantic_query_sha256": "e01710fa8e551d58751db0f97bcf97ee71a51f4b792f4c2285b4a215980b70cc",
+  "source_sha256": "2ac82a72e75e3f8a374def5cb292ee777da4e304c1437f0a334e5509db6b6797",
+  "synthetic": false,
+  "u_degree_histogram": {
+    "1": 30,
+    "2": 11,
+    "4": 3
+  },
+  "u_degree_max": 4,
+  "u_degree_median": 1.0,
+  "u_degree_p95": 4,
+  "unique_u": 44,
+  "unique_v": 44,
+  "v_degree_histogram": {
+    "1": 32,
+    "2": 8,
+    "4": 4
+  },
+  "v_degree_max": 4,
+  "v_degree_median": 1.0,
+  "v_degree_p95": 4
+}

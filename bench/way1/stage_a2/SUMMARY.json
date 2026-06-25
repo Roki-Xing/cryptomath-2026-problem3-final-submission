@@ -1,0 +1,13 @@
+{
+  "elapsed_seconds": 6.887331,
+  "matrix_case_count": 31,
+  "nonzero_exit_count": 0,
+  "oom_count": 0,
+  "raw_shard_count": 172,
+  "reducer_corruption_cases_passed": 12,
+  "schema": "way1-stage-a2-summary-v1",
+  "semantic_mismatch_count": 0,
+  "status": "STAGE_A2_PASS",
+  "submit_sha256": "7b0f638ba8678462ee8d6c12bc0c5b89d7354b4a095b31330f3ba495acfe2e2e",
+  "timeout_count": 0
+}

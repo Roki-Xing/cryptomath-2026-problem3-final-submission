@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "aegis.schema.v0",
+  "taskId": "2026-06-23-pr7-stage-a-toolchain",
+  "lastCheckpointRef": "docs/aegis/work/2026-06-23-pr7-stage-a-toolchain/todo-checkpoint-draft.json",
+  "resumeInstruction": "确认 /tmp/stage_toolchain job 通过，runner 非空目录护栏保持不变",
+  "knownPartialWork": [
+    "确认失败根因为已提交证据目录非空",
+    "添加 workflow 输出路径回归测试并完成 RED/GREEN"
+  ],
+  "mustReadBeforeContinuing": [
+    "docs/aegis/work/2026-06-23-pr7-stage-a-toolchain/10-intent.md",
+    "docs/aegis/work/2026-06-23-pr7-stage-a-toolchain/20-checkpoint.md",
+    "docs/aegis/work/2026-06-23-pr7-stage-a-toolchain/todo-checkpoint-draft.json"
+  ],
+  "unsafeToAssume": [
+    "前一轮失败不是 sanitizer 失败"
+  ]
+}

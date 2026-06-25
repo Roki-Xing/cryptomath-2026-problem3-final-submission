@@ -1,0 +1,1157 @@
+{
+  "cases": [
+    {
+      "anchor": "r1_q64_frozen",
+      "case_id": "r1_q64_frozen_current_k1",
+      "implementation": "current",
+      "manifest_count": 1,
+      "partition": "equal",
+      "program_sha256": "293cebcd6caf6c7f16ed884339dfcee707e5d4dbdd03129fa3539c589a416970",
+      "query_sha256": "bb0a12c862ad2484ec963dabd7d4ef97e001efe1924c6836bd0dc55f5717fe6e",
+      "ranges": [
+        [
+          0,
+          1048576
+        ]
+      ],
+      "reduced_path": "r1_q64_frozen_current_k1/reduced.csv",
+      "reduced_sha256": "f7ed3589af7c7f663f8a5a677630728bd27383b007e99fd5401867b00f5d12f1",
+      "shards": 1
+    },
+    {
+      "anchor": "r1_q64_frozen",
+      "case_id": "r1_q64_frozen_current_k2",
+      "implementation": "current",
+      "manifest_count": 2,
+      "partition": "equal",
+      "program_sha256": "293cebcd6caf6c7f16ed884339dfcee707e5d4dbdd03129fa3539c589a416970",
+      "query_sha256": "bb0a12c862ad2484ec963dabd7d4ef97e001efe1924c6836bd0dc55f5717fe6e",
+      "ranges": [
+        [
+          0,
+          524288
+        ],
+        [
+          524288,
+          1048576
+        ]
+      ],
+      "reduced_path": "r1_q64_frozen_current_k2/reduced.csv",
+      "reduced_sha256": "f7ed3589af7c7f663f8a5a677630728bd27383b007e99fd5401867b00f5d12f1",
+      "shards": 2
+    },
+    {
+      "anchor": "r1_q64_frozen",
+      "case_id": "r1_q64_frozen_grouped_u_k1",
+      "implementation": "grouped_u",
+      "manifest_count": 1,
+      "partition": "equal",
+      "program_sha256": "a9994bf381cd700ff9f4491bc1d548e29b7801930573f7a7f2b9cff524c96943",
+      "query_sha256": "bb0a12c862ad2484ec963dabd7d4ef97e001efe1924c6836bd0dc55f5717fe6e",
+      "ranges": [
+        [
+          0,
+          1048576
+        ]
+      ],
+      "reduced_path": "r1_q64_frozen_grouped_u_k1/reduced.csv",
+      "reduced_sha256": "2679bcb5b880a7675036b3f172c6b5d5e91c6bb869d3efe694d16e591619baa8",
+      "shards": 1
+    },
+    {
+      "anchor": "r1_q64_frozen",
+      "case_id": "r1_q64_frozen_grouped_u_k2",
+      "implementation": "grouped_u",
+      "manifest_count": 2,
+      "partition": "equal",
+      "program_sha256": "a9994bf381cd700ff9f4491bc1d548e29b7801930573f7a7f2b9cff524c96943",
+      "query_sha256": "bb0a12c862ad2484ec963dabd7d4ef97e001efe1924c6836bd0dc55f5717fe6e",
+      "ranges": [
+        [
+          0,
+          524288
+        ],
+        [
+          524288,
+          1048576
+        ]
+      ],
+      "reduced_path": "r1_q64_frozen_grouped_u_k2/reduced.csv",
+      "reduced_sha256": "2679bcb5b880a7675036b3f172c6b5d5e91c6bb869d3efe694d16e591619baa8",
+      "shards": 2
+    },
+    {
+      "anchor": "r1_q64_frozen",
+      "case_id": "r1_q64_frozen_grouped_uv_k1",
+      "implementation": "grouped_uv",
+      "manifest_count": 1,
+      "partition": "equal",
+      "program_sha256": "36acfe61f25ad7b2fed0e82373c42775ce1c63ea00cc39be47aa9a65cf820dca",
+      "query_sha256": "bb0a12c862ad2484ec963dabd7d4ef97e001efe1924c6836bd0dc55f5717fe6e",
+      "ranges": [
+        [
+          0,
+          1048576
+        ]
+      ],
+      "reduced_path": "r1_q64_frozen_grouped_uv_k1/reduced.csv",
+      "reduced_sha256": "bf90e582539d48a70d1f6ae2562a156b63ea0d85ff7781ba06cd319c39c4ce44",
+      "shards": 1
+    },
+    {
+      "anchor": "r1_q64_frozen",
+      "case_id": "r1_q64_frozen_grouped_uv_k2",
+      "implementation": "grouped_uv",
+      "manifest_count": 2,
+      "partition": "equal",
+      "program_sha256": "36acfe61f25ad7b2fed0e82373c42775ce1c63ea00cc39be47aa9a65cf820dca",
+      "query_sha256": "bb0a12c862ad2484ec963dabd7d4ef97e001efe1924c6836bd0dc55f5717fe6e",
+      "ranges": [
+        [
+          0,
+          524288
+        ],
+        [
+          524288,
+          1048576
+        ]
+      ],
+      "reduced_path": "r1_q64_frozen_grouped_uv_k2/reduced.csv",
+      "reduced_sha256": "bf90e582539d48a70d1f6ae2562a156b63ea0d85ff7781ba06cd319c39c4ce44",
+      "shards": 2
+    },
+    {
+      "anchor": "r1_q64_frozen",
+      "case_id": "r1_q64_frozen_grouped_u_k7",
+      "implementation": "grouped_u",
+      "manifest_count": 7,
+      "partition": "seeded-unequal",
+      "program_sha256": "a9994bf381cd700ff9f4491bc1d548e29b7801930573f7a7f2b9cff524c96943",
+      "query_sha256": "bb0a12c862ad2484ec963dabd7d4ef97e001efe1924c6836bd0dc55f5717fe6e",
+      "ranges": [
+        [
+          0,
+          36687
+        ],
+        [
+          36687,
+          287073
+        ],
+        [
+          287073,
+          425860
+        ],
+        [
+          425860,
+          615786
+        ],
+        [
+          615786,
+          660634
+        ],
+        [
+          660634,
+          845767
+        ],
+        [
+          845767,
+          1048576
+        ]
+      ],
+      "reduced_path": "r1_q64_frozen_grouped_u_k7/reduced.csv",
+      "reduced_sha256": "2679bcb5b880a7675036b3f172c6b5d5e91c6bb869d3efe694d16e591619baa8",
+      "shards": 7
+    },
+    {
+      "anchor": "r1_q64_frozen",
+      "case_id": "r1_q64_frozen_grouped_u_k16",
+      "implementation": "grouped_u",
+      "manifest_count": 16,
+      "partition": "seeded-unequal",
+      "program_sha256": "a9994bf381cd700ff9f4491bc1d548e29b7801930573f7a7f2b9cff524c96943",
+      "query_sha256": "bb0a12c862ad2484ec963dabd7d4ef97e001efe1924c6836bd0dc55f5717fe6e",
+      "ranges": [
+        [
+          0,
+          41027
+        ],
+        [
+          41027,
+          81571
+        ],
+        [
+          81571,
+          123406
+        ],
+        [
+          123406,
+          215453
+        ],
+        [
+          215453,
+          243887
+        ],
+        [
+          243887,
+          289212
+        ],
+        [
+          289212,
+          377327
+        ],
+        [
+          377327,
+          505815
+        ],
+        [
+          505815,
+          575049
+        ],
+        [
+          575049,
+          620997
+        ],
+        [
+          620997,
+          711451
+        ],
+        [
+          711451,
+          747764
+        ],
+        [
+          747764,
+          782955
+        ],
+        [
+          782955,
+          889811
+        ],
+        [
+          889811,
+          981693
+        ],
+        [
+          981693,
+          1048576
+        ]
+      ],
+      "reduced_path": "r1_q64_frozen_grouped_u_k16/reduced.csv",
+      "reduced_sha256": "2679bcb5b880a7675036b3f172c6b5d5e91c6bb869d3efe694d16e591619baa8",
+      "shards": 16
+    },
+    {
+      "anchor": "r1_q64_frozen",
+      "case_id": "r1_q64_frozen_grouped_uv_k7",
+      "implementation": "grouped_uv",
+      "manifest_count": 7,
+      "partition": "seeded-unequal",
+      "program_sha256": "36acfe61f25ad7b2fed0e82373c42775ce1c63ea00cc39be47aa9a65cf820dca",
+      "query_sha256": "bb0a12c862ad2484ec963dabd7d4ef97e001efe1924c6836bd0dc55f5717fe6e",
+      "ranges": [
+        [
+          0,
+          164878
+        ],
+        [
+          164878,
+          385405
+        ],
+        [
+          385405,
+          642170
+        ],
+        [
+          642170,
+          696769
+        ],
+        [
+          696769,
+          789938
+        ],
+        [
+          789938,
+          864337
+        ],
+        [
+          864337,
+          1048576
+        ]
+      ],
+      "reduced_path": "r1_q64_frozen_grouped_uv_k7/reduced.csv",
+      "reduced_sha256": "bf90e582539d48a70d1f6ae2562a156b63ea0d85ff7781ba06cd319c39c4ce44",
+      "shards": 7
+    },
+    {
+      "anchor": "r1_q64_frozen",
+      "case_id": "r1_q64_frozen_grouped_uv_k16",
+      "implementation": "grouped_uv",
+      "manifest_count": 16,
+      "partition": "seeded-unequal",
+      "program_sha256": "36acfe61f25ad7b2fed0e82373c42775ce1c63ea00cc39be47aa9a65cf820dca",
+      "query_sha256": "bb0a12c862ad2484ec963dabd7d4ef97e001efe1924c6836bd0dc55f5717fe6e",
+      "ranges": [
+        [
+          0,
+          64315
+        ],
+        [
+          64315,
+          155476
+        ],
+        [
+          155476,
+          257655
+        ],
+        [
+          257655,
+          273492
+        ],
+        [
+          273492,
+          362159
+        ],
+        [
+          362159,
+          409879
+        ],
+        [
+          409879,
+          473261
+        ],
+        [
+          473261,
+          565896
+        ],
+        [
+          565896,
+          603192
+        ],
+        [
+          603192,
+          678728
+        ],
+        [
+          678728,
+          770673
+        ],
+        [
+          770673,
+          842784
+        ],
+        [
+          842784,
+          911488
+        ],
+        [
+          911488,
+          919508
+        ],
+        [
+          919508,
+          990155
+        ],
+        [
+          990155,
+          1048576
+        ]
+      ],
+      "reduced_path": "r1_q64_frozen_grouped_uv_k16/reduced.csv",
+      "reduced_sha256": "bf90e582539d48a70d1f6ae2562a156b63ea0d85ff7781ba06cd319c39c4ce44",
+      "shards": 16
+    },
+    {
+      "anchor": "r2_q512_frozen",
+      "case_id": "r2_q512_frozen_current_k1",
+      "implementation": "current",
+      "manifest_count": 1,
+      "partition": "equal",
+      "program_sha256": "293cebcd6caf6c7f16ed884339dfcee707e5d4dbdd03129fa3539c589a416970",
+      "query_sha256": "f8bb7508a1d5a389ebe888775b3873ed891761cee20f8f2b84ebf3db75ef9a81",
+      "ranges": [
+        [
+          0,
+          131072
+        ]
+      ],
+      "reduced_path": "r2_q512_frozen_current_k1/reduced.csv",
+      "reduced_sha256": "8fcea2550d44052cbb7723a313169866edf10e66a6293dbc986ffe089fe757db",
+      "shards": 1
+    },
+    {
+      "anchor": "r2_q512_frozen",
+      "case_id": "r2_q512_frozen_current_k2",
+      "implementation": "current",
+      "manifest_count": 2,
+      "partition": "equal",
+      "program_sha256": "293cebcd6caf6c7f16ed884339dfcee707e5d4dbdd03129fa3539c589a416970",
+      "query_sha256": "f8bb7508a1d5a389ebe888775b3873ed891761cee20f8f2b84ebf3db75ef9a81",
+      "ranges": [
+        [
+          0,
+          65536
+        ],
+        [
+          65536,
+          131072
+        ]
+      ],
+      "reduced_path": "r2_q512_frozen_current_k2/reduced.csv",
+      "reduced_sha256": "8fcea2550d44052cbb7723a313169866edf10e66a6293dbc986ffe089fe757db",
+      "shards": 2
+    },
+    {
+      "anchor": "r2_q512_frozen",
+      "case_id": "r2_q512_frozen_grouped_u_k1",
+      "implementation": "grouped_u",
+      "manifest_count": 1,
+      "partition": "equal",
+      "program_sha256": "a9994bf381cd700ff9f4491bc1d548e29b7801930573f7a7f2b9cff524c96943",
+      "query_sha256": "f8bb7508a1d5a389ebe888775b3873ed891761cee20f8f2b84ebf3db75ef9a81",
+      "ranges": [
+        [
+          0,
+          131072
+        ]
+      ],
+      "reduced_path": "r2_q512_frozen_grouped_u_k1/reduced.csv",
+      "reduced_sha256": "10130fbde38b84bd76327f03a986d92cf86d698e20ad9c0e177e9a63f1a816a0",
+      "shards": 1
+    },
+    {
+      "anchor": "r2_q512_frozen",
+      "case_id": "r2_q512_frozen_grouped_u_k2",
+      "implementation": "grouped_u",
+      "manifest_count": 2,
+      "partition": "equal",
+      "program_sha256": "a9994bf381cd700ff9f4491bc1d548e29b7801930573f7a7f2b9cff524c96943",
+      "query_sha256": "f8bb7508a1d5a389ebe888775b3873ed891761cee20f8f2b84ebf3db75ef9a81",
+      "ranges": [
+        [
+          0,
+          65536
+        ],
+        [
+          65536,
+          131072
+        ]
+      ],
+      "reduced_path": "r2_q512_frozen_grouped_u_k2/reduced.csv",
+      "reduced_sha256": "10130fbde38b84bd76327f03a986d92cf86d698e20ad9c0e177e9a63f1a816a0",
+      "shards": 2
+    },
+    {
+      "anchor": "r2_q512_frozen",
+      "case_id": "r2_q512_frozen_grouped_uv_k1",
+      "implementation": "grouped_uv",
+      "manifest_count": 1,
+      "partition": "equal",
+      "program_sha256": "36acfe61f25ad7b2fed0e82373c42775ce1c63ea00cc39be47aa9a65cf820dca",
+      "query_sha256": "f8bb7508a1d5a389ebe888775b3873ed891761cee20f8f2b84ebf3db75ef9a81",
+      "ranges": [
+        [
+          0,
+          131072
+        ]
+      ],
+      "reduced_path": "r2_q512_frozen_grouped_uv_k1/reduced.csv",
+      "reduced_sha256": "aee74595291cf3b2ab43054037ca035da082839ae4b9766e00d1bd3481858d95",
+      "shards": 1
+    },
+    {
+      "anchor": "r2_q512_frozen",
+      "case_id": "r2_q512_frozen_grouped_uv_k2",
+      "implementation": "grouped_uv",
+      "manifest_count": 2,
+      "partition": "equal",
+      "program_sha256": "36acfe61f25ad7b2fed0e82373c42775ce1c63ea00cc39be47aa9a65cf820dca",
+      "query_sha256": "f8bb7508a1d5a389ebe888775b3873ed891761cee20f8f2b84ebf3db75ef9a81",
+      "ranges": [
+        [
+          0,
+          65536
+        ],
+        [
+          65536,
+          131072
+        ]
+      ],
+      "reduced_path": "r2_q512_frozen_grouped_uv_k2/reduced.csv",
+      "reduced_sha256": "aee74595291cf3b2ab43054037ca035da082839ae4b9766e00d1bd3481858d95",
+      "shards": 2
+    },
+    {
+      "anchor": "r2_q512_frozen",
+      "case_id": "r2_q512_frozen_grouped_u_k7",
+      "implementation": "grouped_u",
+      "manifest_count": 7,
+      "partition": "seeded-unequal",
+      "program_sha256": "a9994bf381cd700ff9f4491bc1d548e29b7801930573f7a7f2b9cff524c96943",
+      "query_sha256": "f8bb7508a1d5a389ebe888775b3873ed891761cee20f8f2b84ebf3db75ef9a81",
+      "ranges": [
+        [
+          0,
+          7841
+        ],
+        [
+          7841,
+          42134
+        ],
+        [
+          42134,
+          58408
+        ],
+        [
+          58408,
+          66741
+        ],
+        [
+          66741,
+          89332
+        ],
+        [
+          89332,
+          116012
+        ],
+        [
+          116012,
+          131072
+        ]
+      ],
+      "reduced_path": "r2_q512_frozen_grouped_u_k7/reduced.csv",
+      "reduced_sha256": "10130fbde38b84bd76327f03a986d92cf86d698e20ad9c0e177e9a63f1a816a0",
+      "shards": 7
+    },
+    {
+      "anchor": "r2_q512_frozen",
+      "case_id": "r2_q512_frozen_grouped_u_k16",
+      "implementation": "grouped_u",
+      "manifest_count": 16,
+      "partition": "seeded-unequal",
+      "program_sha256": "a9994bf381cd700ff9f4491bc1d548e29b7801930573f7a7f2b9cff524c96943",
+      "query_sha256": "f8bb7508a1d5a389ebe888775b3873ed891761cee20f8f2b84ebf3db75ef9a81",
+      "ranges": [
+        [
+          0,
+          3887
+        ],
+        [
+          3887,
+          14915
+        ],
+        [
+          14915,
+          24462
+        ],
+        [
+          24462,
+          28854
+        ],
+        [
+          28854,
+          34873
+        ],
+        [
+          34873,
+          38517
+        ],
+        [
+          38517,
+          48220
+        ],
+        [
+          48220,
+          56171
+        ],
+        [
+          56171,
+          64833
+        ],
+        [
+          64833,
+          68886
+        ],
+        [
+          68886,
+          80765
+        ],
+        [
+          80765,
+          86317
+        ],
+        [
+          86317,
+          98687
+        ],
+        [
+          98687,
+          112022
+        ],
+        [
+          112022,
+          119024
+        ],
+        [
+          119024,
+          131072
+        ]
+      ],
+      "reduced_path": "r2_q512_frozen_grouped_u_k16/reduced.csv",
+      "reduced_sha256": "10130fbde38b84bd76327f03a986d92cf86d698e20ad9c0e177e9a63f1a816a0",
+      "shards": 16
+    },
+    {
+      "anchor": "r2_q512_frozen",
+      "case_id": "r2_q512_frozen_grouped_uv_k7",
+      "implementation": "grouped_uv",
+      "manifest_count": 7,
+      "partition": "seeded-unequal",
+      "program_sha256": "36acfe61f25ad7b2fed0e82373c42775ce1c63ea00cc39be47aa9a65cf820dca",
+      "query_sha256": "f8bb7508a1d5a389ebe888775b3873ed891761cee20f8f2b84ebf3db75ef9a81",
+      "ranges": [
+        [
+          0,
+          13466
+        ],
+        [
+          13466,
+          31508
+        ],
+        [
+          31508,
+          55627
+        ],
+        [
+          55627,
+          75422
+        ],
+        [
+          75422,
+          100656
+        ],
+        [
+          100656,
+          124779
+        ],
+        [
+          124779,
+          131072
+        ]
+      ],
+      "reduced_path": "r2_q512_frozen_grouped_uv_k7/reduced.csv",
+      "reduced_sha256": "aee74595291cf3b2ab43054037ca035da082839ae4b9766e00d1bd3481858d95",
+      "shards": 7
+    },
+    {
+      "anchor": "r2_q512_frozen",
+      "case_id": "r2_q512_frozen_grouped_uv_k16",
+      "implementation": "grouped_uv",
+      "manifest_count": 16,
+      "partition": "seeded-unequal",
+      "program_sha256": "36acfe61f25ad7b2fed0e82373c42775ce1c63ea00cc39be47aa9a65cf820dca",
+      "query_sha256": "f8bb7508a1d5a389ebe888775b3873ed891761cee20f8f2b84ebf3db75ef9a81",
+      "ranges": [
+        [
+          0,
+          10336
+        ],
+        [
+          10336,
+          12187
+        ],
+        [
+          12187,
+          17528
+        ],
+        [
+          17528,
+          26281
+        ],
+        [
+          26281,
+          40375
+        ],
+        [
+          40375,
+          48848
+        ],
+        [
+          48848,
+          59003
+        ],
+        [
+          59003,
+          60248
+        ],
+        [
+          60248,
+          65803
+        ],
+        [
+          65803,
+          70754
+        ],
+        [
+          70754,
+          86067
+        ],
+        [
+          86067,
+          98157
+        ],
+        [
+          98157,
+          106678
+        ],
+        [
+          106678,
+          108316
+        ],
+        [
+          108316,
+          117052
+        ],
+        [
+          117052,
+          131072
+        ]
+      ],
+      "reduced_path": "r2_q512_frozen_grouped_uv_k16/reduced.csv",
+      "reduced_sha256": "aee74595291cf3b2ab43054037ca035da082839ae4b9766e00d1bd3481858d95",
+      "shards": 16
+    },
+    {
+      "anchor": "r3_q512_synthetic",
+      "case_id": "r3_q512_synthetic_current_k1",
+      "implementation": "current",
+      "manifest_count": 1,
+      "partition": "equal",
+      "program_sha256": "293cebcd6caf6c7f16ed884339dfcee707e5d4dbdd03129fa3539c589a416970",
+      "query_sha256": "5b19da744dc79bde4b3c93806d1ef0e686f6fa1dfe07340454965de4c8bece00",
+      "ranges": [
+        [
+          0,
+          131072
+        ]
+      ],
+      "reduced_path": "r3_q512_synthetic_current_k1/reduced.csv",
+      "reduced_sha256": "97359f184002dcd6b3a1e594ac9f7f4536b932a6d328ab5f3185b8a4368dbcbf",
+      "shards": 1
+    },
+    {
+      "anchor": "r3_q512_synthetic",
+      "case_id": "r3_q512_synthetic_current_k2",
+      "implementation": "current",
+      "manifest_count": 2,
+      "partition": "equal",
+      "program_sha256": "293cebcd6caf6c7f16ed884339dfcee707e5d4dbdd03129fa3539c589a416970",
+      "query_sha256": "5b19da744dc79bde4b3c93806d1ef0e686f6fa1dfe07340454965de4c8bece00",
+      "ranges": [
+        [
+          0,
+          65536
+        ],
+        [
+          65536,
+          131072
+        ]
+      ],
+      "reduced_path": "r3_q512_synthetic_current_k2/reduced.csv",
+      "reduced_sha256": "97359f184002dcd6b3a1e594ac9f7f4536b932a6d328ab5f3185b8a4368dbcbf",
+      "shards": 2
+    },
+    {
+      "anchor": "r3_q512_synthetic",
+      "case_id": "r3_q512_synthetic_grouped_u_k1",
+      "implementation": "grouped_u",
+      "manifest_count": 1,
+      "partition": "equal",
+      "program_sha256": "a9994bf381cd700ff9f4491bc1d548e29b7801930573f7a7f2b9cff524c96943",
+      "query_sha256": "5b19da744dc79bde4b3c93806d1ef0e686f6fa1dfe07340454965de4c8bece00",
+      "ranges": [
+        [
+          0,
+          131072
+        ]
+      ],
+      "reduced_path": "r3_q512_synthetic_grouped_u_k1/reduced.csv",
+      "reduced_sha256": "b2f3a8a595da3105f422a1d274e2047348b47aabb7895ac9c4b919e66b8e11a1",
+      "shards": 1
+    },
+    {
+      "anchor": "r3_q512_synthetic",
+      "case_id": "r3_q512_synthetic_grouped_u_k2",
+      "implementation": "grouped_u",
+      "manifest_count": 2,
+      "partition": "equal",
+      "program_sha256": "a9994bf381cd700ff9f4491bc1d548e29b7801930573f7a7f2b9cff524c96943",
+      "query_sha256": "5b19da744dc79bde4b3c93806d1ef0e686f6fa1dfe07340454965de4c8bece00",
+      "ranges": [
+        [
+          0,
+          65536
+        ],
+        [
+          65536,
+          131072
+        ]
+      ],
+      "reduced_path": "r3_q512_synthetic_grouped_u_k2/reduced.csv",
+      "reduced_sha256": "b2f3a8a595da3105f422a1d274e2047348b47aabb7895ac9c4b919e66b8e11a1",
+      "shards": 2
+    },
+    {
+      "anchor": "r3_q512_synthetic",
+      "case_id": "r3_q512_synthetic_grouped_uv_k1",
+      "implementation": "grouped_uv",
+      "manifest_count": 1,
+      "partition": "equal",
+      "program_sha256": "36acfe61f25ad7b2fed0e82373c42775ce1c63ea00cc39be47aa9a65cf820dca",
+      "query_sha256": "5b19da744dc79bde4b3c93806d1ef0e686f6fa1dfe07340454965de4c8bece00",
+      "ranges": [
+        [
+          0,
+          131072
+        ]
+      ],
+      "reduced_path": "r3_q512_synthetic_grouped_uv_k1/reduced.csv",
+      "reduced_sha256": "e37424afe9776934fc5c2b038dfb72e0138efa09b7b406272d597373a33a8153",
+      "shards": 1
+    },
+    {
+      "anchor": "r3_q512_synthetic",
+      "case_id": "r3_q512_synthetic_grouped_uv_k2",
+      "implementation": "grouped_uv",
+      "manifest_count": 2,
+      "partition": "equal",
+      "program_sha256": "36acfe61f25ad7b2fed0e82373c42775ce1c63ea00cc39be47aa9a65cf820dca",
+      "query_sha256": "5b19da744dc79bde4b3c93806d1ef0e686f6fa1dfe07340454965de4c8bece00",
+      "ranges": [
+        [
+          0,
+          65536
+        ],
+        [
+          65536,
+          131072
+        ]
+      ],
+      "reduced_path": "r3_q512_synthetic_grouped_uv_k2/reduced.csv",
+      "reduced_sha256": "e37424afe9776934fc5c2b038dfb72e0138efa09b7b406272d597373a33a8153",
+      "shards": 2
+    },
+    {
+      "anchor": "r3_q512_synthetic",
+      "case_id": "r3_q512_synthetic_grouped_u_k7",
+      "implementation": "grouped_u",
+      "manifest_count": 7,
+      "partition": "seeded-unequal",
+      "program_sha256": "a9994bf381cd700ff9f4491bc1d548e29b7801930573f7a7f2b9cff524c96943",
+      "query_sha256": "5b19da744dc79bde4b3c93806d1ef0e686f6fa1dfe07340454965de4c8bece00",
+      "ranges": [
+        [
+          0,
+          16802
+        ],
+        [
+          16802,
+          17349
+        ],
+        [
+          17349,
+          29081
+        ],
+        [
+          29081,
+          43486
+        ],
+        [
+          43486,
+          73439
+        ],
+        [
+          73439,
+          82579
+        ],
+        [
+          82579,
+          131072
+        ]
+      ],
+      "reduced_path": "r3_q512_synthetic_grouped_u_k7/reduced.csv",
+      "reduced_sha256": "b2f3a8a595da3105f422a1d274e2047348b47aabb7895ac9c4b919e66b8e11a1",
+      "shards": 7
+    },
+    {
+      "anchor": "r3_q512_synthetic",
+      "case_id": "r3_q512_synthetic_grouped_u_k16",
+      "implementation": "grouped_u",
+      "manifest_count": 16,
+      "partition": "seeded-unequal",
+      "program_sha256": "a9994bf381cd700ff9f4491bc1d548e29b7801930573f7a7f2b9cff524c96943",
+      "query_sha256": "5b19da744dc79bde4b3c93806d1ef0e686f6fa1dfe07340454965de4c8bece00",
+      "ranges": [
+        [
+          0,
+          9488
+        ],
+        [
+          9488,
+          14186
+        ],
+        [
+          14186,
+          17891
+        ],
+        [
+          17891,
+          32180
+        ],
+        [
+          32180,
+          41890
+        ],
+        [
+          41890,
+          52004
+        ],
+        [
+          52004,
+          58627
+        ],
+        [
+          58627,
+          62389
+        ],
+        [
+          62389,
+          63529
+        ],
+        [
+          63529,
+          76988
+        ],
+        [
+          76988,
+          91356
+        ],
+        [
+          91356,
+          101743
+        ],
+        [
+          101743,
+          103866
+        ],
+        [
+          103866,
+          115651
+        ],
+        [
+          115651,
+          122476
+        ],
+        [
+          122476,
+          131072
+        ]
+      ],
+      "reduced_path": "r3_q512_synthetic_grouped_u_k16/reduced.csv",
+      "reduced_sha256": "b2f3a8a595da3105f422a1d274e2047348b47aabb7895ac9c4b919e66b8e11a1",
+      "shards": 16
+    },
+    {
+      "anchor": "r3_q512_synthetic",
+      "case_id": "r3_q512_synthetic_grouped_uv_k7",
+      "implementation": "grouped_uv",
+      "manifest_count": 7,
+      "partition": "seeded-unequal",
+      "program_sha256": "36acfe61f25ad7b2fed0e82373c42775ce1c63ea00cc39be47aa9a65cf820dca",
+      "query_sha256": "5b19da744dc79bde4b3c93806d1ef0e686f6fa1dfe07340454965de4c8bece00",
+      "ranges": [
+        [
+          0,
+          9140
+        ],
+        [
+          9140,
+          38438
+        ],
+        [
+          38438,
+          62310
+        ],
+        [
+          62310,
+          69866
+        ],
+        [
+          69866,
+          92489
+        ],
+        [
+          92489,
+          126045
+        ],
+        [
+          126045,
+          131072
+        ]
+      ],
+      "reduced_path": "r3_q512_synthetic_grouped_uv_k7/reduced.csv",
+      "reduced_sha256": "e37424afe9776934fc5c2b038dfb72e0138efa09b7b406272d597373a33a8153",
+      "shards": 7
+    },
+    {
+      "anchor": "r3_q512_synthetic",
+      "case_id": "r3_q512_synthetic_grouped_uv_k16",
+      "implementation": "grouped_uv",
+      "manifest_count": 16,
+      "partition": "seeded-unequal",
+      "program_sha256": "36acfe61f25ad7b2fed0e82373c42775ce1c63ea00cc39be47aa9a65cf820dca",
+      "query_sha256": "5b19da744dc79bde4b3c93806d1ef0e686f6fa1dfe07340454965de4c8bece00",
+      "ranges": [
+        [
+          0,
+          2239
+        ],
+        [
+          2239,
+          6911
+        ],
+        [
+          6911,
+          19998
+        ],
+        [
+          19998,
+          23538
+        ],
+        [
+          23538,
+          37561
+        ],
+        [
+          37561,
+          45959
+        ],
+        [
+          45959,
+          60135
+        ],
+        [
+          60135,
+          63457
+        ],
+        [
+          63457,
+          66831
+        ],
+        [
+          66831,
+          78598
+        ],
+        [
+          78598,
+          87734
+        ],
+        [
+          87734,
+          94741
+        ],
+        [
+          94741,
+          110617
+        ],
+        [
+          110617,
+          118285
+        ],
+        [
+          118285,
+          129622
+        ],
+        [
+          129622,
+          131072
+        ]
+      ],
+      "reduced_path": "r3_q512_synthetic_grouped_uv_k16/reduced.csv",
+      "reduced_sha256": "e37424afe9776934fc5c2b038dfb72e0138efa09b7b406272d597373a33a8153",
+      "shards": 16
+    },
+    {
+      "anchor": "r2_q512_frozen",
+      "case_id": "r2_q512_frozen_current_k7",
+      "implementation": "current",
+      "manifest_count": 7,
+      "partition": "seeded-unequal",
+      "program_sha256": "293cebcd6caf6c7f16ed884339dfcee707e5d4dbdd03129fa3539c589a416970",
+      "query_sha256": "f8bb7508a1d5a389ebe888775b3873ed891761cee20f8f2b84ebf3db75ef9a81",
+      "ranges": [
+        [
+          0,
+          11150
+        ],
+        [
+          11150,
+          13717
+        ],
+        [
+          13717,
+          31115
+        ],
+        [
+          31115,
+          79337
+        ],
+        [
+          79337,
+          85919
+        ],
+        [
+          85919,
+          100840
+        ],
+        [
+          100840,
+          131072
+        ]
+      ],
+      "reduced_path": "r2_q512_frozen_current_k7/reduced.csv",
+      "reduced_sha256": "8fcea2550d44052cbb7723a313169866edf10e66a6293dbc986ffe089fe757db",
+      "shards": 7
+    }
+  ],
+  "completed_at": "2026-06-23T12:54:51+00:00",
+  "environment": {
+    "compiler_flags": "-O3 -std=c++17 -Wall -Wextra -pedantic -pthread",
+    "compiler_id": "gcc",
+    "compiler_version": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+    "cpu_affinity": "unbound",
+    "cpu_model": "Intel(R) Core(TM) i7-14650HX",
+    "kernel": "6.6.87.2-microsoft-standard-WSL2",
+    "logical_cpu_count": 8,
+    "multithread": 8,
+    "numa": "1-node",
+    "ram_bytes": 8328015872
+  },
+  "partition_seed": "stage-a2-v1",
+  "repository_commit": "9a6360893e8d9cfb153dfe4e876a7f2b6eda6839",
+  "schema": "way1-stage-a2-manifest-v1",
+  "started_at": "2026-06-23T12:54:45+00:00",
+  "status": "STAGE_A2_PASS",
+  "summary": {
+    "elapsed_seconds": 6.887331,
+    "matrix_case_count": 31,
+    "nonzero_exit_count": 0,
+    "oom_count": 0,
+    "raw_shard_count": 172,
+    "reducer_corruption_cases_passed": 12,
+    "schema": "way1-stage-a2-summary-v1",
+    "semantic_mismatch_count": 0,
+    "status": "STAGE_A2_PASS",
+    "submit_sha256": "7b0f638ba8678462ee8d6c12bc0c5b89d7354b4a095b31330f3ba495acfe2e2e",
+    "timeout_count": 0
+  }
+}

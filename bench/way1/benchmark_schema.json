@@ -1,0 +1,81 @@
+{
+  "schema": "way1-benchmark-results-v2",
+  "authority": {
+    "numerator": "signed int64 exact sum over the visited plaintext interval",
+    "timing": "orchestrator monotonic wall plus /usr/bin/time process wall, CPU, and RSS",
+    "algorithmic_counts": "deterministic counts derived from the executed algorithm shape",
+    "query_source": "experiments/frozen/final_queries.csv and experiments/frozen/final_ru.csv only",
+    "legacy_results": "bench/way1/results.csv is a pre-P0 smoke snapshot and does not satisfy this schema"
+  },
+  "required_fields": [
+    "run_id",
+    "implementation",
+    "query_family",
+    "query_profile",
+    "seed",
+    "order",
+    "semantic_query_sha256",
+    "r",
+    "Q",
+    "unique_u",
+    "unique_v",
+    "domain_start",
+    "domain_end",
+    "plaintext_count",
+    "threads",
+    "wall_seconds",
+    "process_wall_seconds",
+    "user_cpu_seconds",
+    "system_cpu_seconds",
+    "peak_rss_kib",
+    "timing_metric_origin",
+    "logical_query_updates",
+    "query_updates_per_second",
+    "plaintexts_per_second",
+    "u_parity_evaluations",
+    "v_parity_evaluations",
+    "permutation_evaluations",
+    "counter_metric_origin",
+    "program_commit",
+    "program_sha256",
+    "input_sha256",
+    "output_sha256",
+    "compiler_id",
+    "compiler_version",
+    "compiler_flags",
+    "cpu_model",
+    "ram_bytes",
+    "numa",
+    "kernel",
+    "cpu_affinity",
+    "timeout_seconds",
+    "max_rss_kib",
+    "submit_sha256",
+    "exit_status"
+  ],
+  "implementations": [
+    "current",
+    "grouped_u",
+    "grouped_uv"
+  ],
+  "rounds": [
+    1,
+    2,
+    3
+  ],
+  "planned_query_counts": [
+    64,
+    512,
+    4096,
+    16384
+  ],
+  "automatic_full_domain_runs": false,
+  "required_query_orders": [
+    "canonical",
+    "shuffled"
+  ],
+  "required_thread_modes": [
+    "1",
+    "T"
+  ]
+}

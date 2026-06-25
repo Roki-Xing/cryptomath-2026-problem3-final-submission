@@ -1,0 +1,3 @@
+benchmark_rows=3
+numerator_cross_variant_match=1
+results=/home/xing-12_26/.config/aegis/worktrees/cryptomath-2026-problem3-final-submission/pr7-way1-benchmark/bench/way1/stage_a1/results/r1_q4096_synthetic_canonical_t8.csv

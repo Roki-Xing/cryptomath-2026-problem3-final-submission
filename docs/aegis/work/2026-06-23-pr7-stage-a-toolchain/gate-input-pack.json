@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "aegis.schema.v0",
+  "baselineRefs": [
+    ".github/workflows/ci.yml"
+  ],
+  "impactStatement": "docs/aegis/work/2026-06-23-pr7-stage-a-toolchain/impact-statement-draft.json",
+  "compatPlan": "不修改算法、不调用 exact dyadic backend、不运行完整 2^32 域",
+  "retirementPlan": "废止 CI 写入已提交 artifact 目录的路径",
+  "evidenceBundle": [
+    "docs/aegis/work/2026-06-23-pr7-stage-a-toolchain/evidence-bundle-draft-ci-output-path-regression.json",
+    "docs/aegis/work/2026-06-23-pr7-stage-a-toolchain/evidence-bundle-draft-final-release-gates.json",
+    "docs/aegis/work/2026-06-23-pr7-stage-a-toolchain/evidence-bundle-draft-github-toolchain-run.json",
+    "docs/aegis/work/2026-06-23-pr7-stage-a-toolchain/evidence-bundle-draft-stage-a-aggregate.json",
+    "docs/aegis/work/2026-06-23-pr7-stage-a-toolchain/evidence-bundle-draft-toolchain-matrix-test.json"
+  ]
+}
