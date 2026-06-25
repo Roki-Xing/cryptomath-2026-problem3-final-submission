@@ -1,15 +1,43 @@
 {
+  "schema": "way1-stage-a-aggregate-v2",
+  "decision": "STAGE_A_PASS",
+  "stage_a_evidence_commit": "4b26302e5aa0c60b66bf2c11f29b50e3bc88fb8e",
+  "stage_toolchain_source_head_commit": "abefde8643701d4f83c43cd8a527b70d5a268f3b",
+  "stage_toolchain_execution_commit": "04fb504250796c1d13261f4cedec1e06bca17a3a",
+  "stage_toolchain_execution_commit_kind": "ci_synthetic_merge",
+  "stage_toolchain_artifact": {
+    "run_id": 28031330588,
+    "run_url": "https://github.com/Roki-Xing/cryptomath-2026-problem3-final-submission/actions/runs/28031330588",
+    "artifact_id": 7823007424,
+    "artifact_name": "stage-a-toolchain-28031330588-1",
+    "artifact_digest": "sha256:47e62a52cc64cae5f2f26a3e9240a73dd33bea4f95b25f49a70c756d97b085c5",
+    "source_head_commit": "abefde8643701d4f83c43cd8a527b70d5a268f3b",
+    "execution_commit": "04fb504250796c1d13261f4cedec1e06bca17a3a"
+  },
+  "ci_attested_commit": "5fbff142a72557060a45d490aaf4094dadaf8af1",
+  "integration_head_commit": "5fbff142a72557060a45d490aaf4094dadaf8af1",
+  "integration_head_role": "pre_closeout_integration_evidence_head",
+  "final_push_ci_run_id": 28032401682,
+  "final_pr_ci_run_id": 28032406708,
   "ci": {
-    "final_pr_ci_run_id": 28032406708,
-    "final_pr_ci_run_url": "https://github.com/Roki-Xing/cryptomath-2026-problem3-final-submission/actions/runs/28032406708",
-    "final_push_ci_run_id": 28032401682,
-    "final_push_ci_run_url": "https://github.com/Roki-Xing/cryptomath-2026-problem3-final-submission/actions/runs/28032401682",
+    "stage_toolchain_push_run_id": 28031329201,
+    "stage_toolchain_push_run_url": "https://github.com/Roki-Xing/cryptomath-2026-problem3-final-submission/actions/runs/28031329201",
     "stage_toolchain_pull_request_run_id": 28031330588,
     "stage_toolchain_pull_request_run_url": "https://github.com/Roki-Xing/cryptomath-2026-problem3-final-submission/actions/runs/28031330588",
-    "stage_toolchain_push_run_id": 28031329201,
-    "stage_toolchain_push_run_url": "https://github.com/Roki-Xing/cryptomath-2026-problem3-final-submission/actions/runs/28031329201"
+    "final_push_ci_run_id": 28032401682,
+    "final_push_ci_run_url": "https://github.com/Roki-Xing/cryptomath-2026-problem3-final-submission/actions/runs/28032401682",
+    "final_push_artifact_id": 7823472569,
+    "final_push_artifact_digest": "sha256:2c38708b08b74cd68f8b64b9868c43215dae0daf353a391da0f81c30e2bc2817",
+    "final_pr_ci_run_id": 28032406708,
+    "final_pr_ci_run_url": "https://github.com/Roki-Xing/cryptomath-2026-problem3-final-submission/actions/runs/28032406708",
+    "final_pr_artifact_id": 7823479010,
+    "final_pr_artifact_digest": "sha256:5cf4cd38a7d4d7baae1c2f885545415df56d70a6cfe353bf41498846126348b8"
   },
-  "decision": "STAGE_A_PASS",
+  "non_goals": {
+    "stage_b_authorized": false,
+    "full_2_32_run_started": false,
+    "strategy_b_decision": "NO_GO_PENDING_STAGE_B"
+  },
   "gates": {
     "all_artifacts_independently_hashed": true,
     "all_query_families_passed": true,
@@ -26,17 +54,6 @@
     "submit_sha256_unchanged": true,
     "variant_semantic_equivalence": true
   },
-  "final_pr_ci_run_id": 28032406708,
-  "final_push_ci_run_id": 28032401682,
-  "integration_head_commit": "5fbff142a72557060a45d490aaf4094dadaf8af1",
-  "non_goals": {
-    "full_2_32_run_started": false,
-    "stage_b_authorized": false,
-    "strategy_b_decision": "NO_GO_PENDING_STAGE_B"
-  },
-  "schema": "way1-stage-a-aggregate-v1",
-  "stage_a_evidence_commit": "4b26302e5aa0c60b66bf2c11f29b50e3bc88fb8e",
-  "stage_toolchain_evidence_commit": "04fb504250796c1d13261f4cedec1e06bca17a3a",
   "stages": {
     "a0": {
       "status": "STAGE_A0_PASS",
@@ -54,21 +71,21 @@
       "summary_sha256": "cbccb31f04de76fa416c3fcfa2a5949fed07c1f1541fb8a2c7407b5922ba1f9c"
     },
     "toolchain": {
-      "asan_cases": 9,
-      "matrix_case_count": 69,
-      "optimization_cases": 36,
-      "sanitizer_diagnostic_count": 0,
-      "semantic_mismatch_count": 0,
       "status": "STAGE_TOOLCHAIN_PASS",
       "summary_path": "stage_toolchain/SUMMARY.json",
       "summary_sha256": "f3df1d0ed29a16199c13bf71d311d84e317a8529564bfd33a53ddd0127a7d91f",
-      "tsan_cases": 6,
-      "ubsan_cases": 18
+      "matrix_case_count": 69,
+      "semantic_mismatch_count": 0,
+      "sanitizer_diagnostic_count": 0,
+      "optimization_cases": 36,
+      "ubsan_cases": 18,
+      "asan_cases": 9,
+      "tsan_cases": 6
     }
   },
   "submission": {
     "sha256": "7b0f638ba8678462ee8d6c12bc0c5b89d7354b4a095b31330f3ba495acfe2e2e",
-    "total_score": "105843.622442471292742994",
-    "valid_count": 138338
+    "valid_count": 138338,
+    "total_score": "105843.622442471292742994"
   }
 }

@@ -9,19 +9,28 @@ machine-readable authority is `STAGE_A_SUMMARY.json`. This is a bounded
 correctness, provenance, and implementation-consistency result only. It does
 not authorize Stage B, a full \(2^{32}\) run, or a Strategy-B `GO` decision.
 
-The closeout provenance is split into independently checkable fields:
+The closeout provenance is split into distinct, non-interchangeable fields:
 
 - `stage_a_evidence_commit`:
-  `4b26302e5aa0c60b66bf2c11f29b50e3bc88fb8e`, the commit that introduced the
-  Stage-A aggregate evidence;
-- `stage_toolchain_evidence_commit`:
-  `04fb504250796c1d13261f4cedec1e06bca17a3a`, copied from
-  `stage_toolchain/MANIFEST.json` as the toolchain artifact program commit;
+  `4b26302e5aa0c60b66bf2c11f29b50e3bc88fb8e`, the Stage-A aggregate evidence
+  commit;
+- `stage_toolchain_source_head_commit`:
+  `abefde8643701d4f83c43cd8a527b70d5a268f3b`, the branch source head used by
+  the Stage-A toolchain CI run;
+- `stage_toolchain_execution_commit`:
+  `04fb504250796c1d13261f4cedec1e06bca17a3a`, a CI synthetic merge commit
+  recorded by the toolchain artifact and not a branch source head;
 - `integration_head_commit`:
-  `5fbff142a72557060a45d490aaf4094dadaf8af1`, the final PR #4 head that passed
-  CI after the toolchain temporary-directory fix;
+  `5fbff142a72557060a45d490aaf4094dadaf8af1`, the pre-closeout integration
+  evidence head attested by the final integration CI runs; this field is not
+  the current closeout branch head;
+- `ci_attested_commit`:
+  `5fbff142a72557060a45d490aaf4094dadaf8af1`, the commit attested by the final
+  push and pull-request CI artifacts;
 - `final_push_ci_run_id`: `28032401682`;
 - `final_pr_ci_run_id`: `28032406708`.
+
+The machine-readable CI contract is duplicated in `CI_EVIDENCE.json`.
 
 ## Stage A0 result
 
@@ -103,17 +112,18 @@ program, and output hashes by a sidecar manifest before reduction.
 
 The Stage-A toolchain artifact was produced by GitHub Actions pull-request run
 [`28031330588`](https://github.com/Roki-Xing/cryptomath-2026-problem3-final-submission/actions/runs/28031330588)
-and push run
-[`28031329201`](https://github.com/Roki-Xing/cryptomath-2026-problem3-final-submission/actions/runs/28031329201)
-both passed the GCC, Clang, release, and Stage-A toolchain jobs.
+from branch source head
+`abefde8643701d4f83c43cd8a527b70d5a268f3b`. The committed toolchain manifest
+records CI execution commit
+`04fb504250796c1d13261f4cedec1e06bca17a3a`, which is a CI synthetic merge
+commit and must not be described as the branch source head.
 
-The final integration head
-`5fbff142a72557060a45d490aaf4094dadaf8af1` was then re-run after the CI
-temporary-directory fix. Final push run
+The final integration evidence is attested by push run
 [`28032401682`](https://github.com/Roki-Xing/cryptomath-2026-problem3-final-submission/actions/runs/28032401682)
-and final pull-request run
-[`28032406708`](https://github.com/Roki-Xing/cryptomath-2026-problem3-final-submission/actions/runs/28032406708)
-both completed successfully.
+and pull-request run
+[`28032406708`](https://github.com/Roki-Xing/cryptomath-2026-problem3-final-submission/actions/runs/28032406708),
+both for pre-closeout integration evidence head
+`5fbff142a72557060a45d490aaf4094dadaf8af1`.
 
 The committed CI artifact under `stage_toolchain/` contains:
 
@@ -162,15 +172,19 @@ The current protocol authority is `PROTOCOL.md`; the result contract is
 `ARTIFACT_RETENTION_PLAN.md` and `ARTIFACT_INDEX.json` classify the Stage-A
 files without deleting raw evidence:
 
-- `REQUIRED_SUMMARY`: `STAGE_A_SUMMARY.json`, `SUMMARY.md`, `PROTOCOL.md`, and
-  `benchmark_schema.json`;
-- `REQUIRED_MANIFEST`: `MANIFEST.json`, top-level `SHA256SUMS.txt`, and per-stage
-  manifests/hash files;
-- `RAW_REPRODUCIBILITY_EVIDENCE`: `stage_a0/`, `stage_a1/`, `stage_a2/`, and
-  `stage_toolchain/`;
-- `CI_ONLY`: CI temporary output locations and the final GitHub Actions runs;
-- `EXCLUDE_FROM_SUBMISSION_PACKAGE`: historical smoke files and Python bytecode
-  caches.
+- `REQUIRED_SUMMARY`: `STAGE_A_SUMMARY.json`, `SUMMARY.md`, `PROTOCOL.md`,
+  `benchmark_schema.json`, and the four per-stage `SUMMARY.json` files;
+- `REQUIRED_MANIFEST`: `MANIFEST.json`, `CI_EVIDENCE.json`,
+  `ARTIFACT_INDEX.json`, `ARTIFACT_RETENTION_PLAN.md`, top-level
+  `SHA256SUMS.txt`, and per-stage manifest/hash files;
+- `RAW_REPRODUCIBILITY_EVIDENCE`: stage-specific query/result/artifact trees
+  and toolchain compile/result trees only;
+- `CI_ONLY`: CI temporary output locations and the fixed GitHub Actions runs;
+- `EXCLUDE_FROM_SUBMISSION_PACKAGE`: historical smoke files, temporary files,
+  and Python bytecode caches.
 
-The retention classification does not authorize Stage B and does not change the
-frozen submit SHA.
+The compact package boundary is implemented by the explicit allowlist in
+`scripts/build_stage_a_compact_package.py`. Raw directories remain in the
+repository, but allowlisted summary and manifest files are never dropped by
+parent-directory overlap. The retention classification does not authorize
+Stage B and does not change the frozen submit SHA.

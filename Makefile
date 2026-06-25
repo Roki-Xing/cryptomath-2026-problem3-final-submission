@@ -98,6 +98,8 @@ test: test_core test_linear_mask_basis test_exact_cartesian test_exact_dyadic te
 	python3 -X utf8 tests/test_way1_stage_a1.py
 	python3 -X utf8 tests/test_way1_stage_a2.py
 	python3 -X utf8 tests/test_way1_stage_toolchain.py
+	python3 -X utf8 tests/test_stage_a_closeout_provenance.py
+	python3 -X utf8 tests/test_stage_a_compact_package.py
 	@test "$$(sha256sum submit.txt | cut -d' ' -f1)" = "7b0f638ba8678462ee8d6c12bc0c5b89d7354b4a095b31330f3ba495acfe2e2e"
 
 smoke: all
