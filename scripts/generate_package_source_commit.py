@@ -35,6 +35,24 @@ def require_rfc3339_utc(value: str, field: str) -> str:
     value = value.strip()
     if not RFC3339_UTC_RE.fullmatch(value):
         raise SystemExit(f"{field} must be RFC3339 UTC like 2026-06-25T00:00:00Z")
+    try:
+        year = int(value[0:4])
+        month = int(value[5:7])
+        day = int(value[8:10])
+        hour = int(value[11:13])
+        minute = int(value[14:16])
+        second = int(value[17:19])
+        parsed = datetime(year, month, day, hour, minute, second, tzinfo=timezone.utc)
+    except ValueError as exc:
+        raise SystemExit(f"{field} must be a calendar-valid RFC3339 UTC timestamp") from exc
+    if parsed.year < 1 or parsed.year > 9999:
+        raise SystemExit(f"{field} must be a calendar-valid RFC3339 UTC timestamp")
+    normalized = (
+        f"{parsed.year:04d}-{parsed.month:02d}-{parsed.day:02d}T"
+        f"{parsed.hour:02d}:{parsed.minute:02d}:{parsed.second:02d}Z"
+    )
+    if normalized != value:
+        raise SystemExit(f"{field} must be a calendar-valid RFC3339 UTC timestamp")
     return value
 
 

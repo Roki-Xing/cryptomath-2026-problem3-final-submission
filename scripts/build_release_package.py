@@ -7,9 +7,11 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import shutil
 import subprocess
 import tempfile
+from datetime import datetime, timezone
 from pathlib import Path
 
 
@@ -26,6 +28,8 @@ QUERY = [
     "--backend",
     "cpp_int",
 ]
+COMMIT_RE = re.compile(r"^[0-9a-f]{40}([0-9a-f]{24})?$")
+RFC3339_UTC_RE = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$")
 
 
 def sha256_file(path: Path) -> str:
@@ -36,8 +40,77 @@ def sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
+def normalize_commit(value: str) -> str:
+    normalized = value.strip().lower()
+    if not COMMIT_RE.fullmatch(normalized):
+        raise SystemExit("release_commit must be a 40- or 64-hex commit/hash")
+    return normalized
+
+
+def resolve_package_generated_at(explicit: str | None) -> str:
+    if explicit is not None:
+        value = explicit.strip()
+        if not RFC3339_UTC_RE.fullmatch(value):
+            raise SystemExit("package_generated_at_utc must be RFC3339 UTC like 2026-06-25T00:00:00Z")
+        try:
+            year = int(value[0:4])
+            month = int(value[5:7])
+            day = int(value[8:10])
+            hour = int(value[11:13])
+            minute = int(value[14:16])
+            second = int(value[17:19])
+            parsed = datetime(year, month, day, hour, minute, second, tzinfo=timezone.utc)
+        except ValueError as exc:
+            raise SystemExit("package_generated_at_utc must be a calendar-valid RFC3339 UTC timestamp") from exc
+        normalized = (
+            f"{parsed.year:04d}-{parsed.month:02d}-{parsed.day:02d}T"
+            f"{parsed.hour:02d}:{parsed.minute:02d}:{parsed.second:02d}Z"
+        )
+        if normalized != value:
+            raise SystemExit("package_generated_at_utc must be a calendar-valid RFC3339 UTC timestamp")
+        return normalized
+
+    epoch = os.environ.get("SOURCE_DATE_EPOCH")
+    if not epoch:
+        raise SystemExit("package_generated_at_utc must be provided or SOURCE_DATE_EPOCH must be set")
+    try:
+        timestamp = int(epoch)
+    except ValueError as exc:
+        raise SystemExit("SOURCE_DATE_EPOCH must be an integer") from exc
+    return datetime.fromtimestamp(timestamp, tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
 def run(command: list[str], cwd: Path | None = None, env: dict[str, str] | None = None) -> None:
     subprocess.run(command, cwd=cwd or ROOT, env=env, check=True)
+
+
+def resolve_checkout_head(source_root: Path) -> str:
+    try:
+        result = subprocess.run(
+            ["git", "rev-parse", "--verify", "HEAD"],
+            cwd=source_root,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=True,
+        )
+    except (FileNotFoundError, subprocess.CalledProcessError) as exc:
+        raise SystemExit("release builder requires a valid git checkout with a resolvable HEAD") from exc
+    try:
+        return normalize_commit(result.stdout)
+    except SystemExit as exc:
+        raise SystemExit("release builder resolved an invalid checkout HEAD") from exc
+
+
+def require_release_commit_matches_head(source_root: Path, requested_commit: str) -> str:
+    normalized_requested = normalize_commit(requested_commit)
+    actual_head = resolve_checkout_head(source_root)
+    if normalized_requested != actual_head:
+        raise SystemExit(
+            "release_commit must equal checkout HEAD "
+            f"(requested={normalized_requested}, actual_head={actual_head})"
+        )
+    return actual_head
 
 
 def parse_metadata(path: Path) -> dict[str, str]:
@@ -84,6 +157,8 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
+    checkout_head = require_release_commit_matches_head(ROOT, args.release_commit)
+    resolved_generated_at = resolve_package_generated_at(args.package_generated_at_utc)
     out_dir = Path(args.out_dir)
     if out_dir.exists():
         if not out_dir.is_dir():
@@ -97,7 +172,7 @@ def main() -> None:
         raise SystemExit(f"repository must be {CURRENT_REPOSITORY}")
 
     env = os.environ.copy()
-    env["EXTRA_CPPFLAGS"] = f"-DHS_SOURCE_COMMIT=\\\"{args.release_commit}\\\""
+    env["EXTRA_CPPFLAGS"] = f"-DHS_SOURCE_COMMIT=\\\"{checkout_head}\\\""
     run(["make", "clean"], env=env)
     run(["make", "estimator_exact"], env=env)
 
@@ -114,7 +189,7 @@ def main() -> None:
             "--release-ref",
             args.release_ref,
             "--release-commit",
-            args.release_commit,
+            checkout_head,
             "--submit-source-commit",
             args.submit_source_commit,
             "--submit-sha256",
@@ -131,16 +206,14 @@ def main() -> None:
     )
     shutil.copy2(ROOT / "PACKAGE_SOURCE_COMMIT.template", out_dir / "PACKAGE_SOURCE_COMMIT.template")
 
-    verify_staged_binary(out_dir, args.release_commit)
+    verify_staged_binary(out_dir, checkout_head)
 
     manifest = {
         "schema": "release-package-staging-v1",
         "repository": args.repository,
         "release_ref": args.release_ref,
-        "release_commit": args.release_commit,
-        "package_generated_at_utc": parse_metadata(out_dir / "PACKAGE_SOURCE_COMMIT.txt")[
-            "package_generated_at_utc"
-        ],
+        "release_commit": checkout_head,
+        "package_generated_at_utc": resolved_generated_at,
         "submit_source_commit": args.submit_source_commit,
         "submit_sha256": args.submit_sha256,
         "files": {

@@ -76,6 +76,29 @@ bool valid_rfc3339_utc(const std::string& value) {
         if ((index == 13 || index == 16) && ch != ':') return false;
         if (index == 19 && ch != 'Z') return false;
     }
+    const auto parse_uint = [&](std::size_t offset, std::size_t width) -> int {
+        int parsed = 0;
+        for (std::size_t index = 0; index < width; ++index) {
+            parsed = parsed * 10 + (value[offset + index] - '0');
+        }
+        return parsed;
+    };
+    const int year = parse_uint(0, 4);
+    const int month = parse_uint(5, 2);
+    const int day = parse_uint(8, 2);
+    const int hour = parse_uint(11, 2);
+    const int minute = parse_uint(14, 2);
+    const int second = parse_uint(17, 2);
+    if (year < 1 || year > 9999) return false;
+    if (month < 1 || month > 12) return false;
+    const bool leap = year % 4 == 0 && (year % 100 != 0 || year % 400 == 0);
+    static const int month_days[] = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+    int max_day = month_days[month];
+    if (month == 2 && leap) max_day = 29;
+    if (day < 1 || day > max_day) return false;
+    if (hour < 0 || hour > 23) return false;
+    if (minute < 0 || minute > 59) return false;
+    if (second < 0 || second > 59) return false;
     return true;
 }
 
@@ -217,24 +240,43 @@ std::string resolve_git_commit() {
 
 std::string source_commit() {
     const auto metadata = load_package_metadata(kPackageMetadataPath);
+    std::optional<std::string> macro_commit;
+    std::optional<std::string> git_commit;
+    std::optional<std::string> metadata_commit;
 #ifdef HS_SOURCE_COMMIT
     const std::string build_time_commit = trim(HS_SOURCE_COMMIT);
     if (!valid_commit_hash(build_time_commit)) {
         throw std::runtime_error("invalid build-time HS_SOURCE_COMMIT");
     }
-    if (metadata.has_value() && metadata->release_commit != build_time_commit) {
-        throw std::runtime_error("build-time HS_SOURCE_COMMIT mismatch with PACKAGE_SOURCE_COMMIT");
-    }
-    return build_time_commit;
+    macro_commit = build_time_commit;
 #endif
-    const std::string git_commit = resolve_git_commit();
-    if (!git_commit.empty()) {
-        if (metadata.has_value() && metadata->release_commit != git_commit) {
-            throw std::runtime_error("git HEAD mismatch with PACKAGE_SOURCE_COMMIT");
-        }
-        return git_commit;
+    const std::string resolved_git_commit = resolve_git_commit();
+    if (!resolved_git_commit.empty()) {
+        git_commit = resolved_git_commit;
     }
-    if (metadata.has_value()) return metadata->release_commit;
+    if (metadata.has_value()) metadata_commit = metadata->release_commit;
+
+    auto require_equal = [](const std::string& lhs_name,
+                            const std::string& lhs_value,
+                            const std::string& rhs_name,
+                            const std::string& rhs_value) {
+        if (lhs_value != rhs_value) {
+            throw std::runtime_error(lhs_name + " mismatch with " + rhs_name);
+        }
+    };
+    if (macro_commit.has_value() && git_commit.has_value()) {
+        require_equal("build-time HS_SOURCE_COMMIT", *macro_commit, "git HEAD", *git_commit);
+    }
+    if (macro_commit.has_value() && metadata_commit.has_value()) {
+        require_equal("build-time HS_SOURCE_COMMIT", *macro_commit, "PACKAGE_SOURCE_COMMIT", *metadata_commit);
+    }
+    if (git_commit.has_value() && metadata_commit.has_value()) {
+        require_equal("git HEAD", *git_commit, "PACKAGE_SOURCE_COMMIT", *metadata_commit);
+    }
+
+    if (macro_commit.has_value()) return *macro_commit;
+    if (git_commit.has_value()) return *git_commit;
+    if (metadata_commit.has_value()) return *metadata_commit;
     throw std::runtime_error("cannot determine source commit");
 }
 
