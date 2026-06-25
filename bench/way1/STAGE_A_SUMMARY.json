@@ -1,9 +1,13 @@
 {
   "ci": {
-    "pull_request_run_id": 28031330588,
-    "pull_request_run_url": "https://github.com/Roki-Xing/cryptomath-2026-problem3-final-submission/actions/runs/28031330588",
-    "push_run_id": 28031329201,
-    "push_run_url": "https://github.com/Roki-Xing/cryptomath-2026-problem3-final-submission/actions/runs/28031329201"
+    "final_pr_ci_run_id": 28032406708,
+    "final_pr_ci_run_url": "https://github.com/Roki-Xing/cryptomath-2026-problem3-final-submission/actions/runs/28032406708",
+    "final_push_ci_run_id": 28032401682,
+    "final_push_ci_run_url": "https://github.com/Roki-Xing/cryptomath-2026-problem3-final-submission/actions/runs/28032401682",
+    "stage_toolchain_pull_request_run_id": 28031330588,
+    "stage_toolchain_pull_request_run_url": "https://github.com/Roki-Xing/cryptomath-2026-problem3-final-submission/actions/runs/28031330588",
+    "stage_toolchain_push_run_id": 28031329201,
+    "stage_toolchain_push_run_url": "https://github.com/Roki-Xing/cryptomath-2026-problem3-final-submission/actions/runs/28031329201"
   },
   "decision": "STAGE_A_PASS",
   "gates": {
@@ -22,13 +26,17 @@
     "submit_sha256_unchanged": true,
     "variant_semantic_equivalence": true
   },
+  "final_pr_ci_run_id": 28032406708,
+  "final_push_ci_run_id": 28032401682,
+  "integration_head_commit": "5fbff142a72557060a45d490aaf4094dadaf8af1",
   "non_goals": {
     "full_2_32_run_started": false,
     "stage_b_authorized": false,
     "strategy_b_decision": "NO_GO_PENDING_STAGE_B"
   },
   "schema": "way1-stage-a-aggregate-v1",
-  "source_head_commit": "abefde8643701d4f83c43cd8a527b70d5a268f3b",
+  "stage_a_evidence_commit": "4b26302e5aa0c60b66bf2c11f29b50e3bc88fb8e",
+  "stage_toolchain_evidence_commit": "04fb504250796c1d13261f4cedec1e06bca17a3a",
   "stages": {
     "a0": {
       "status": "STAGE_A0_PASS",

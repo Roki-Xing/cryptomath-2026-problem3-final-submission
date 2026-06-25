@@ -9,6 +9,20 @@ machine-readable authority is `STAGE_A_SUMMARY.json`. This is a bounded
 correctness, provenance, and implementation-consistency result only. It does
 not authorize Stage B, a full \(2^{32}\) run, or a Strategy-B `GO` decision.
 
+The closeout provenance is split into independently checkable fields:
+
+- `stage_a_evidence_commit`:
+  `4b26302e5aa0c60b66bf2c11f29b50e3bc88fb8e`, the commit that introduced the
+  Stage-A aggregate evidence;
+- `stage_toolchain_evidence_commit`:
+  `04fb504250796c1d13261f4cedec1e06bca17a3a`, copied from
+  `stage_toolchain/MANIFEST.json` as the toolchain artifact program commit;
+- `integration_head_commit`:
+  `5fbff142a72557060a45d490aaf4094dadaf8af1`, the final PR #4 head that passed
+  CI after the toolchain temporary-directory fix;
+- `final_push_ci_run_id`: `28032401682`;
+- `final_pr_ci_run_id`: `28032406708`.
+
 ## Stage A0 result
 
 - query specifications: 18;
@@ -87,11 +101,19 @@ program, and output hashes by a sidecar manifest before reduction.
 
 ## Toolchain result
 
-GitHub Actions pull-request run
+The Stage-A toolchain artifact was produced by GitHub Actions pull-request run
 [`28031330588`](https://github.com/Roki-Xing/cryptomath-2026-problem3-final-submission/actions/runs/28031330588)
 and push run
 [`28031329201`](https://github.com/Roki-Xing/cryptomath-2026-problem3-final-submission/actions/runs/28031329201)
 both passed the GCC, Clang, release, and Stage-A toolchain jobs.
+
+The final integration head
+`5fbff142a72557060a45d490aaf4094dadaf8af1` was then re-run after the CI
+temporary-directory fix. Final push run
+[`28032401682`](https://github.com/Roki-Xing/cryptomath-2026-problem3-final-submission/actions/runs/28032401682)
+and final pull-request run
+[`28032406708`](https://github.com/Roki-Xing/cryptomath-2026-problem3-final-submission/actions/runs/28032406708)
+both completed successfully.
 
 The committed CI artifact under `stage_toolchain/` contains:
 
@@ -134,3 +156,21 @@ evidence, and must not be used as a runtime forecast or Strategy-B decision.
 
 The current protocol authority is `PROTOCOL.md`; the result contract is
 `benchmark_schema.json`.
+
+## Artifact retention
+
+`ARTIFACT_RETENTION_PLAN.md` and `ARTIFACT_INDEX.json` classify the Stage-A
+files without deleting raw evidence:
+
+- `REQUIRED_SUMMARY`: `STAGE_A_SUMMARY.json`, `SUMMARY.md`, `PROTOCOL.md`, and
+  `benchmark_schema.json`;
+- `REQUIRED_MANIFEST`: `MANIFEST.json`, top-level `SHA256SUMS.txt`, and per-stage
+  manifests/hash files;
+- `RAW_REPRODUCIBILITY_EVIDENCE`: `stage_a0/`, `stage_a1/`, `stage_a2/`, and
+  `stage_toolchain/`;
+- `CI_ONLY`: CI temporary output locations and the final GitHub Actions runs;
+- `EXCLUDE_FROM_SUBMISSION_PACKAGE`: historical smoke files and Python bytecode
+  caches.
+
+The retention classification does not authorize Stage B and does not change the
+frozen submit SHA.
