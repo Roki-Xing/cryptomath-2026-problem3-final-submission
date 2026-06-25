@@ -1,0 +1,97 @@
+{
+  "schema": "official-reference-sources-v2",
+  "repository": "Roki-Xing/cryptomath-2026-problem3-final-submission",
+  "sources": [
+    {
+      "document_id": "official-homepage",
+      "document_title": "全国高校密码数学挑战赛官网首页",
+      "source_type": "official_homepage",
+      "source_page_url": "http://www.cmsecc.com/",
+      "direct_download_url": null,
+      "verified_filename": null,
+      "sha256": null,
+      "page_count": null,
+      "retrieved_at_utc": "2026-06-25T10:47:59Z",
+      "redistribution": "not_applicable",
+      "verification_status": "url_verified"
+    },
+    {
+      "document_id": "official-download-page",
+      "document_title": "全国高校密码数学挑战赛下载中心",
+      "source_type": "official_download_page",
+      "source_page_url": "http://www.cmsecc.com/xiazai/",
+      "direct_download_url": null,
+      "verified_filename": null,
+      "sha256": null,
+      "page_count": null,
+      "retrieved_at_utc": "2026-06-25T10:47:59Z",
+      "redistribution": "not_applicable",
+      "verification_status": "url_verified"
+    },
+    {
+      "document_id": "challenge-public-announcement",
+      "document_title": "第十一届（2026）全国高校密码数学挑战赛赛题公告页",
+      "source_type": "public_announcement_or_mirror",
+      "source_page_url": "https://www.cmathc.org.cn/mcm/st/434.html",
+      "direct_download_url": null,
+      "verified_filename": null,
+      "sha256": null,
+      "page_count": null,
+      "retrieved_at_utc": "2026-06-25T10:47:59Z",
+      "redistribution": "not_applicable",
+      "verification_status": "url_verified"
+    },
+    {
+      "document_id": "challenge-zip",
+      "document_title": "第十一届（2026年）全国高校密码数学挑战赛--赛题三 ZIP",
+      "source_type": "official_zip_bundle",
+      "source_page_url": "http://www.cmsecc.com/xiazai/",
+      "direct_download_url": "http://www.cmsecc.com/d/file/xiazai/2026-04-07/saiti3.zip",
+      "verified_filename": "saiti3.zip",
+      "sha256": "7f2a8561469ef0603f015bc3fd4248dfbe0fd3f87ebfc45efeb6d0b1e242a175",
+      "page_count": null,
+      "retrieved_at_utc": "2026-06-25T10:47:59Z",
+      "redistribution": "not_included",
+      "verification_status": "local_file_verified"
+    },
+    {
+      "document_id": "challenge-pdf",
+      "document_title": "第十一届（2026年）全国高校密码数学挑战赛-赛题三 PDF",
+      "source_type": "official_problem_pdf",
+      "source_page_url": "http://www.cmsecc.com/xiazai/",
+      "direct_download_url": "http://www.cmsecc.com/d/file/xiazai/2026-04-07/saiti3.zip",
+      "verified_filename": "2026密码数学挑战赛-赛题三.pdf",
+      "sha256": "6ab700efbbb6b531130fae03406202184b7f41faecd86355b7848248d5aea8f7",
+      "page_count": 10,
+      "retrieved_at_utc": "2026-06-25T10:47:59Z",
+      "redistribution": "not_included",
+      "verification_status": "local_file_verified"
+    },
+    {
+      "document_id": "official-computecor",
+      "document_title": "官方 computecor.cpp",
+      "source_type": "official_reference_code",
+      "source_page_url": "http://www.cmsecc.com/xiazai/",
+      "direct_download_url": "http://www.cmsecc.com/d/file/xiazai/2026-04-07/saiti3.zip",
+      "verified_filename": "computecor.cpp",
+      "sha256": "5a89c8d71a84992070c1d53976443ed6eac9091ae67e22806825e8d35050f653",
+      "page_count": null,
+      "retrieved_at_utc": "2026-06-25T10:47:59Z",
+      "redistribution": "not_included",
+      "verification_status": "local_file_verified"
+    },
+    {
+      "document_id": "analysis-pdf",
+      "document_title": "赛题解析与答疑：矩阵连乘元素的逼近（赛题三）",
+      "source_type": "official_analysis_pdf",
+      "source_page_url": "http://www.cmsecc.com/xiazai/",
+      "direct_download_url": "http://www.cmsecc.com/d/file/xiazai/2026-04-20/saiti3.pdf",
+      "verified_filename": "saiti3.pdf",
+      "sha256": "0077a138c2288d75c8384f937d92b1ca2ebb4cd860d86852a64317db14653016",
+      "page_count": 19,
+      "retrieved_at_utc": "2026-06-25T10:47:59Z",
+      "redistribution": "not_included",
+      "verification_status": "local_file_verified"
+    }
+  ]
+}

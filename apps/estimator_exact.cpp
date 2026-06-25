@@ -1,9 +1,11 @@
 #include <atomic>
+#include <cctype>
 #include <csignal>
 #include <cstdio>
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
+#include <map>
 #include <optional>
 #include <sstream>
 #include <stdexcept>
@@ -21,6 +23,9 @@ using namespace hs;
 namespace {
 
 std::atomic<bool> interrupted{false};
+constexpr const char* kCurrentRepository = "Roki-Xing/cryptomath-2026-problem3-final-submission";
+constexpr const char* kPackageMetadataSchema = "package-source-metadata-v1";
+constexpr const char* kPackageMetadataPath = "PACKAGE_SOURCE_COMMIT.txt";
 
 void on_signal(int) {
     interrupted.store(true);
@@ -30,7 +35,71 @@ std::string trim(std::string value) {
     while (!value.empty() && (value.back() == '\n' || value.back() == '\r' || value.back() == ' ')) {
         value.pop_back();
     }
+    std::size_t offset = 0;
+    while (offset < value.size() && (value[offset] == ' ' || value[offset] == '\t')) {
+        ++offset;
+    }
+    if (offset != 0) value.erase(0, offset);
     return value;
+}
+
+bool valid_commit_hash(const std::string& commit) {
+    if (commit.size() != 40 && commit.size() != 64) return false;
+    for (char ch : commit) {
+        if (!std::isxdigit(static_cast<unsigned char>(ch))) return false;
+    }
+    return true;
+}
+
+bool valid_sha256(const std::string& value) {
+    if (value.size() != 64) return false;
+    for (char ch : value) {
+        if (!std::isxdigit(static_cast<unsigned char>(ch))) return false;
+    }
+    return true;
+}
+
+bool valid_rfc3339_utc(const std::string& value) {
+    if (value.size() != 20) return false;
+    for (std::size_t index = 0; index < value.size(); ++index) {
+        const char ch = value[index];
+        const bool digit_position = index == 0 || index == 1 || index == 2 || index == 3 ||
+                                    index == 5 || index == 6 || index == 8 || index == 9 ||
+                                    index == 11 || index == 12 || index == 14 || index == 15 ||
+                                    index == 17 || index == 18;
+        if (digit_position) {
+            if (!std::isdigit(static_cast<unsigned char>(ch))) return false;
+            continue;
+        }
+        if ((index == 4 || index == 7) && ch != '-') return false;
+        if (index == 10 && ch != 'T') return false;
+        if ((index == 13 || index == 16) && ch != ':') return false;
+        if (index == 19 && ch != 'Z') return false;
+    }
+    const auto parse_uint = [&](std::size_t offset, std::size_t width) -> int {
+        int parsed = 0;
+        for (std::size_t index = 0; index < width; ++index) {
+            parsed = parsed * 10 + (value[offset + index] - '0');
+        }
+        return parsed;
+    };
+    const int year = parse_uint(0, 4);
+    const int month = parse_uint(5, 2);
+    const int day = parse_uint(8, 2);
+    const int hour = parse_uint(11, 2);
+    const int minute = parse_uint(14, 2);
+    const int second = parse_uint(17, 2);
+    if (year < 1 || year > 9999) return false;
+    if (month < 1 || month > 12) return false;
+    const bool leap = year % 4 == 0 && (year % 100 != 0 || year % 400 == 0);
+    static const int month_days[] = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+    int max_day = month_days[month];
+    if (month == 2 && leap) max_day = 29;
+    if (day < 1 || day > max_day) return false;
+    if (hour < 0 || hour > 23) return false;
+    if (minute < 0 || minute > 59) return false;
+    if (second < 0 || second > 59) return false;
+    return true;
 }
 
 std::string read_command(const char* command) {
@@ -67,12 +136,148 @@ std::string sha256_text(const std::string& text) {
     return output.substr(0, 64);
 }
 
+struct PackageMetadata {
+    std::string schema;
+    std::string repository;
+    std::string release_ref;
+    std::string release_commit;
+    std::string package_generated_at_utc;
+    std::string submit_source_commit;
+    std::string submit_sha256;
+};
+
+std::optional<PackageMetadata> load_package_metadata(const std::string& path) {
+    std::ifstream input(path);
+    if (!input) return std::nullopt;
+
+    std::map<std::string, std::string> rows;
+    std::string line;
+    while (std::getline(input, line)) {
+        line = trim(line);
+        if (line.empty()) continue;
+        const std::size_t colon = line.find(':');
+        if (colon == std::string::npos) {
+            throw std::runtime_error("invalid PACKAGE_SOURCE_COMMIT: malformed line");
+        }
+        const std::string key = trim(line.substr(0, colon));
+        const std::string value = trim(line.substr(colon + 1));
+        if (key.empty()) throw std::runtime_error("invalid PACKAGE_SOURCE_COMMIT: empty key");
+        if (rows.count(key) != 0) {
+            throw std::runtime_error("invalid PACKAGE_SOURCE_COMMIT: duplicate key");
+        }
+        rows.emplace(key, value);
+    }
+
+    static const std::vector<std::string> required_keys = {
+        "schema",
+        "repository",
+        "release_ref",
+        "release_commit",
+        "package_generated_at_utc",
+        "submit_source_commit",
+        "submit_sha256",
+    };
+    if (rows.size() != required_keys.size()) {
+        throw std::runtime_error("invalid PACKAGE_SOURCE_COMMIT: unexpected field count");
+    }
+    for (const auto& key : required_keys) {
+        if (rows.count(key) == 0) {
+            throw std::runtime_error("invalid PACKAGE_SOURCE_COMMIT: missing key");
+        }
+    }
+    for (const auto& [key, _] : rows) {
+        bool known = false;
+        for (const auto& expected : required_keys) {
+            if (key == expected) {
+                known = true;
+                break;
+            }
+        }
+        if (!known) throw std::runtime_error("invalid PACKAGE_SOURCE_COMMIT: unknown key");
+    }
+
+    PackageMetadata metadata{
+        rows.at("schema"),
+        rows.at("repository"),
+        rows.at("release_ref"),
+        rows.at("release_commit"),
+        rows.at("package_generated_at_utc"),
+        rows.at("submit_source_commit"),
+        rows.at("submit_sha256"),
+    };
+    if (metadata.schema != kPackageMetadataSchema) {
+        throw std::runtime_error("invalid PACKAGE_SOURCE_COMMIT: unexpected schema");
+    }
+    if (metadata.repository != kCurrentRepository) {
+        throw std::runtime_error("invalid PACKAGE_SOURCE_COMMIT: unexpected repository");
+    }
+    if (metadata.release_ref.empty()) {
+        throw std::runtime_error("invalid PACKAGE_SOURCE_COMMIT: empty release_ref");
+    }
+    if (!valid_commit_hash(metadata.release_commit)) {
+        throw std::runtime_error("invalid PACKAGE_SOURCE_COMMIT: invalid release_commit");
+    }
+    if (!valid_rfc3339_utc(metadata.package_generated_at_utc)) {
+        throw std::runtime_error("invalid PACKAGE_SOURCE_COMMIT: invalid package_generated_at_utc");
+    }
+    if (!valid_commit_hash(metadata.submit_source_commit)) {
+        throw std::runtime_error("invalid PACKAGE_SOURCE_COMMIT: invalid submit_source_commit");
+    }
+    if (!valid_sha256(metadata.submit_sha256)) {
+        throw std::runtime_error("invalid PACKAGE_SOURCE_COMMIT: invalid submit_sha256");
+    }
+    return metadata;
+}
+
+std::string resolve_git_commit() {
+    const std::string commit = read_command("git rev-parse HEAD 2>/dev/null");
+    if (commit.empty()) return "";
+    if (!valid_commit_hash(commit)) {
+        throw std::runtime_error("git rev-parse HEAD returned an invalid commit");
+    }
+    return commit;
+}
+
 std::string source_commit() {
-    std::string commit = read_command("git rev-parse HEAD 2>/dev/null");
-    if (!commit.empty()) return commit;
-    std::ifstream input("PACKAGE_SOURCE_COMMIT.txt");
-    if (input) std::getline(input, commit);
-    return trim(commit);
+    const auto metadata = load_package_metadata(kPackageMetadataPath);
+    std::optional<std::string> macro_commit;
+    std::optional<std::string> git_commit;
+    std::optional<std::string> metadata_commit;
+#ifdef HS_SOURCE_COMMIT
+    const std::string build_time_commit = trim(HS_SOURCE_COMMIT);
+    if (!valid_commit_hash(build_time_commit)) {
+        throw std::runtime_error("invalid build-time HS_SOURCE_COMMIT");
+    }
+    macro_commit = build_time_commit;
+#endif
+    const std::string resolved_git_commit = resolve_git_commit();
+    if (!resolved_git_commit.empty()) {
+        git_commit = resolved_git_commit;
+    }
+    if (metadata.has_value()) metadata_commit = metadata->release_commit;
+
+    auto require_equal = [](const std::string& lhs_name,
+                            const std::string& lhs_value,
+                            const std::string& rhs_name,
+                            const std::string& rhs_value) {
+        if (lhs_value != rhs_value) {
+            throw std::runtime_error(lhs_name + " mismatch with " + rhs_name);
+        }
+    };
+    if (macro_commit.has_value() && git_commit.has_value()) {
+        require_equal("build-time HS_SOURCE_COMMIT", *macro_commit, "git HEAD", *git_commit);
+    }
+    if (macro_commit.has_value() && metadata_commit.has_value()) {
+        require_equal("build-time HS_SOURCE_COMMIT", *macro_commit, "PACKAGE_SOURCE_COMMIT", *metadata_commit);
+    }
+    if (git_commit.has_value() && metadata_commit.has_value()) {
+        require_equal("git HEAD", *git_commit, "PACKAGE_SOURCE_COMMIT", *metadata_commit);
+    }
+
+    if (macro_commit.has_value()) return *macro_commit;
+    if (git_commit.has_value()) return *git_commit;
+    if (metadata_commit.has_value()) return *metadata_commit;
+    throw std::runtime_error("cannot determine source commit");
 }
 
 std::string bool_json(bool value) {
