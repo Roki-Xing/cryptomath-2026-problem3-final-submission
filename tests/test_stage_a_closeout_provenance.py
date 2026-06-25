@@ -16,7 +16,38 @@ CI_EVIDENCE_PATH = ROOT / "bench" / "way1" / "CI_EVIDENCE.json"
 HEX40 = re.compile(r"^[0-9a-f]{40}$")
 
 
+def ensure_commit_present(commit: str) -> None:
+    verify = subprocess.run(
+        ["git", "rev-parse", "--verify", f"{commit}^{{commit}}"],
+        cwd=ROOT,
+        check=False,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+    if verify.returncode == 0:
+        return
+    fetch = subprocess.run(
+        ["git", "fetch", "--depth=256", "origin", commit],
+        cwd=ROOT,
+        check=False,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+    )
+    assert fetch.returncode == 0, f"unable to fetch commit {commit}: {fetch.stderr.strip()}"
+    verify = subprocess.run(
+        ["git", "rev-parse", "--verify", f"{commit}^{{commit}}"],
+        cwd=ROOT,
+        check=False,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+    assert verify.returncode == 0, f"commit still unavailable after fetch: {commit}"
+
+
 def git_is_ancestor(ancestor: str, descendant: str) -> bool:
+    ensure_commit_present(ancestor)
+    ensure_commit_present(descendant)
     result = subprocess.run(
         ["git", "merge-base", "--is-ancestor", ancestor, descendant],
         cwd=ROOT,
