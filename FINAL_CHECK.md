@@ -1,5 +1,10 @@
 # Final Submission Check
 
+Status: this file describes the frozen pre-Strategy-B baseline. The
+`valid_count=138338` and `total_score=105843.622442471292742994` values are the
+historical frozen self-score baseline. Complete way-1 `VT` provenance has not
+yet been closed.
+
 ## Score
 
 ```text

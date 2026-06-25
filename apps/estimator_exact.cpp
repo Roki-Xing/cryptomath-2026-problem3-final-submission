@@ -1,4 +1,5 @@
 #include <atomic>
+#include <cctype>
 #include <csignal>
 #include <cstdio>
 #include <cstdlib>
@@ -21,6 +22,7 @@ using namespace hs;
 namespace {
 
 std::atomic<bool> interrupted{false};
+constexpr const char* kCurrentRepository = "Roki-Xing/cryptomath-2026-problem3-final-submission";
 
 void on_signal(int) {
     interrupted.store(true);
@@ -30,7 +32,33 @@ std::string trim(std::string value) {
     while (!value.empty() && (value.back() == '\n' || value.back() == '\r' || value.back() == ' ')) {
         value.pop_back();
     }
+    std::size_t offset = 0;
+    while (offset < value.size() && (value[offset] == ' ' || value[offset] == '\t')) {
+        ++offset;
+    }
+    if (offset != 0) value.erase(0, offset);
     return value;
+}
+
+std::string normalize_key(std::string key) {
+    std::string normalized;
+    for (char ch : key) {
+        if (std::isalnum(static_cast<unsigned char>(ch))) {
+            normalized.push_back(static_cast<char>(std::tolower(static_cast<unsigned char>(ch))));
+        } else if (!normalized.empty() && normalized.back() != '_') {
+            normalized.push_back('_');
+        }
+    }
+    while (!normalized.empty() && normalized.back() == '_') normalized.pop_back();
+    return normalized;
+}
+
+bool valid_commit_hash(const std::string& commit) {
+    if (commit.size() != 40 && commit.size() != 64) return false;
+    for (char ch : commit) {
+        if (!std::isxdigit(static_cast<unsigned char>(ch))) return false;
+    }
+    return true;
 }
 
 std::string read_command(const char* command) {
@@ -67,12 +95,60 @@ std::string sha256_text(const std::string& text) {
     return output.substr(0, 64);
 }
 
+std::optional<std::string> package_source_commit(const std::string& path) {
+    std::ifstream input(path);
+    if (!input) return std::nullopt;
+
+    std::string repository;
+    std::string release_commit;
+    std::string source_commit_field;
+    std::string pending_key;
+    std::string line;
+    while (std::getline(input, line)) {
+        line = trim(line);
+        if (line.empty()) {
+            pending_key.clear();
+            continue;
+        }
+
+        const std::size_t colon = line.find(':');
+        if (colon != std::string::npos) {
+            pending_key = normalize_key(line.substr(0, colon));
+            const std::string value = trim(line.substr(colon + 1));
+            if (pending_key == "repository") repository = value;
+            else if (pending_key == "release_commit") release_commit = value;
+            else if (pending_key == "source_commit") source_commit_field = value;
+            if (!value.empty()) pending_key.clear();
+            continue;
+        }
+
+        if (pending_key == "repository") repository = line;
+        else if (pending_key == "release_commit") release_commit = line;
+        else if (pending_key == "source_commit") source_commit_field = line;
+        pending_key.clear();
+    }
+
+    if (!repository.empty() && repository != kCurrentRepository &&
+        repository != std::string("https://github.com/") + kCurrentRepository) {
+        return std::nullopt;
+    }
+
+    if (valid_commit_hash(release_commit)) return release_commit;
+    if (valid_commit_hash(source_commit_field)) return source_commit_field;
+    return std::nullopt;
+}
+
 std::string source_commit() {
+#ifdef HS_SOURCE_COMMIT
+    const std::string build_time_commit = trim(HS_SOURCE_COMMIT);
+    if (valid_commit_hash(build_time_commit)) return build_time_commit;
+    throw std::runtime_error("invalid build-time HS_SOURCE_COMMIT");
+#endif
     std::string commit = read_command("git rev-parse HEAD 2>/dev/null");
-    if (!commit.empty()) return commit;
-    std::ifstream input("PACKAGE_SOURCE_COMMIT.txt");
-    if (input) std::getline(input, commit);
-    return trim(commit);
+    if (valid_commit_hash(commit)) return commit;
+    const auto package_commit = package_source_commit("PACKAGE_SOURCE_COMMIT.txt");
+    if (package_commit.has_value()) return *package_commit;
+    return "";
 }
 
 std::string bool_json(bool value) {

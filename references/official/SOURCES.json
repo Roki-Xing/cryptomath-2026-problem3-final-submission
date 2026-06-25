@@ -1,0 +1,56 @@
+{
+  "schema": "official-reference-sources-v1",
+  "challenge": "第十一届（2026年）全国高校密码数学挑战赛赛题三",
+  "official_landing_page": {
+    "url": "https://www.cmathc.org.cn/mcm/st/434.html",
+    "retrieved_at_utc": "2026-06-25T02:50:00Z",
+    "status": "public official challenge page"
+  },
+  "official_analysis_pdf": {
+    "redistribution": "not_included",
+    "official_url": null,
+    "local_verified_filename": null,
+    "sha256": null,
+    "retrieved_at_utc": null,
+    "limitation": "The page map below follows verified review guidance, but the PDF itself is not redistributed in this repository."
+  },
+  "page_map": [
+    {
+      "page": 12,
+      "repository_claim_ids": [
+        "OFFICIAL_EXPLICIT-FIVE-FIELDS",
+        "OFFICIAL_EXPLICIT-NEGATIVE-INTERVAL"
+      ],
+      "topic": "VT/VE submitted fields and absolute error tolerance"
+    },
+    {
+      "page": 14,
+      "repository_claim_ids": [
+        "OFFICIAL_EXPLICIT-APPROXIMATE-THEN-VERIFY"
+      ],
+      "topic": "Approximate first, then verify"
+    },
+    {
+      "page": 16,
+      "repository_claim_ids": [
+        "CONSERVATIVE_INTERPRETATION-GENERIC-ROUNDS"
+      ],
+      "topic": "Round-count examples and arbitrary-r discussion"
+    },
+    {
+      "page": 17,
+      "repository_claim_ids": [
+        "CONSERVATIVE_INTERPRETATION-GENERIC-ROUNDS"
+      ],
+      "topic": "Additional arbitrary-r discussion"
+    },
+    {
+      "page": 18,
+      "repository_claim_ids": [
+        "OFFICIAL_EXPLICIT-COMPLEXITY",
+        "OFFICIAL_EXPLICIT-HEX-MASKS"
+      ],
+      "topic": "Strictly lower complexity and hexadecimal masks"
+    }
+  ]
+}

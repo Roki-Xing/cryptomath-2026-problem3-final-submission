@@ -10,6 +10,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SPEC = ROOT / "docs/OFFICIAL_SPEC_INTERPRETATION.md"
 VT_VE = ROOT / "docs/VT_VE_COMPLIANCE.md"
+OFFICIAL_SOURCES = ROOT / "references/official/SOURCES.json"
 
 HEADINGS = [
     "OFFICIAL_EXPLICIT",
@@ -22,6 +23,7 @@ REQUIRED_IDS = {
     "OFFICIAL_EXPLICIT-NEGATIVE-INTERVAL",
     "OFFICIAL_EXPLICIT-HEX-MASKS",
     "OFFICIAL_EXPLICIT-COMPLEXITY",
+    "OFFICIAL_EXPLICIT-APPROXIMATE-THEN-VERIFY",
     "CONSERVATIVE_INTERPRETATION-DECIMAL-MASKS",
     "CONSERVATIVE_INTERPRETATION-UNIQUENESS-REPORTING",
     "CONSERVATIVE_INTERPRETATION-GENERIC-ROUNDS",
@@ -76,8 +78,17 @@ def main() -> int:
         "Interface applicability for arbitrary `r` does not imply no-truncation, "
         "exact certification, acceptable accuracy, or lower measured cost for every `r`."
     ) in text
-    assert "Source file: not checked into this repository." in text
-    assert "Page: unavailable in the checked-in artifacts." in text
+    assert "Source index: `references/official/SOURCES.json`." in text
+    assert "Source file: official analysis PDF not checked into this repository." in text
+    assert "Redistribution status: not included" in text
+    assert "page 12" in text and "page 14" in text and "page 16/17" in text and "page 18" in text
+
+    assert OFFICIAL_SOURCES.exists()
+    sources = OFFICIAL_SOURCES.read_text(encoding="utf-8")
+    assert "https://www.cmathc.org.cn/mcm/st/434.html" in sources
+    assert '"redistribution": "not_included"' in sources
+    for page in [12, 14, 16, 17, 18]:
+        assert f'"page": {page}' in sources
 
     vt_text = VT_VE.read_text(encoding="utf-8")
     assert "`docs/OFFICIAL_SPEC_INTERPRETATION.md` is the canonical authority" in vt_text

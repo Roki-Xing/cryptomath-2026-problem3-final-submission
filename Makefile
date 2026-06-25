@@ -88,6 +88,8 @@ test: test_core test_linear_mask_basis test_exact_cartesian test_exact_dyadic te
 	python3 -X utf8 tests/test_freeze_baseline.py
 	python3 -X utf8 tests/test_audit_schema.py
 	python3 -X utf8 tests/test_submission_integrity.py
+	PYTHONDONTWRITEBYTECODE=1 python3 -X utf8 tests/test_package_source_commit.py
+	PYTHONDONTWRITEBYTECODE=1 python3 -X utf8 tests/test_estimator_source_commit.py
 	python3 -X utf8 tests/test_official_spec.py
 	python3 -X utf8 tests/test_walsh_spectrum.py
 	python3 -X utf8 tests/test_dyadic_bounds.py

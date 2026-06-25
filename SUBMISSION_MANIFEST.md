@@ -1,5 +1,10 @@
 # Submission Manifest
 
+Status: this manifest describes the frozen pre-Strategy-B baseline. The
+`valid_count=138338` and `total_score=105843.622442471292742994` values are the
+historical frozen self-score baseline. Complete way-1 `VT` provenance has not
+yet been closed.
+
 ## 包级交付物
 
 - `提交说明.md`：提交入口、复现层次与工具边界。
