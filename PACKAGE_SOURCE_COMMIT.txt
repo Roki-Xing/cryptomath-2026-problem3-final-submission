@@ -1,6 +1,0 @@
-repository: Roki-Xing/cryptomath-2026-problem3-final-submission
-release_ref: hardening/source-provenance-official-reference
-release_commit: fc803f2139105312525015799255e6ca0b21cdb8
-package_generated_at_utc: 2026-06-25T02:49:59Z
-submit_source_commit: b4fd4061877660a4eefbd2ea88e8170a708e2da1
-submit_sha256: 7b0f638ba8678462ee8d6c12bc0c5b89d7354b4a095b31330f3ba495acfe2e2e

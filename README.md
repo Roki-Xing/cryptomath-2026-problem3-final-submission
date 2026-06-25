@@ -2,6 +2,16 @@
 
 This repository contains the final package for Challenge 3, "Approximation of Matrix-Chain Elements".  The main method is **Route-Shell Guided Sparse Dynamic Programming**: it models `M(r)[v,u]` as the linear correlation of `HS(r)` and evaluates selected coordinates by propagating masks through S-box correlation branches and deterministic linear layers.
 
+Status: frozen pre-Strategy-B baseline.
+
+The displayed `138338` rows and `105843.622442471292742994` score are
+historical frozen self-score results. Full way-1 `VT` provenance has not yet
+been closed.
+
+当前仓库保存的是冻结的 Strategy-B 前基线。`138338` 条与
+`105843.622442471292742994` 为历史冻结自评分口径；全量方式一 `VT`
+来源链尚未闭合。
+
 See `REPORT.md` for the full method, proof, complexity analysis, compliance boundary, experiment tables, and ablation discussion.  See `SUBMISSION_MANIFEST.md` for the final file manifest.
 
 ## Final result
@@ -51,7 +61,7 @@ total_score = 105843.622442471292742994
 - `enumerate_r1_positive`: one-round way-2 formula enumerator for all positive `r=1` rows.
 - `experiments/build_submit_from_sources.py`: rebuilds the final `submit.txt` from way-2 certified source rows.
 - `score`: checks `@(r,u,v,VT,VE)` records and computes the final score.
-- `exact_oracle` / `exact_batch_mt`: way-1 validation-only spotcheck tools based on reference plaintext enumeration. They are not used to generate, rank, filter, or populate the submitted rows.
+- `exact_oracle` / `exact_batch_mt`: way-1 validation-only spotcheck tools based on reference plaintext enumeration. They are not used to generate, rank, filter, populate, or backfill the submitted rows or the historical `VT` field.
 - `search_candidates`: legacy research miner/verifier that emits candidate CSV only and never creates or modifies `submit.txt`. The final `submit.txt` is rebuilt from way-2 certified source rows by `experiments/build_submit_from_sources.py`.
 - `experiments/build_submit_with_certified_r2.py`: historical helper that builds a high-score draft submit file from full `r=1` rows and certified `r=2` candidate CSVs by writing the certified way-2 route-shell value into both submission fields required by the contest format. It is not the current final submit generation path.
 - `experiments/verify_top_candidates.py`: legacy validation helper for proxy-ranked CSV candidates. It is not part of the current final submit generation chain.

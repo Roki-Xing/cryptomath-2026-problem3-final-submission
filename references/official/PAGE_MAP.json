@@ -1,0 +1,52 @@
+{
+  "schema": "official-page-map-v1",
+  "document_id": "analysis-pdf",
+  "document_title": "赛题解析与答疑：矩阵连乘元素的逼近（赛题三）",
+  "source_registry": "references/official/SOURCES.json",
+  "pages": [
+    {
+      "page": 12,
+      "claims": [
+        "way-1 computes VT",
+        "way-2 computes VE",
+        "absolute and relative error conditions",
+        "way-2 complexity strictly lower than way-1"
+      ]
+    },
+    {
+      "page": 13,
+      "claims": [
+        "five-field submission format",
+        "score definition",
+        "theory document, data document, program, and self-score requirements"
+      ]
+    },
+    {
+      "page": 14,
+      "claims": [
+        "approximate first and then verify",
+        "exact first and then design approximation is also allowed"
+      ]
+    },
+    {
+      "page": 16,
+      "claims": [
+        "algorithm should apply to arbitrary r"
+      ]
+    },
+    {
+      "page": 17,
+      "claims": [
+        "traditional linear-analysis methods may be used",
+        "the method still needs to apply to arbitrary rounds"
+      ]
+    },
+    {
+      "page": 18,
+      "claims": [
+        "way-2 complexity strictly lower than way-1",
+        "32-bit masks and hexadecimal submission format"
+      ]
+    }
+  ]
+}

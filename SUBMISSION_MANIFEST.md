@@ -8,7 +8,7 @@ yet been closed.
 ## 包级交付物
 
 - `提交说明.md`：提交入口、复现层次与工具边界。
-- `PACKAGE_SOURCE_COMMIT.txt`：唯一来源分支、提交号与打包日期。
+- `PACKAGE_SOURCE_COMMIT.template`：源码树内的 package metadata 模板。
 - `SHA256SUMS.txt`：除自身外全部包内文件的 SHA-256。
 - `submit.txt`：最终 138338 条有效记录，自算分 105843.622442471292742994。
 - `REPORT.md`：论文 Markdown 源及方法、证明、实验文本备份。
@@ -49,7 +49,10 @@ yet been closed.
 - `experiments/manifests/E13_final_integration.md`：最终权威口径。
 - `docs/CLAIMS_AND_EVIDENCE.md`：论文声明到 artifact 的映射。
 - `docs/OFFICIAL_SPEC_INTERPRETATION.md`：官方明确、仓库保守解释与未决问题的唯一分类入口。
+- `references/official/README.md`、`SOURCES.json`、`PAGE_MAP.json`：官方来源边界、已验证本地文件哈希、下载链接和页码映射。
 - `.github/workflows/ci.yml`：在 pull request 和 hardening/main push 上执行构建、测试、重建、评分与包检查。
+
+正式 `PACKAGE_SOURCE_COMMIT.txt` 只在 release staging 目录中生成，不在源码树中预置，也不伪装为尚未存在的最终 release commit。
 
 ## Final gate
 

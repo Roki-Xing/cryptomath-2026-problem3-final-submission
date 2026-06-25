@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import re
+import json
 from pathlib import Path
 
 
@@ -11,6 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SPEC = ROOT / "docs/OFFICIAL_SPEC_INTERPRETATION.md"
 VT_VE = ROOT / "docs/VT_VE_COMPLIANCE.md"
 OFFICIAL_SOURCES = ROOT / "references/official/SOURCES.json"
+PAGE_MAP = ROOT / "references/official/PAGE_MAP.json"
 
 HEADINGS = [
     "OFFICIAL_EXPLICIT",
@@ -69,29 +71,42 @@ def main() -> int:
     assert len(claim_ids) == len(set(claim_ids))
     assert REQUIRED_IDS.issubset(claim_ids)
 
-    assert "Way 2 must have complexity strictly lower than way 1." in text
-    assert "0x000ee0f0" in text and "0x08088880" in text
-    assert "parsing-only" in text
-    assert "does not assert that `0.5` is the true correlation" in text
+    assert "complexity must be strictly lower than way-1" in text
     assert "`r=0` is an internal identity-map test only" in text
-    assert (
-        "Interface applicability for arbitrary `r` does not imply no-truncation, "
-        "exact certification, acceptable accuracy, or lower measured cost for every `r`."
-    ) in text
-    assert "Source index: `references/official/SOURCES.json`." in text
-    assert "Source file: official analysis PDF not checked into this repository." in text
-    assert "Redistribution status: not included" in text
-    assert "page 12" in text and "page 14" in text and "page 16/17" in text and "page 18" in text
+    assert "does not imply no-truncation, exact certification" in text
+    assert "Structured source registry: `references/official/SOURCES.json`." in text
+    assert "Structured page map: `references/official/PAGE_MAP.json`." in text
+    assert "`public_announcement_or_mirror`" in text
+    assert "an exact certified way-2 value can replace an actually executed way-1 `VT`" in text
 
     assert OFFICIAL_SOURCES.exists()
-    sources = OFFICIAL_SOURCES.read_text(encoding="utf-8")
-    assert "https://www.cmathc.org.cn/mcm/st/434.html" in sources
-    assert '"redistribution": "not_included"' in sources
-    for page in [12, 14, 16, 17, 18]:
-        assert f'"page": {page}' in sources
+    sources = json.loads(OFFICIAL_SOURCES.read_text(encoding="utf-8"))
+    assert sources["schema"] == "official-reference-sources-v2"
+    source_ids = {entry["document_id"] for entry in sources["sources"]}
+    assert {
+        "official-homepage",
+        "official-download-page",
+        "challenge-public-announcement",
+        "challenge-zip",
+        "challenge-pdf",
+        "official-computecor",
+        "analysis-pdf",
+    }.issubset(source_ids)
+    analysis = next(entry for entry in sources["sources"] if entry["document_id"] == "analysis-pdf")
+    assert analysis["redistribution"] == "not_included"
+    assert analysis["page_count"] == 19
+    assert analysis["sha256"] == "0077a138c2288d75c8384f937d92b1ca2ebb4cd860d86852a64317db14653016"
+
+    assert PAGE_MAP.exists()
+    page_map = json.loads(PAGE_MAP.read_text(encoding="utf-8"))
+    assert page_map["schema"] == "official-page-map-v1"
+    pages = {entry["page"] for entry in page_map["pages"]}
+    assert {12, 13, 14, 16, 17, 18} == pages
 
     vt_text = VT_VE.read_text(encoding="utf-8")
     assert "`docs/OFFICIAL_SPEC_INTERPRETATION.md` is the canonical authority" in vt_text
+    assert "numerical fact" in vt_text
+    assert "Strategy B remains the formal low-risk target" in vt_text
 
     print("official specification lint passed")
     return 0
