@@ -13,12 +13,21 @@
 - cross-backend endpoint mismatch: `0`
 - exact certificate count: `344`
 - parseval count: `344`
+- total endpoint count: `50540`
 - duplicate row_id: `0`
 - duplicate (r,u,v): `0`
 - missing row: `0`
 - extra row: `0`
 - partial/orphan artifacts: `0`
 - way-1 numerator mismatch: `0`
+- selector elapsed wall: `1.67`
 - cpp_int column wall sum: `7.8911591290000045`
 - int128 column wall sum: `5.151829981`
-- peak RSS bytes: `22151168`
+- total column wall sum: `13.042989110000004`
+- orchestrator elapsed wall: `56.44`
+- comparison elapsed wall: `1.39`
+- summarizer elapsed wall: `0.45`
+- total pilot elapsed wall: `59.95`
+- peak process RSS bytes: `22151168`
+- peak total concurrent RSS bytes: `22151168`
+- repeat subset CV: `cpp_int=0.009310848437683723, int128_checked=0.011767148987410086`

@@ -1,5 +1,5 @@
 {
-  "comparison_elapsed_wall": 1.2937061930133495,
+  "comparison_elapsed_wall": 1.39,
   "cpp_int_column_wall_sum": 7.8911591290000045,
   "cpp_int_completed_columns": 344,
   "cross_backend_certificate_mismatch": 0,
@@ -25,7 +25,7 @@
   "int128_completed_columns": 344,
   "jobs": 1,
   "missing_row": 0,
-  "orchestrator_elapsed_wall": 56.06883537900285,
+  "orchestrator_elapsed_wall": 56.44,
   "parseval_count": 344,
   "partial_or_orphan_artifact": 0,
   "peak_process_rss": 22151168,
@@ -37,12 +37,34 @@
   },
   "schema": "exact-way2-pilot-summary-v2",
   "selected_columns": 344,
-  "selector_elapsed_wall": 0.0,
+  "selector_elapsed_wall": 1.67,
   "status": "PILOT_PASS_READY_FOR_FULL_EXACT_WAY2_REVIEW",
-  "summarizer_elapsed_wall": 0.055747499005519785,
+  "summarizer_elapsed_wall": 0.45,
   "total_column_wall_sum": 13.042989110000004,
   "total_endpoint_count": 50540,
-  "total_pilot_elapsed_wall": 57.41828907102172,
+  "total_pilot_elapsed_wall": 59.95,
   "way1_spotcheck_numerator_mismatch": 0,
-  "way1_spotcheck_rows": 18
+  "way1_spotcheck_rows": 18,
+  "repeat_subset": {
+    "cpp_int": {
+      "runs": [
+        1.9029746009910014,
+        1.8648266829986824,
+        1.901267832989106
+      ],
+      "cv": 0.009310848437683723,
+      "digest_equal": true,
+      "endpoint_equal": true
+    },
+    "int128_checked": {
+      "runs": [
+        1.5374339940026402,
+        1.502864125999622,
+        1.4971471380122239
+      ],
+      "cv": 0.011767148987410086,
+      "digest_equal": true,
+      "endpoint_equal": true
+    }
+  }
 }
