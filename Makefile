@@ -11,6 +11,7 @@ EXACT_DYADIC_OBJS := $(BUILD_DIR)/sbox_corr.o $(BUILD_DIR)/linear_layer.o \
 .PHONY: all clean test smoke
 
 all: estimator estimator_exact exact_oracle exact_batch_mt exact_batch_current exact_batch_grouped_u exact_batch_grouped_uv reduce_exact_parts search_candidates candidate_miner_approx enumerate_r1_positive score test_core test_linear_mask_basis test_exact_cartesian test_exact_dyadic test_exact_batch_grouping
+all: recompute_frozen_exact
 
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
@@ -22,6 +23,9 @@ estimator: apps/estimator.cpp $(APPROX_OBJS)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $^
 
 estimator_exact: apps/estimator_exact.cpp $(EXACT_DYADIC_OBJS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $^
+
+recompute_frozen_exact: apps/recompute_frozen_exact.cpp $(EXACT_DYADIC_OBJS)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $^
 
 exact_oracle: apps/exact_oracle.cpp $(EXACT_OBJS)
@@ -69,7 +73,7 @@ test_exact_dyadic: tests/test_exact_dyadic.cpp $(EXACT_DYADIC_OBJS)
 test_exact_batch_grouping: tests/test_exact_batch_grouping.cpp $(EXACT_OBJS)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $^
 
-test: test_core test_linear_mask_basis test_exact_cartesian test_exact_dyadic test_exact_batch_grouping estimator_exact exact_batch_current exact_batch_grouped_u exact_batch_grouped_uv score
+test: test_core test_linear_mask_basis test_exact_cartesian test_exact_dyadic test_exact_batch_grouping estimator_exact recompute_frozen_exact exact_batch_current exact_batch_grouped_u exact_batch_grouped_uv score
 	@test "$$(sha256sum submit.txt | cut -d' ' -f1)" = "7b0f638ba8678462ee8d6c12bc0c5b89d7354b4a095b31330f3ba495acfe2e2e"
 	./test_core
 	./test_linear_mask_basis
@@ -94,6 +98,12 @@ test: test_core test_linear_mask_basis test_exact_cartesian test_exact_dyadic te
 	python3 -X utf8 tests/test_walsh_spectrum.py
 	python3 -X utf8 tests/test_dyadic_bounds.py
 	python3 -X utf8 tests/test_exact_shard_reduction.py
+	python3 -X utf8 tests/test_exact_decimal_parser.py
+	python3 -X utf8 tests/test_exact_selector.py
+	python3 -X utf8 tests/test_frozen_exact_pipeline.py
+	python3 -X utf8 tests/test_exact_resume.py
+	python3 -X utf8 tests/test_exact_artifact_gate.py
+	python3 -X utf8 tests/test_committed_exact_pilot_artifacts.py
 	python3 -X utf8 tests/test_way1_benchmark_protocol.py
 	python3 -X utf8 tests/test_way1_query_families.py
 	python3 -X utf8 tests/test_way1_stage_a0.py
@@ -112,5 +122,5 @@ smoke: all
 
 clean:
 	rm -rf $(BUILD_DIR)
-	rm -f estimator estimator_exact exact_oracle exact_batch_mt exact_batch_current exact_batch_grouped_u exact_batch_grouped_uv reduce_exact_parts search_candidates candidate_miner_approx enumerate_r1_positive score test_core test_linear_mask_basis test_exact_cartesian test_exact_dyadic test_exact_batch_grouping
+	rm -f estimator estimator_exact recompute_frozen_exact exact_oracle exact_batch_mt exact_batch_current exact_batch_grouped_u exact_batch_grouped_uv reduce_exact_parts search_candidates candidate_miner_approx enumerate_r1_positive score test_core test_linear_mask_basis test_exact_cartesian test_exact_dyadic test_exact_batch_grouping
 	rm -f candidates.csv candidates_approx.csv exact_verified.csv exact_part_*.csv smoke_*.csv submit_r1_full.txt

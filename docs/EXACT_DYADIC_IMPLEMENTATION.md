@@ -59,11 +59,50 @@ every multiplication and addition with compiler overflow intrinsics.
 
 A successful result separately records:
 
+- `completed_normally`;
 - `exact_cartesian_complete`;
 - `no_state_pruning`;
+- `exact_integer_backend`;
+- `no_overflow`;
+- `all_rounds_completed`;
+- `completed_rounds`;
 - `certified_no_truncation`;
 - `certified_exact_dyadic`;
 - `parseval_pass`.
+
+The certification fields are defined as
+
+\[
+\texttt{certified\_no\_truncation}
+=
+\texttt{exact\_cartesian\_complete}
+\land
+\texttt{no\_state\_pruning}
+\land
+\texttt{all\_rounds\_completed},
+\]
+
+\[
+\texttt{certified\_exact\_dyadic}
+=
+\texttt{completed\_normally}
+\land
+\texttt{exact\_cartesian\_complete}
+\land
+\texttt{no\_state\_pruning}
+\land
+\texttt{exact\_integer\_backend}
+\land
+\texttt{no\_overflow}
+\land
+\texttt{all\_rounds\_completed},
+\]
+
+\[
+\texttt{parseval\_pass}
+=
+\bigl(\sum_v N_r[v]^2 = 2^{32r}\bigr).
+\]
 
 The complete final column is checked with
 
@@ -71,9 +110,13 @@ The complete final column is checked with
 \sum_v N_r[v]^2=2^{32r}.
 \]
 
-Cancellation, a configured state or transition limit, incomplete Cartesian
-enumeration, branch-table inconsistency, checked overflow, or Parseval failure
-clears the partial state map and refuses exact certification.
+`parseval_pass` is an independent strong audit condition. It is not folded into
+`certified_exact_dyadic`, and release gates must require both fields to be
+`true`. Cancellation, a configured state or transition limit, incomplete
+Cartesian enumeration, branch-table inconsistency, checked overflow, or any
+other abnormal early exit clears the partial state map, sets both
+certification fields to `false`, and refuses publication of a certified exact
+artifact.
 
 When `--out` is supplied, `estimator_exact` serializes to a temporary file and
 renames it only after the complete JSON artifact is written. A rejected or

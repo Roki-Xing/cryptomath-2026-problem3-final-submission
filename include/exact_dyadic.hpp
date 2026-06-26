@@ -39,6 +39,10 @@ struct ExactDyadicResult {
     bool completed_normally = false;
     bool exact_cartesian_complete = false;
     bool no_state_pruning = false;
+    bool exact_integer_backend = false;
+    bool no_overflow = false;
+    bool all_rounds_completed = false;
+    int completed_rounds = 0;
     bool certified_no_truncation = false;
     bool certified_exact_dyadic = false;
     bool parseval_pass = false;
@@ -46,6 +50,7 @@ struct ExactDyadicResult {
 };
 
 void exact_accumulate(std::map<Mask, cpp_int>& accumulator, Mask mask, const cpp_int& delta);
+void finalize_exact_dyadic_certification(ExactDyadicResult& result);
 ExactDyadicResult compute_exact_dyadic(const ExactDyadicOptions& options);
 cpp_int to_way1_numerator(const cpp_int& dyadic_numerator, int rounds);
 std::string exact_numeric_backend_name(ExactNumericBackend backend);

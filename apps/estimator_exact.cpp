@@ -304,9 +304,16 @@ std::string make_artifact(std::uint64_t row_id,
            << "  \"value_fraction\": \"" << numerator << "/2^" << result.denominator_exp2
            << "\",\n"
            << "  \"numeric_backend\": \"" << exact_numeric_backend_name(backend) << "\",\n"
+           << "  \"completed_normally\": " << bool_json(result.completed_normally) << ",\n"
            << "  \"exact_cartesian_complete\": " << bool_json(result.exact_cartesian_complete)
            << ",\n"
            << "  \"no_state_pruning\": " << bool_json(result.no_state_pruning) << ",\n"
+           << "  \"exact_integer_backend\": " << bool_json(result.exact_integer_backend)
+           << ",\n"
+           << "  \"no_overflow\": " << bool_json(result.no_overflow) << ",\n"
+           << "  \"all_rounds_completed\": " << bool_json(result.all_rounds_completed)
+           << ",\n"
+           << "  \"completed_rounds\": " << result.completed_rounds << ",\n"
            << "  \"certified_no_truncation\": "
            << bool_json(result.certified_no_truncation) << ",\n"
            << "  \"certified_exact_dyadic\": "
@@ -317,6 +324,7 @@ std::string make_artifact(std::uint64_t row_id,
            << "  \"expected_sum_squares\": \"" << result.expected_sum_squares << "\",\n"
            << "  \"expanded_states\": " << result.expanded_states << ",\n"
            << "  \"generated_transitions\": " << result.generated_transitions << ",\n"
+           << "  \"failure_reason\": \"" << result.failure_reason << "\",\n"
            << "  \"source_commit\": \"" << commit << "\",\n"
            << "  \"input_sha256\": \"" << input_sha << "\",\n"
            << "  \"command_sha256\": \"" << command_sha << "\"\n"
@@ -345,7 +353,7 @@ void write_atomic(const std::string& path, const std::string& content) {
 
 void usage(const char* program) {
     std::cerr << "Usage: " << program
-              << " --r R --u MASK --v MASK [--backend cpp_int|int128]"
+              << " --r R --u MASK --v MASK [--backend cpp_int|int128|int128_checked]"
                  " [--row-id N] [--max-states N] [--max-transitions N] [--out FILE]\n";
 }
 
@@ -384,7 +392,8 @@ int main(int argc, char** argv) {
             } else if (option == "--backend") {
                 const std::string backend = require_arg(i, argc, argv, option);
                 if (backend == "cpp_int") options.backend = ExactNumericBackend::CppInt;
-                else if (backend == "int128") options.backend = ExactNumericBackend::Int128Checked;
+                else if (backend == "int128" || backend == "int128_checked")
+                    options.backend = ExactNumericBackend::Int128Checked;
                 else throw std::invalid_argument("unknown exact backend: " + backend);
             } else if (option == "--row-id") {
                 row_id = parse_u64(require_arg(i, argc, argv, option));
