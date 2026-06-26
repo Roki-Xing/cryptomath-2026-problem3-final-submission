@@ -1,5 +1,5 @@
 {
-  "artifact_committed_in_commit": "bb65c5ef1683a3ba015a333c0503bb430fc4d889",
+  "artifact_committed_in_commit": "bb65c5e0cde21c4ed924961d6ec40651d3727a4e",
   "category_counts": {
     "EXCLUDE_FROM_SUBMISSION_PACKAGE": 2,
     "PILOT_RAW_EVIDENCE": 2064,
@@ -60,7 +60,7 @@
     {
       "category": "REQUIRED_SUMMARY",
       "path": "PROVENANCE.json",
-      "sha256": "bacfb743414649a6fc17b6860ab8dbe1f584f9078fdff3528885da48390d04c3"
+      "sha256": "109abf876409fafcdb42e5b3da7f0c625facc96d49ded8e3927f67e6ca058b8b"
     },
     {
       "category": "REQUIRED_SUMMARY",
