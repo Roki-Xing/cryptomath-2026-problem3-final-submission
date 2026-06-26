@@ -1,0 +1,24 @@
+# Exact Way-2 Pilot Summary
+
+- status: `PILOT_PASS_READY_FOR_FULL_EXACT_WAY2_REVIEW`
+- selected columns: `344`
+- round distribution: `{'r1': 120, 'r2': 128, 'r3': 96}`
+- cpp_int completed: `344`
+- int128 completed: `344`
+- EXACT_EQUAL: `50540`
+- NOT_EQUAL: `0`
+- PARSE_ERROR: `0`
+- MISSING_ENDPOINT: `0`
+- cross-backend digest mismatch: `0`
+- cross-backend endpoint mismatch: `0`
+- exact certificate count: `344`
+- parseval count: `344`
+- duplicate row_id: `0`
+- duplicate (r,u,v): `0`
+- missing row: `0`
+- extra row: `0`
+- partial/orphan artifacts: `0`
+- way-1 numerator mismatch: `0`
+- cpp_int column wall sum: `7.8911591290000045`
+- int128 column wall sum: `5.151829981`
+- peak RSS bytes: `22151168`

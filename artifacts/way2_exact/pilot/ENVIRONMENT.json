@@ -1,0 +1,23 @@
+{
+  "artifact_generated_at_commit": "fc974821bd70ff6dd77cd0cc716784343e3d05a9",
+  "artifact_root": "artifacts/way2_exact/pilot",
+  "backend_mode": "both",
+  "binary_build_commit": "fc974821bd70ff6dd77cd0cc716784343e3d05a9",
+  "binary_path": "recompute_frozen_exact",
+  "binary_sha256": "649f60b87db680588d306bfe8db2df6da887a43d5844d41e0f7b8013b1f9d7c6",
+  "command_sha256": "eaaea3ed673d1cd6605c39e8c4c6fbfc2edef200a03aaadc657480ff3d3501e0",
+  "final_queries_sha256": "44cef0f572d0201aed2e2d42e21deb6a5b8259743bf0a29b0665a332fbfdd93e",
+  "final_ru_sha256": "941879db58f4ad63b3fcc45b27a04713215f8c7920c77ad8a76015795ec78246",
+  "git_status_porcelain_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "jobs": 1,
+  "provenance_generated_at_utc": "2026-06-26T03:13:13.623213Z",
+  "queries_path": "experiments/frozen/final_queries.csv",
+  "runner_commit": "fc974821bd70ff6dd77cd0cc716784343e3d05a9",
+  "selection_path": "artifacts/way2_exact/pilot/PILOT_SELECTION.csv",
+  "selection_sha256": "73b89eb62070546f87c8e9fa05b377d4de73468338d273abc40b1020cdab79ce",
+  "selector_commit": "fc974821bd70ff6dd77cd0cc716784343e3d05a9",
+  "source_checkout_commit": "fc974821bd70ff6dd77cd0cc716784343e3d05a9",
+  "source_tree_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "source_tree_dirty": false,
+  "source_tree_sha": "50cd9031e7262a6e2a21be618ef66a0d608abd17"
+}
