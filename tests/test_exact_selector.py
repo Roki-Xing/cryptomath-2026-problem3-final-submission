@@ -1,10 +1,12 @@
 import csv
+import hashlib
 import json
 import subprocess
 import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+EXPECTED_SELECTION_SHA = "73b89eb62070546f87c8e9fa05b377d4de73468338d273abc40b1020cdab79ce"
 
 
 def run_selector(out_dir: Path) -> None:
@@ -67,11 +69,14 @@ def main() -> None:
         payload = json.loads((out_a / "PILOT_SELECTION.json").read_text(encoding="utf-8"))
         assert payload["selected_columns"] == 344
         assert payload["round_distribution"] == {"r1": 120, "r2": 128, "r3": 96}
-        assert payload["selection_payload_sha256"]
+        assert payload["selection_payload_sha256"] == EXPECTED_SELECTION_SHA
+        assert hashlib.sha256((out_a / "PILOT_SELECTION.csv").read_bytes()).hexdigest() == EXPECTED_SELECTION_SHA
 
         source = (ROOT / "experiments/exact_way2/select_pilot.py").read_text(encoding="utf-8")
         assert "submit_audit.csv" not in source
         assert "exact_spotcheck.csv" not in source
+        for forbidden in ("frozen_way2_ve", "submitted_vt_field_snapshot", "future_way1_numerator"):
+            assert forbidden not in source
 
         bad_audit = tmp / "bad_submit_audit.csv"
         with (ROOT / "experiments/submit_audit.csv").open(newline="", encoding="utf-8") as src, bad_audit.open(

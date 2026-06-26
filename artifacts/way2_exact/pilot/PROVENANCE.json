@@ -3,7 +3,7 @@
   "artifact_generated_at_commit": "eb0056138090a9397513335517774c44bf01e313",
   "artifact_root": "artifacts/way2_exact/pilot",
   "binary_build_commit": "eb0056138090a9397513335517774c44bf01e313",
-  "binary_path": "/tmp/exact-way2-build1/recompute_frozen_exact",
+  "binary_path": "recompute_frozen_exact",
   "binary_sha256": "649f60b87db680588d306bfe8db2df6da887a43d5844d41e0f7b8013b1f9d7c6",
   "build_command": "make recompute_frozen_exact",
   "command_sha256": "341c07e17c6cec48ad6722719956603cdf55c8cafcf4213f7911c8732e125fb9",
@@ -12,6 +12,13 @@
   "compiler_path": "/usr/bin/x86_64-linux-gnu-g++-13",
   "compiler_version": "x86_64-linux-gnu-g++-13 (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
   "cpp_int_column_wall_sum": 7.716504444000004,
+  "diagnostic_environment": {
+    "observed_artifact_root": "artifacts/way2_exact/pilot",
+    "observed_binary_path": "/tmp/exact-way2-build1/recompute_frozen_exact",
+    "observed_queries_path": "experiments/frozen/final_queries.csv",
+    "observed_runner_command": "python3 -X utf8 experiments/exact_way2/run_frozen_exact.py --selection artifacts/way2_exact/pilot/PILOT_SELECTION.csv --backend both --jobs 1 --resume --artifact-root artifacts/way2_exact/pilot --binary /tmp/exact-way2-build1/recompute_frozen_exact --queries experiments/frozen/final_queries.csv",
+    "observed_selection_path": "artifacts/way2_exact/pilot/PILOT_SELECTION.csv"
+  },
   "final_queries_sha256": "44cef0f572d0201aed2e2d42e21deb6a5b8259743bf0a29b0665a332fbfdd93e",
   "final_ru_sha256": "941879db58f4ad63b3fcc45b27a04713215f8c7920c77ad8a76015795ec78246",
   "full_4760_run_started": false,

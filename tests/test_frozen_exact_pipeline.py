@@ -245,7 +245,7 @@ def main() -> None:
         manifest = json.loads((artifact_root / "MANIFEST.json").read_text(encoding="utf-8"))
         assert all(entry["path"] not in {"MANIFEST.json", "SHA256SUMS.txt"} for entry in manifest["files"])
         subprocess.run(
-            ["sha256sum", "-c", "SHA256SUMS.txt"],
+            ["sha256sum", "-c", str(artifact_root / "SHA256SUMS.txt")],
             cwd=artifact_root,
             check=True,
             stdout=subprocess.PIPE,

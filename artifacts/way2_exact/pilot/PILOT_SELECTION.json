@@ -4142,6 +4142,6 @@
   ],
   "selection_payload_sha256": "73b89eb62070546f87c8e9fa05b377d4de73468338d273abc40b1020cdab79ce",
   "selector_command": "python3 -X utf8 experiments/exact_way2/select_pilot.py --final-ru experiments/frozen/final_ru.csv --final-queries experiments/frozen/final_queries.csv --complexity-input <ARTIFACT_ROOT>/COMPLEXITY_INPUT.csv --spotcheck-coordinates <ARTIFACT_ROOT>/SPOTCHECK_COORDINATES.csv --out <ARTIFACT_ROOT>",
-  "selector_source_commit": "eb0056138090a9397513335517774c44bf01e313",
+  "selector_source_commit": "6261edd252d9cf21f2522e7045877e45665a7448",
   "spotcheck_coordinates_sha256": "54b9a81d397f9b8023eee0569c48e2f68e160c71845339574075530df1761ca4"
 }

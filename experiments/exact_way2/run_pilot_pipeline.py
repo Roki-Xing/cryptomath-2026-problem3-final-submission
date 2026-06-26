@@ -11,7 +11,7 @@ import subprocess
 import time
 from pathlib import Path
 
-from common import bundle_output_sha, nearest_rank_index, population_cv, read_json, write_csv, write_json
+from common import bundle_output_sha, nearest_rank_index, population_cv, read_json, repo_relative, write_csv, write_json
 
 
 def run_cmd(args: list[str], *, cwd: Path) -> None:
@@ -75,6 +75,16 @@ def combined_bundle_sha(root: Path) -> tuple[str, str]:
     )
 
 
+def binary_logical_path(binary: str) -> str:
+    path = Path(binary)
+    if path.is_absolute():
+        try:
+            return repo_relative(path)
+        except ValueError:
+            return path.name
+    return binary
+
+
 def run_repeat_subset(root: Path, selection_rows: list[dict[str, str]], binary: str, jobs: int) -> dict[str, object]:
     subset_rows = build_repeat_subset_rows(selection_rows)
     subset_csv = root / "repeat_subset_selection.csv"
@@ -116,7 +126,7 @@ def run_repeat_subset(root: Path, selection_rows: list[dict[str, str]], binary: 
                     "--binary",
                     binary,
                     "--binary-logical-path",
-                    binary,
+                    binary_logical_path(binary),
                 ],
                 cwd=Path.cwd(),
             )
@@ -229,7 +239,7 @@ def main() -> int:
             "--binary",
             args.binary,
             "--binary-logical-path",
-            args.binary,
+            binary_logical_path(args.binary),
             "--queries",
             args.final_queries,
         ],

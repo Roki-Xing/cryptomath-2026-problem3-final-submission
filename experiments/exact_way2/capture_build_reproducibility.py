@@ -94,6 +94,14 @@ def main() -> int:
     source_commit = current_source_commit(cwd=root)
     source_tree_sha = current_source_tree_sha(cwd=root)
     subprocess.run(["make", "clean"], cwd=root, check=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    planned = subprocess.run(
+        ["make", "-n", "recompute_frozen_exact"],
+        cwd=root,
+        check=True,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
     build = subprocess.run(
         ["make", "recompute_frozen_exact"],
         cwd=root,
@@ -103,7 +111,7 @@ def main() -> int:
         stderr=subprocess.STDOUT,
     )
     build_end = now_utc_microseconds()
-    commands = [line for line in build.stdout.splitlines() if line.strip()]
+    commands = [line for line in planned.stdout.splitlines() if line.strip()]
     object_records = []
     link_command = ""
     for line in commands:
@@ -119,6 +127,10 @@ def main() -> int:
             )
         if LINK_RE.search(line):
             link_command = line.strip()
+    if not object_records:
+        raise SystemExit("failed to capture object build commands from make -n recompute_frozen_exact")
+    if not link_command:
+        raise SystemExit("failed to capture link command from make -n recompute_frozen_exact")
     binary_path = root / "recompute_frozen_exact"
     payload = {
         "schema": BUILD_REPRODUCIBILITY_SCHEMA,

@@ -4,6 +4,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 ARTIFACT_ROOT = ROOT / "artifacts" / "way2_exact" / "pilot"
+EXPECTED_BINARY_SHA = "649f60b87db680588d306bfe8db2df6da887a43d5844d41e0f7b8013b1f9d7c6"
 
 
 def main() -> None:
@@ -34,16 +35,36 @@ def main() -> None:
     assert environment["source_tree_dirty"] is False
     assert not str(provenance["artifact_root"]).startswith("/home/")
     assert not str(environment["artifact_root"]).startswith("/home/")
+    assert not str(provenance["binary_path"]).startswith("/")
+    assert not str(environment["binary_path"]).startswith("/")
+    assert not str(environment["selection_path"]).startswith("/")
+    assert not str(environment["queries_path"]).startswith("/")
     assert provenance["artifact_committed_in_commit"]
     assert build_repro["binary_sha256_match"] is True
+    assert build_repro["first_clean_build"]["binary_sha256"] == EXPECTED_BINARY_SHA
+    assert build_repro["second_clean_build"]["binary_sha256"] == EXPECTED_BINARY_SHA
+    assert build_repro["first_clean_build"]["objects"]
+    assert build_repro["second_clean_build"]["objects"]
+    assert build_repro["first_clean_build"]["link_command"]
+    assert build_repro["second_clean_build"]["link_command"]
     assert manifest["category_counts"]["PILOT_RAW_EVIDENCE"] > 0
     assert all(entry["path"] not in {"MANIFEST.json", "SHA256SUMS.txt"} for entry in manifest["files"])
+    assert all("size" in entry and int(entry["size"]) >= 0 for entry in manifest["files"])
+    category_counts: dict[str, int] = {}
+    for entry in manifest["files"]:
+        path = ARTIFACT_ROOT / entry["path"]
+        assert path.exists()
+        assert path.stat().st_size == int(entry["size"])
+        category_counts[entry["category"]] = category_counts.get(entry["category"], 0) + 1
+    assert category_counts == manifest["category_counts"]
     assert compare["cross_backend_canonical_column_digest_mismatch"] == 0
     assert compare["cross_backend_endpoint_numerator_mismatch"] == 0
+    sha_lines = (ARTIFACT_ROOT / "SHA256SUMS.txt").read_text(encoding="utf-8").splitlines()
+    assert any(line.endswith("  ./artifacts/way2_exact/pilot/MANIFEST.json") for line in sha_lines)
 
     subprocess.run(
-        ["sha256sum", "-c", "SHA256SUMS.txt"],
-        cwd=ARTIFACT_ROOT,
+        ["sha256sum", "-c", str(ARTIFACT_ROOT / "SHA256SUMS.txt")],
+        cwd=ROOT,
         check=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,

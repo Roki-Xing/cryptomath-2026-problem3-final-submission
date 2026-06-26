@@ -100,6 +100,7 @@ def main() -> None:
         )
         assert completed.returncode != 0
         assert "partial or staging artifacts present" in completed.stderr
+        assert not (artifact_root / "completed").exists()
     print("exact artifact gate tests passed")
 
 

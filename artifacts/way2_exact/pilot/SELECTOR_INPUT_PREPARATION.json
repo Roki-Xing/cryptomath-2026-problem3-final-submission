@@ -4,7 +4,7 @@
   "complexity_input_sha256": "05359f7702df6f4b01ceff69bdd86baefa751eb741e3be1c5ff44b80b33ba310",
   "final_ru_sha256": "941879db58f4ad63b3fcc45b27a04713215f8c7920c77ad8a76015795ec78246",
   "schema": "exact-way2-pilot-selection-v2",
-  "source_commit": "eb0056138090a9397513335517774c44bf01e313",
+  "source_commit": "6261edd252d9cf21f2522e7045877e45665a7448",
   "spotcheck_coordinates_sha256": "54b9a81d397f9b8023eee0569c48e2f68e160c71845339574075530df1761ca4",
   "spotcheck_queries_sha256": "9f802650aa67765f3ead406c5ed8000aa4f0461f966de952c7021c8b4e3367ff"
 }

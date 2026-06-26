@@ -20,6 +20,9 @@ from common import (
     write_text,
 )
 
+COMPLEXITY_FIELDNAMES = ["r", "u", "generated_transitions", "expanded_states"]
+SPOTCHECK_FIELDNAMES = ["r", "u", "v"]
+
 
 def load_complexity_rows(audit_path: Path, allowed_keys: set[tuple[int, str]]) -> list[dict[str, object]]:
     per_key: dict[tuple[int, str], dict[str, object]] = {}
@@ -94,13 +97,13 @@ def main() -> int:
     complexity_path = out_dir / "COMPLEXITY_INPUT.csv"
     write_csv(
         complexity_path,
-        ["r", "u", "generated_transitions", "expanded_states"],
+        COMPLEXITY_FIELDNAMES,
         complexity_rows,
     )
 
     spotcheck_rows = load_spotcheck_rows(spotcheck_queries_path)
     spotcheck_path = out_dir / "SPOTCHECK_COORDINATES.csv"
-    write_csv(spotcheck_path, ["r", "u", "v"], spotcheck_rows)
+    write_csv(spotcheck_path, SPOTCHECK_FIELDNAMES, spotcheck_rows)
 
     command = (
         "python3 -X utf8 experiments/exact_way2/prepare_selector_inputs.py "

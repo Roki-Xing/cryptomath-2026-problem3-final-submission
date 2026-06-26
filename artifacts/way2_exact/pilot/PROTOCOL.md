@@ -1,7 +1,7 @@
 # Exact Way-2 Pilot Protocol
 
 - schema: `exact-way2-pilot-selection-v2`
-- selector source commit: `eb0056138090a9397513335517774c44bf01e313`
+- selector source commit: `6261edd252d9cf21f2522e7045877e45665a7448`
 - selector command: `python3 -X utf8 experiments/exact_way2/select_pilot.py --final-ru experiments/frozen/final_ru.csv --final-queries experiments/frozen/final_queries.csv --complexity-input <ARTIFACT_ROOT>/COMPLEXITY_INPUT.csv --spotcheck-coordinates <ARTIFACT_ROOT>/SPOTCHECK_COORDINATES.csv --out <ARTIFACT_ROOT>`
 - final_ru input: `experiments/frozen/final_ru.csv`
 - final_queries input: `experiments/frozen/final_queries.csv`

@@ -29,11 +29,16 @@ from common import (
     write_text,
 )
 
+COMPLEXITY_INPUT_FIELDNAMES = ["r", "u", "generated_transitions", "expanded_states"]
+SPOTCHECK_INPUT_FIELDNAMES = ["r", "u", "v"]
+
 
 def load_complexity_rows(path: Path) -> list[dict[str, object]]:
     rows: list[dict[str, object]] = []
     with path.open(newline="", encoding="utf-8") as handle:
         reader = csv.DictReader(handle)
+        if list(reader.fieldnames or []) != COMPLEXITY_INPUT_FIELDNAMES:
+            raise SystemExit("COMPLEXITY_INPUT.csv must contain only r,u,generated_transitions,expanded_states")
         for row in reader:
             rows.append(
                 {
@@ -51,6 +56,8 @@ def load_spotcheck_coordinate_rows(path: Path) -> list[dict[str, object]]:
     rows: list[dict[str, object]] = []
     with path.open(newline="", encoding="utf-8") as handle:
         reader = csv.DictReader(handle)
+        if list(reader.fieldnames or []) != SPOTCHECK_INPUT_FIELDNAMES:
+            raise SystemExit("SPOTCHECK_COORDINATES.csv must contain only r,u,v")
         for row in reader:
             rows.append({"r": int(row["r"]), "u": row["u"].lower(), "v": row["v"].lower()})
     rows.sort(key=lambda row: (int(row["r"]), str(row["u"]), str(row["v"])))
