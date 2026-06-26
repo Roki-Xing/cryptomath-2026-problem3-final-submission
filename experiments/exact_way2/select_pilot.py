@@ -9,6 +9,7 @@ from collections import defaultdict
 from pathlib import Path
 
 from common import (
+    PILOT_HASH_PREFIX,
     ROOT,
     SELECTION_SCHEMA,
     count_active_nibbles,
@@ -17,46 +18,41 @@ from common import (
     exact_band,
     load_final_queries,
     load_final_ru,
+    nearest_rank_index,
     percentile_rank,
     repo_relative,
     sha256_file,
     sha256_text,
+    upper_median_index,
     write_csv,
     write_json,
+    write_text,
 )
 
 
-def load_complexity_rows() -> list[dict[str, object]]:
-    source = ROOT / "experiments/submit_audit.csv"
-    grouped: dict[tuple[int, str], dict[str, object]] = {}
-    with source.open(newline="", encoding="utf-8") as handle:
-        reader = csv.DictReader(handle)
-        for row in reader:
-            key = (int(row["r"]), row["u"].lower())
-            if key in grouped:
-                continue
-            grouped[key] = {
-                "r": key[0],
-                "u": key[1],
-                "generated_transitions": int(row["generated_transitions"]),
-                "expanded_states": int(row["expanded_states"]),
-            }
-    return [grouped[key] for key in sorted(grouped)]
-
-
-def load_spotcheck_coordinate_rows() -> list[dict[str, object]]:
-    source = ROOT / "experiments/spotcheck/exact_spotcheck.csv"
+def load_complexity_rows(path: Path) -> list[dict[str, object]]:
     rows: list[dict[str, object]] = []
-    with source.open(newline="", encoding="utf-8") as handle:
+    with path.open(newline="", encoding="utf-8") as handle:
         reader = csv.DictReader(handle)
         for row in reader:
             rows.append(
                 {
                     "r": int(row["r"]),
                     "u": row["u"].lower(),
-                    "v": row["v"].lower(),
+                    "generated_transitions": int(row["generated_transitions"]),
+                    "expanded_states": int(row["expanded_states"]),
                 }
             )
+    rows.sort(key=lambda row: (int(row["r"]), str(row["u"])))
+    return rows
+
+
+def load_spotcheck_coordinate_rows(path: Path) -> list[dict[str, object]]:
+    rows: list[dict[str, object]] = []
+    with path.open(newline="", encoding="utf-8") as handle:
+        reader = csv.DictReader(handle)
+        for row in reader:
+            rows.append({"r": int(row["r"]), "u": row["u"].lower(), "v": row["v"].lower()})
     rows.sort(key=lambda row: (int(row["r"]), str(row["u"]), str(row["v"])))
     return rows
 
@@ -112,10 +108,23 @@ def largest_remainder_allocate(groups: dict[str, list[dict[str, object]]], targe
     return allocation
 
 
+def pick_required_r2_u(rows: list[dict[str, object]], r2_spotcheck_u: set[str]) -> set[str]:
+    ordered = sorted(rows, key=lambda row: (int(row["generated_transitions"]), str(row["u"])))
+    count = len(ordered)
+    required = set(r2_spotcheck_u)
+    required.add(str(ordered[0]["u"]))
+    required.add(str(ordered[upper_median_index(count)]["u"]))
+    required.add(str(ordered[nearest_rank_index(count, 95.0)]["u"]))
+    required.add(str(ordered[-1]["u"]))
+    return required
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--final-ru", required=True)
     parser.add_argument("--final-queries", required=True)
+    parser.add_argument("--complexity-input", required=True)
+    parser.add_argument("--spotcheck-coordinates", required=True)
     parser.add_argument("--out", required=True)
     args = parser.parse_args()
 
@@ -123,26 +132,22 @@ def main() -> int:
     out_dir.mkdir(parents=True, exist_ok=True)
     final_ru_path = Path(args.final_ru)
     final_queries_path = Path(args.final_queries)
+    complexity_input_path = Path(args.complexity_input)
+    spotcheck_input_path = Path(args.spotcheck_coordinates)
     source_commit = current_source_commit()
     selector_command = (
         "python3 -X utf8 experiments/exact_way2/select_pilot.py "
         f"--final-ru {repo_relative(final_ru_path)} "
         f"--final-queries {repo_relative(final_queries_path)} "
+        "--complexity-input <ARTIFACT_ROOT>/COMPLEXITY_INPUT.csv "
+        "--spotcheck-coordinates <ARTIFACT_ROOT>/SPOTCHECK_COORDINATES.csv "
         "--out <ARTIFACT_ROOT>"
     )
 
-    complexity_rows = load_complexity_rows()
-    complexity_input_path = out_dir / "COMPLEXITY_INPUT.csv"
-    write_csv(
-        complexity_input_path,
-        ["r", "u", "generated_transitions", "expanded_states"],
-        complexity_rows,
-    )
+    complexity_rows = load_complexity_rows(complexity_input_path)
     complexity = {(int(row["r"]), str(row["u"])): row for row in complexity_rows}
 
-    spotcheck_rows = load_spotcheck_coordinate_rows()
-    spotcheck_input_path = out_dir / "SPOTCHECK_COORDINATES.csv"
-    write_csv(spotcheck_input_path, ["r", "u", "v"], spotcheck_rows)
+    spotcheck_rows = load_spotcheck_coordinate_rows(spotcheck_input_path)
     r2_spotcheck_u = load_r2_spotcheck_u(spotcheck_rows)
 
     final_ru = load_final_ru(final_ru_path)
@@ -169,15 +174,7 @@ def main() -> int:
         row["complexity_band"] = exact_band(float(row["complexity_percentile"]))
 
     r2_by_u = {str(row["u"]): row for row in r2_rows}
-    required_u = set(r2_spotcheck_u)
-    order_by_complexity = sorted(r2_rows, key=lambda row: (int(row["generated_transitions"]), str(row["u"])))
-    required_u.add(str(order_by_complexity[0]["u"]))
-    required_u.add(str(order_by_complexity[len(order_by_complexity) // 2]["u"]))
-    required_u.add(
-        str(order_by_complexity[min(len(order_by_complexity) - 1, int(len(order_by_complexity) * 0.95))]["u"])
-    )
-    required_u.add(str(order_by_complexity[-1]["u"]))
-
+    required_u = pick_required_r2_u(r2_rows, r2_spotcheck_u)
     for u in sorted(required_u):
         row = dict(r2_by_u[u])
         row["selection_reason"] = "required_anchor"
@@ -202,8 +199,15 @@ def main() -> int:
             selected_keys.add((2, str(chosen["u"])))
 
     selected.sort(key=lambda row: (int(row["r"]), str(row["u"])))
-    if len(selected) != 344:
-        raise SystemExit(f"pilot selection must contain 344 columns, got {len(selected)}")
+    distribution = {
+        "r1": sum(1 for row in selected if int(row["r"]) == 1),
+        "r2": sum(1 for row in selected if int(row["r"]) == 2),
+        "r3": sum(1 for row in selected if int(row["r"]) == 3),
+    }
+    if len(selected) != 344 or distribution != {"r1": 120, "r2": 128, "r3": 96}:
+        raise SystemExit(
+            "pilot selection must contain 344 columns with distribution r1/r2/r3 = 120/128/96"
+        )
 
     fieldnames = [
         "r",
@@ -217,19 +221,17 @@ def main() -> int:
         "query_count",
         "deterministic_hash",
     ]
-    write_csv(out_dir / "PILOT_SELECTION.csv", fieldnames, selected)
-    selection_payload_sha256 = sha256_file(out_dir / "PILOT_SELECTION.csv")
+    selection_csv_path = out_dir / "PILOT_SELECTION.csv"
+    write_csv(selection_csv_path, fieldnames, selected)
+    selection_payload_sha256 = sha256_file(selection_csv_path)
 
     payload = {
         "schema": SELECTION_SCHEMA,
         "selected_columns": len(selected),
-        "round_distribution": {
-            "r1": sum(1 for row in selected if int(row["r"]) == 1),
-            "r2": sum(1 for row in selected if int(row["r"]) == 2),
-            "r3": sum(1 for row in selected if int(row["r"]) == 3),
-        },
+        "round_distribution": distribution,
         "selector_source_commit": source_commit,
         "selector_command": selector_command,
+        "pilot_hash_prefix": PILOT_HASH_PREFIX,
         "final_ru_sha256": sha256_file(final_ru_path),
         "final_queries_sha256": sha256_file(final_queries_path),
         "complexity_input_sha256": sha256_file(complexity_input_path),
@@ -239,27 +241,31 @@ def main() -> int:
     }
     write_json(out_dir / "PILOT_SELECTION.json", payload)
 
-    protocol_lines = [
-        "# Exact Way-2 Pilot Protocol",
-        "",
-        f"- schema: `{SELECTION_SCHEMA}`",
-        f"- selector source commit: `{source_commit}`",
-        f"- selector command: `{selector_command}`",
-        f"- final_ru input: `{repo_relative(final_ru_path)}`",
-        f"- final_queries input: `{repo_relative(final_queries_path)}`",
-        f"- complexity-only input: `{complexity_input_path.name}`",
-        f"- spotcheck-coordinates input: `{spotcheck_input_path.name}`",
-        f"- final_ru_sha256: `{sha256_file(final_ru_path)}`",
-        f"- final_queries_sha256: `{sha256_file(final_queries_path)}`",
-        f"- complexity_input_sha256: `{sha256_file(complexity_input_path)}`",
-        f"- spotcheck_coordinates_sha256: `{sha256_file(spotcheck_input_path)}`",
-        f"- selection_payload_sha256: `{selection_payload_sha256}`",
-        "- forbidden during selection/compute: frozen VE values, score, submit VT/VE, way-1 outputs, candidate ranking",
-        "- pilot size: `344` unique `(r,u)` columns",
-        "- target distribution: `r1=120`, `r2=128`, `r3=96`",
-    ]
-    (out_dir / "PROTOCOL.md").write_text("\n".join(protocol_lines) + "\n", encoding="utf-8")
-    protocol_sha = sha256_text("\n".join(protocol_lines) + "\n")
+    protocol_text = "\n".join(
+        [
+            "# Exact Way-2 Pilot Protocol",
+            "",
+            f"- schema: `{SELECTION_SCHEMA}`",
+            f"- selector source commit: `{source_commit}`",
+            f"- selector command: `{selector_command}`",
+            f"- final_ru input: `{repo_relative(final_ru_path)}`",
+            f"- final_queries input: `{repo_relative(final_queries_path)}`",
+            "- complexity-only input: `COMPLEXITY_INPUT.csv`",
+            "- spotcheck-coordinates input: `SPOTCHECK_COORDINATES.csv`",
+            f"- final_ru_sha256: `{sha256_file(final_ru_path)}`",
+            f"- final_queries_sha256: `{sha256_file(final_queries_path)}`",
+            f"- complexity_input_sha256: `{sha256_file(complexity_input_path)}`",
+            f"- spotcheck_coordinates_sha256: `{sha256_file(spotcheck_input_path)}`",
+            f"- selection_payload_sha256: `{selection_payload_sha256}`",
+            "- forbidden during selection/compute: frozen VE values, submit VT/VE, score, way-1 numerators, candidate ranking/source",
+            "- pilot size: `344` unique `(r,u)` columns",
+            "- target distribution: `r1=120`, `r2=128`, `r3=96`",
+            "- r2 mandatory anchors: `min`, `upper-median`, `nearest-rank P95`, `max`, and all unique `r=2` spotcheck inputs",
+            "- active-count × complexity-band allocation uses largest remainder with one guaranteed slot per non-empty stratum",
+        ]
+    ) + "\n"
+    write_text(out_dir / "PROTOCOL.md", protocol_text)
+    protocol_sha = sha256_text(protocol_text)
 
     write_json(
         out_dir / "SELECTOR_PROVENANCE.json",

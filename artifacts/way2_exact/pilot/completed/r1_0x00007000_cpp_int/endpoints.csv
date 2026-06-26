@@ -1,3 +1,0 @@
-row_id,r,u,v,numerator,denominator_exp2,exact_fraction,way1_normalized_numerator
-FQ000127,1,0x00007000,0x00000b00,32768,16,"32768/2^16","2147483648"
-FQ000128,1,0x00007000,0x00000c00,32768,16,"32768/2^16","2147483648"

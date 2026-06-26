@@ -30,7 +30,9 @@ raw files into Git. The intended retention boundary is:
   - total bytes;
   - extracted manifest SHA-256;
   - source commit and source tree SHA.
-- GitHub Release assets may mirror the deterministic archive volumes, but CI
-  artifacts must not be the only long-term evidence carrier.
+- GitHub Release assets are the intended primary long-term carrier for the full
+  deterministic archive volumes.
+- CI artifacts may mirror the deterministic archive volumes, but CI artifacts
+  must not be the only long-term evidence carrier.
 - The final competition delivery package only carries compact evidence, not the
   full raw exact-way2 archive.

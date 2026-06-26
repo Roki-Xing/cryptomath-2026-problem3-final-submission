@@ -5,6 +5,7 @@ from __future__ import annotations
 import csv
 import hashlib
 import json
+import math
 import os
 import re
 import subprocess
@@ -24,6 +25,9 @@ SELECTION_SCHEMA = "exact-way2-pilot-selection-v2"
 BUNDLE_SCHEMA = "exact-way2-column-bundle-v2"
 COMPARE_SCHEMA = "exact-way2-pilot-compare-v2"
 SUMMARY_SCHEMA = "exact-way2-pilot-summary-v2"
+PROVENANCE_SCHEMA = "exact-way2-pilot-provenance-v2"
+MANIFEST_SCHEMA = "exact-way2-pilot-manifest-v2"
+BUILD_REPRODUCIBILITY_SCHEMA = "exact-way2-build-reproducibility-v2"
 
 
 @dataclass(frozen=True)
@@ -48,6 +52,10 @@ def sha256_file(path: Path) -> str:
         for chunk in iter(lambda: handle.read(65536), b""):
             digest.update(chunk)
     return digest.hexdigest()
+
+
+def bundle_output_sha(column_path: Path, endpoints_path: Path) -> str:
+    return sha256_bytes(column_path.read_bytes() + b"\0" + endpoints_path.read_bytes())
 
 
 def sha256_path_list(paths: Sequence[Path]) -> str:
@@ -81,6 +89,11 @@ def write_csv(path: Path, fieldnames: list[str], rows: Iterable[dict[str, object
         writer.writeheader()
         for row in rows:
             writer.writerow(row)
+
+
+def write_text(path: Path, text: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(text, encoding="utf-8")
 
 
 def hex32(value: int | str) -> str:
@@ -175,6 +188,20 @@ def percentile_rank(sorted_values: list[int], value: int) -> float:
     return (index / len(sorted_values)) * 100.0
 
 
+def upper_median_index(length: int) -> int:
+    if length <= 0:
+        raise ValueError("length must be positive")
+    return length // 2
+
+
+def nearest_rank_index(length: int, percentile: float) -> int:
+    if length <= 0:
+        raise ValueError("length must be positive")
+    if not 0.0 <= percentile <= 100.0:
+        raise ValueError("percentile out of range")
+    return max(0, math.ceil((percentile / 100.0) * length) - 1)
+
+
 def exact_band(percentile: float) -> str:
     if percentile < 25:
         return "[0,25)"
@@ -250,3 +277,12 @@ def ensure_empty_dir(path: Path) -> None:
         raise RuntimeError(f"artifact root must be empty without --resume: {path}")
     path.mkdir(parents=True, exist_ok=True)
 
+
+def population_cv(values: Sequence[float]) -> float:
+    if not values:
+        return 0.0
+    mean = sum(values) / len(values)
+    if mean == 0.0:
+        return 0.0
+    variance = sum((value - mean) ** 2 for value in values) / len(values)
+    return math.sqrt(variance) / mean

@@ -1,43 +1,13 @@
 #!/usr/bin/env python3
-"""Summarize pilot artifacts and build manifest/SHA inventory."""
+"""Summarize pilot artifacts without regenerating provenance or manifest."""
 
 from __future__ import annotations
 
 import argparse
-import csv
 import time
 from pathlib import Path
 
-from common import SUMMARY_SCHEMA, read_json, sha256_file, write_json
-
-
-def categorize(path: Path) -> str:
-    relative = str(path).replace("\\", "/")
-    if relative in {
-        "SUMMARY.json",
-        "SUMMARY.md",
-        "COMPARE.json",
-        "COMPARISONS.csv",
-        "MISMATCHES.csv",
-        "PROVENANCE.json",
-        "ENVIRONMENT.json",
-        "PILOT_SELECTION.csv",
-        "PILOT_SELECTION.json",
-        "PROTOCOL.md",
-        "WAY1_NUMERATOR_CHECK.csv",
-    }:
-        return "REQUIRED_SUMMARY"
-    if relative in {
-        "MANIFEST.json",
-        "SHA256SUMS.txt",
-        "SELECTOR_PROVENANCE.json",
-        "COMPLEXITY_INPUT.csv",
-        "SPOTCHECK_COORDINATES.csv",
-    }:
-        return "REQUIRED_MANIFEST"
-    if relative.startswith("completed/"):
-        return "PILOT_RAW_EVIDENCE"
-    return "EXCLUDE_FROM_SUBMISSION_PACKAGE"
+from common import SUMMARY_SCHEMA, read_json, write_json, write_text
 
 
 def main() -> int:
@@ -49,18 +19,24 @@ def main() -> int:
     root = Path(args.artifact_root)
     compare = read_json(root / "COMPARE.json")
     selection = read_json(root / "PILOT_SELECTION.json")
-    provenance = read_json(root / "PROVENANCE.json")
-    if not isinstance(compare, dict) or not isinstance(selection, dict) or not isinstance(provenance, dict):
+    runner = read_json(root / "RUNNER.json")
+    pipeline = read_json(root / "PIPELINE.json")
+    repeat_subset = read_json(root / "REPEAT_SUBSET.json")
+    if (
+        not isinstance(compare, dict)
+        or not isinstance(selection, dict)
+        or not isinstance(runner, dict)
+        or not isinstance(pipeline, dict)
+    ):
         raise SystemExit("invalid summary prerequisites")
 
     bundles = sorted(path for path in (root / "completed").glob("*") if path.is_dir())
     cpp_columns = 0
     int_columns = 0
-    exact_cert_count = 0
-    parseval_count = 0
-    cpp_wall_sum = 0.0
-    int_wall_sum = 0.0
-    peak_rss = 0
+    cert_cpp = 0
+    cert_int = 0
+    parseval_cpp = 0
+    parseval_int = 0
     partial_or_orphan_artifact = 0
     for bundle_dir in bundles:
         done = read_json(bundle_dir / "DONE.json")
@@ -70,13 +46,12 @@ def main() -> int:
         backend = str(done["backend"])
         if backend == "cpp_int":
             cpp_columns += 1
-            cpp_wall_sum += float(column["wall_seconds"])
-            exact_cert_count += int(bool(column["certified_exact_dyadic"]))
-            parseval_count += int(bool(column["parseval_pass"]))
+            cert_cpp += int(bool(column["certified_exact_dyadic"]))
+            parseval_cpp += int(bool(column["parseval_pass"]))
         elif backend == "int128_checked":
             int_columns += 1
-            int_wall_sum += float(column["wall_seconds"])
-        peak_rss = max(peak_rss, int(column["peak_rss_bytes"]))
+            cert_int += int(bool(column["certified_exact_dyadic"]))
+            parseval_int += int(bool(column["parseval_pass"]))
         for required in ("column.json", "endpoints.csv", "DONE.json"):
             if not (bundle_dir / required).exists():
                 partial_or_orphan_artifact += 1
@@ -88,13 +63,17 @@ def main() -> int:
         selection["round_distribution"] != {"r1": 120, "r2": 128, "r3": 96},
         cpp_columns != 344,
         int_columns != 344,
-        compare["cross_backend_digest_mismatch"] != 0,
-        compare["cross_backend_endpoint_mismatch"] != 0,
+        compare["cross_backend_canonical_column_digest_mismatch"] != 0,
         compare["cross_backend_state_count_mismatch"] != 0,
-        compare["cross_backend_denominator_mismatch"] != 0,
-        compare["cross_backend_parseval_mismatch"] != 0,
-        compare["cross_backend_certificate_mismatch"] != 0,
-        compare["cross_backend_way1_mismatch"] != 0,
+        compare["cross_backend_denominator_exp2_mismatch"] != 0,
+        compare["cross_backend_sum_squares_mismatch"] != 0,
+        compare["cross_backend_expected_sum_squares_mismatch"] != 0,
+        compare["cross_backend_completed_rounds_mismatch"] != 0,
+        compare["cross_backend_certified_no_truncation_mismatch"] != 0,
+        compare["cross_backend_certified_exact_dyadic_mismatch"] != 0,
+        compare["cross_backend_parseval_pass_mismatch"] != 0,
+        compare["cross_backend_endpoint_numerator_mismatch"] != 0,
+        compare["cross_backend_way1_normalized_numerator_mismatch"] != 0,
         frozen["NOT_EQUAL"] != 0,
         frozen["PARSE_ERROR"] != 0,
         frozen["MISSING_ENDPOINT"] != 0,
@@ -104,8 +83,10 @@ def main() -> int:
         compare["duplicate_backend_artifact"] != 0,
         compare["missing_row"] != 0,
         compare["extra_row"] != 0,
-        exact_cert_count != 344,
-        parseval_count != 344,
+        cert_cpp != 344,
+        cert_int != 344,
+        parseval_cpp != 344,
+        parseval_int != 344,
         compare["way1_spotcheck_rows"] != 18,
         compare["way1_spotcheck_mismatch"] != 0,
         partial_or_orphan_artifact != 0,
@@ -128,15 +109,21 @@ def main() -> int:
             "MISSING_ENDPOINT": frozen["MISSING_ENDPOINT"],
         },
         "total_endpoint_count": compare["selected_endpoint_rows"],
-        "cross_backend_digest_mismatch": compare["cross_backend_digest_mismatch"],
-        "cross_backend_endpoint_mismatch": compare["cross_backend_endpoint_mismatch"],
+        "cross_backend_canonical_column_digest_mismatch": compare["cross_backend_canonical_column_digest_mismatch"],
         "cross_backend_state_count_mismatch": compare["cross_backend_state_count_mismatch"],
-        "cross_backend_denominator_mismatch": compare["cross_backend_denominator_mismatch"],
-        "cross_backend_parseval_mismatch": compare["cross_backend_parseval_mismatch"],
-        "cross_backend_certificate_mismatch": compare["cross_backend_certificate_mismatch"],
-        "cross_backend_way1_mismatch": compare["cross_backend_way1_mismatch"],
-        "exact_certificate_count": exact_cert_count,
-        "parseval_count": parseval_count,
+        "cross_backend_denominator_exp2_mismatch": compare["cross_backend_denominator_exp2_mismatch"],
+        "cross_backend_sum_squares_mismatch": compare["cross_backend_sum_squares_mismatch"],
+        "cross_backend_expected_sum_squares_mismatch": compare["cross_backend_expected_sum_squares_mismatch"],
+        "cross_backend_completed_rounds_mismatch": compare["cross_backend_completed_rounds_mismatch"],
+        "cross_backend_certified_no_truncation_mismatch": compare["cross_backend_certified_no_truncation_mismatch"],
+        "cross_backend_certified_exact_dyadic_mismatch": compare["cross_backend_certified_exact_dyadic_mismatch"],
+        "cross_backend_parseval_pass_mismatch": compare["cross_backend_parseval_pass_mismatch"],
+        "cross_backend_endpoint_numerator_mismatch": compare["cross_backend_endpoint_numerator_mismatch"],
+        "cross_backend_way1_normalized_numerator_mismatch": compare["cross_backend_way1_normalized_numerator_mismatch"],
+        "certified_exact_dyadic_cpp_int": cert_cpp,
+        "certified_exact_dyadic_int128_checked": cert_int,
+        "parseval_cpp_int": parseval_cpp,
+        "parseval_int128_checked": parseval_int,
         "duplicate_row_id": compare["duplicate_row_id"],
         "duplicate_ruv": compare["duplicate_ruv"],
         "duplicate_column_key": compare["duplicate_column_key"],
@@ -146,41 +133,20 @@ def main() -> int:
         "partial_or_orphan_artifact": partial_or_orphan_artifact,
         "way1_spotcheck_rows": compare["way1_spotcheck_rows"],
         "way1_spotcheck_numerator_mismatch": compare["way1_spotcheck_mismatch"],
-        "selector_elapsed_wall": 0.0,
-        "cpp_int_column_wall_sum": cpp_wall_sum,
-        "int128_column_wall_sum": int_wall_sum,
-        "total_column_wall_sum": cpp_wall_sum + int_wall_sum,
-        "orchestrator_elapsed_wall": provenance["orchestrator_elapsed_wall"],
+        "selector_elapsed_wall": pipeline["selector_elapsed_wall"],
+        "cpp_int_column_wall_sum": runner["cpp_int_column_wall_sum"],
+        "int128_column_wall_sum": runner["int128_column_wall_sum"],
+        "total_column_wall_sum": runner["cpp_int_column_wall_sum"] + runner["int128_column_wall_sum"],
+        "orchestrator_elapsed_wall": pipeline["orchestrator_elapsed_wall"],
         "comparison_elapsed_wall": compare.get("comparison_elapsed_wall", 0.0),
         "summarizer_elapsed_wall": summarizer_elapsed,
-        "total_pilot_elapsed_wall": provenance["orchestrator_elapsed_wall"]
-        + compare.get("comparison_elapsed_wall", 0.0)
-        + summarizer_elapsed,
-        "peak_process_rss": provenance["peak_process_rss"],
-        "peak_total_concurrent_rss": provenance["peak_total_concurrent_rss"],
-        "jobs": provenance["jobs"],
+        "total_pilot_elapsed_wall": pipeline["total_pilot_elapsed_wall"],
+        "peak_process_rss": pipeline["peak_process_rss"],
+        "peak_total_concurrent_rss": pipeline["peak_total_concurrent_rss"],
+        "jobs": runner["jobs"],
+        "repeat_subset": repeat_subset,
     }
     write_json(root / "SUMMARY.json", summary)
-
-    files = sorted(path for path in root.rglob("*") if path.is_file())
-    sha_lines = [f"{sha256_file(path)}  ./{path.relative_to(root)}" for path in files if path.name != "SHA256SUMS.txt"]
-    (root / "SHA256SUMS.txt").write_text("\n".join(sha_lines) + "\n", encoding="utf-8")
-    write_json(
-        root / "MANIFEST.json",
-        {
-            "schema": SUMMARY_SCHEMA,
-            "status": status,
-            "files": [
-                {
-                    "path": str(path.relative_to(root)).replace("\\", "/"),
-                    "sha256": sha256_file(path),
-                    "category": categorize(path.relative_to(root)),
-                }
-                for path in files
-                if path.name != "SHA256SUMS.txt"
-            ],
-        },
-    )
 
     lines = [
         "# Exact Way-2 Pilot Summary",
@@ -194,21 +160,21 @@ def main() -> int:
         f"- NOT_EQUAL: `{frozen['NOT_EQUAL']}`",
         f"- PARSE_ERROR: `{frozen['PARSE_ERROR']}`",
         f"- MISSING_ENDPOINT: `{frozen['MISSING_ENDPOINT']}`",
-        f"- cross-backend digest mismatch: `{compare['cross_backend_digest_mismatch']}`",
-        f"- cross-backend endpoint mismatch: `{compare['cross_backend_endpoint_mismatch']}`",
-        f"- exact certificate count: `{exact_cert_count}`",
-        f"- parseval count: `{parseval_count}`",
+        f"- cross-backend canonical digest mismatch: `{compare['cross_backend_canonical_column_digest_mismatch']}`",
+        f"- cross-backend endpoint numerator mismatch: `{compare['cross_backend_endpoint_numerator_mismatch']}`",
+        f"- certified_exact_dyadic cpp_int/int128: `{cert_cpp}/{cert_int}`",
+        f"- parseval cpp_int/int128: `{parseval_cpp}/{parseval_int}`",
         f"- duplicate row_id: `{compare['duplicate_row_id']}`",
         f"- duplicate (r,u,v): `{compare['duplicate_ruv']}`",
         f"- missing row: `{compare['missing_row']}`",
         f"- extra row: `{compare['extra_row']}`",
         f"- partial/orphan artifacts: `{partial_or_orphan_artifact}`",
         f"- way-1 numerator mismatch: `{compare['way1_spotcheck_mismatch']}`",
-        f"- cpp_int column wall sum: `{cpp_wall_sum}`",
-        f"- int128 column wall sum: `{int_wall_sum}`",
-        f"- peak RSS bytes: `{peak_rss}`",
+        f"- cpp_int column wall sum: `{runner['cpp_int_column_wall_sum']}`",
+        f"- int128 column wall sum: `{runner['int128_column_wall_sum']}`",
+        f"- peak RSS bytes: `{runner['peak_process_rss']}`",
     ]
-    (root / "SUMMARY.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    write_text(root / "SUMMARY.md", "\n".join(lines) + "\n")
     return 0
 
 

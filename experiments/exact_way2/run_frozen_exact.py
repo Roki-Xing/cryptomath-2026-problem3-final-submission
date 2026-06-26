@@ -10,7 +10,6 @@ import os
 import resource
 import shutil
 import subprocess
-import sys
 import time
 from pathlib import Path
 
@@ -19,6 +18,7 @@ from common import (
     EMPTY_SHA256,
     ROOT,
     bundle_name,
+    bundle_output_sha,
     command_sha,
     current_source_commit,
     current_source_tree_sha,
@@ -27,7 +27,6 @@ from common import (
     read_json,
     repo_relative,
     require_clean_worktree,
-    sha256_bytes,
     sha256_file,
     write_json,
 )
@@ -38,15 +37,15 @@ def selection_rows(selection_path: Path) -> list[dict[str, str]]:
         return list(csv.DictReader(handle))
 
 
-def stable_runner_command(selection: Path, queries: Path, backend: str, jobs: int) -> str:
-    return (
-        "python3 -X utf8 experiments/exact_way2/run_frozen_exact.py "
-        f"--selection {repo_relative(selection)} "
-        f"--backend {backend} "
-        f"--jobs {jobs} "
-        "--resume "
-        f"--artifact-root <ARTIFACT_ROOT> "
-        f"--queries {repo_relative(queries)}"
+def selection_json_path(selection_path: Path, artifact_root: Path) -> Path:
+    sibling = selection_path.with_name("PILOT_SELECTION.json")
+    if sibling.exists():
+        return sibling
+    artifact_copy = artifact_root / "PILOT_SELECTION.json"
+    if artifact_copy.exists():
+        return artifact_copy
+    raise FileNotFoundError(
+        f"missing PILOT_SELECTION.json beside {selection_path} or under {artifact_root}"
     )
 
 
@@ -62,27 +61,49 @@ def logical_path(path: Path, *, logical_root: str | None, suffix: str | None = N
         return base
 
 
-def bundle_output_sha(column_path: Path, endpoints_path: Path) -> str:
-    return sha256_bytes(column_path.read_bytes() + b"\0" + endpoints_path.read_bytes())
-
-
 def check_partial_artifacts(root: Path) -> None:
     partials = sorted(root.rglob("*.tmp.*"))
     partials += sorted(root.rglob("*.partial.*"))
-    partials += sorted(
-        path
-        for path in root.rglob("*")
-        if ".staging" in path.parts and (path.is_file() or any(path.iterdir()))
-    )
+    partials += sorted(path for path in root.rglob("*") if ".staging" in path.parts and path != root / ".staging")
     if partials:
-        sample = ", ".join(repo_relative(path) if path.is_relative_to(ROOT) else str(path) for path in partials[:8])
+        sample = ", ".join(
+            repo_relative(path) if path.is_relative_to(ROOT) else str(path) for path in partials[:8]
+        )
         raise RuntimeError(f"partial or staging artifacts present: {sample}")
 
 
 def verify_no_orphan_loose_outputs(root: Path) -> None:
+    allowed_root_files = {
+        "PILOT_SELECTION.csv",
+        "PILOT_SELECTION.json",
+        "PROTOCOL.md",
+        "SELECTOR_PROVENANCE.json",
+        "COMPLEXITY_INPUT.csv",
+        "SPOTCHECK_COORDINATES.csv",
+        "SELECTOR_INPUT_PREPARATION.json",
+        "SELECTOR_INPUT_PROTOCOL.md",
+        "BUILD_REPRODUCIBILITY.json",
+        "ENVIRONMENT.json",
+        "RUNNER.json",
+        "PIPELINE.json",
+        "COMPARE.json",
+        "COMPARISONS.csv",
+        "MISMATCHES.csv",
+        "SUMMARY.json",
+        "SUMMARY.md",
+        "REPEAT_SUBSET.json",
+        "REPEAT_SUBSET.md",
+        "WAY1_NUMERATOR_CHECK.csv",
+        "PROVENANCE.json",
+        "MANIFEST.json",
+        "SHA256SUMS.txt",
+    }
     for subdir in ("columns", "endpoints"):
         if (root / subdir).exists():
             raise RuntimeError(f"legacy loose artifact directory is forbidden: {subdir}")
+    for path in root.iterdir():
+        if path.is_file() and path.name not in allowed_root_files:
+            raise RuntimeError(f"unexpected loose artifact file is forbidden: {path.name}")
 
 
 def lock_path(root: Path, r: int, u: str, backend: str) -> Path:
@@ -112,16 +133,10 @@ def verify_endpoint_csv(path: Path, *, r: int, u: str, expected_count: int) -> N
             if triple[0] != r or triple[1] != u:
                 raise RuntimeError(f"unexpected endpoint key in bundle: {triple}")
     if count != expected_count:
-        raise RuntimeError(
-            f"endpoint count mismatch for r={r} u={u}: expected {expected_count}, got {count}"
-        )
+        raise RuntimeError(f"endpoint count mismatch for r={r} u={u}: expected {expected_count}, got {count}")
 
 
-def verify_done_bundle(
-    bundle_dir: Path,
-    *,
-    expected: dict[str, object],
-) -> None:
+def verify_done_bundle(bundle_dir: Path, *, expected: dict[str, object]) -> None:
     column_path = bundle_dir / "column.json"
     endpoints_path = bundle_dir / "endpoints.csv"
     done_path = bundle_dir / "DONE.json"
@@ -156,14 +171,17 @@ def publish_bundle(
     bundle_expected: dict[str, object],
     max_wall_seconds: int,
     max_rss_bytes: int | None,
-) -> None:
+) -> dict[str, object]:
     r = int(selection_row["r"])
     u = selection_row["u"].lower()
     expected_count = int(selection_row["query_count"])
     bundle_dir = completed_bundle(artifact_root, r, u, backend)
     if bundle_dir.exists():
         verify_done_bundle(bundle_dir, expected=bundle_expected)
-        return
+        done_payload = read_json(bundle_dir / "DONE.json")
+        if not isinstance(done_payload, dict):
+            raise RuntimeError(f"invalid DONE payload: {bundle_dir}")
+        return done_payload
 
     staging_root = artifact_root / ".staging"
     staging_root.mkdir(parents=True, exist_ok=True)
@@ -207,9 +225,9 @@ def publish_bundle(
             preexec_fn=preexec if max_rss_bytes else None,
         )
         column_payload = json.loads(column_path.read_text(encoding="utf-8"))
-        if not column_payload["certified_exact_dyadic"]:
+        if not bool(column_payload["certified_exact_dyadic"]):
             raise RuntimeError(f"exact certificate false for {bundle_name(r, u, backend)}")
-        if not column_payload["parseval_pass"]:
+        if not bool(column_payload["parseval_pass"]):
             raise RuntimeError(f"parseval false for {bundle_name(r, u, backend)}")
         verify_endpoint_csv(endpoints_path, r=r, u=u, expected_count=expected_count)
         done_payload = {
@@ -223,13 +241,15 @@ def publish_bundle(
             "state_count": column_payload["state_count"],
             "sum_squares": column_payload["sum_squares"],
             "expected_sum_squares": column_payload["expected_sum_squares"],
-            "parseval_pass": bool(column_payload["parseval_pass"]),
+            "certified_no_truncation": bool(column_payload["certified_no_truncation"]),
             "certified_exact_dyadic": bool(column_payload["certified_exact_dyadic"]),
+            "parseval_pass": bool(column_payload["parseval_pass"]),
             "way1_numerator_convention": "K_r(u,v)",
         }
         write_json(done_path, done_payload)
         bundle_dir.parent.mkdir(parents=True, exist_ok=True)
         os.replace(staging_dir, bundle_dir)
+        return done_payload
     except Exception:
         if staging_dir.exists():
             shutil.rmtree(staging_dir)
@@ -267,17 +287,13 @@ def main() -> int:
     require_clean_worktree(cwd=ROOT)
     source_commit = current_source_commit(cwd=ROOT)
     source_tree_sha = current_source_tree_sha(cwd=ROOT)
-    source_tree_dirty = False
-    git_status_sha = EMPTY_SHA256
-    source_tree_diff_sha = EMPTY_SHA256
-
     verify_no_orphan_loose_outputs(artifact_root)
     check_partial_artifacts(artifact_root)
     binary = binary_path
     if not binary.exists():
         raise SystemExit("recompute_frozen_exact binary is missing; run make first")
 
-    selection_payload = read_json(selection_path.with_name("PILOT_SELECTION.json"))
+    selection_payload = read_json(selection_json_path(selection_path, artifact_root))
     if not isinstance(selection_payload, dict):
         raise SystemExit("invalid selection JSON payload")
     selection_sha = sha256_file(selection_path)
@@ -302,7 +318,7 @@ def main() -> int:
     )
     runner_command_sha = command_sha(["python3", "-X", "utf8", runner_command])
     runner_start = time.perf_counter()
-    provenance_start = now_utc_microseconds()
+    runner_started_at = now_utc_microseconds()
 
     env_payload = {
         "artifact_root": artifact_root_logical,
@@ -313,9 +329,9 @@ def main() -> int:
         "jobs": args.jobs,
         "source_checkout_commit": source_commit,
         "source_tree_sha": source_tree_sha,
-        "source_tree_dirty": source_tree_dirty,
-        "git_status_porcelain_sha256": git_status_sha,
-        "source_tree_diff_sha256": source_tree_diff_sha,
+        "source_tree_dirty": False,
+        "git_status_porcelain_sha256": EMPTY_SHA256,
+        "source_tree_diff_sha256": EMPTY_SHA256,
         "binary_build_commit": source_commit,
         "runner_commit": source_commit,
         "selector_commit": str(selection_payload["selector_source_commit"]),
@@ -325,7 +341,6 @@ def main() -> int:
         "final_queries_sha256": str(selection_payload["final_queries_sha256"]),
         "selection_sha256": selection_sha,
         "command_sha256": runner_command_sha,
-        "provenance_generated_at_utc": provenance_start,
     }
     write_json(artifact_root / "ENVIRONMENT.json", env_payload)
 
@@ -333,6 +348,7 @@ def main() -> int:
     rows = selection_rows(selection_path)
     (artifact_root / "locks").mkdir(exist_ok=True)
 
+    completed_done_payloads: list[dict[str, object]] = []
     for row in rows:
         wall_limit = 120 if int(row["r"]) == 1 else 1200 if int(row["r"]) == 2 else 1800
         for backend in backends:
@@ -354,15 +370,17 @@ def main() -> int:
                     "command_sha256": runner_command_sha,
                     "schema_version": BUNDLE_SCHEMA,
                 }
-                publish_bundle(
-                    artifact_root=artifact_root,
-                    selection_row=row,
-                    backend=backend,
-                    binary=binary,
-                    queries=queries_path,
-                    bundle_expected=bundle_expected,
-                    max_wall_seconds=wall_limit,
-                    max_rss_bytes=args.max_rss_bytes or None,
+                completed_done_payloads.append(
+                    publish_bundle(
+                        artifact_root=artifact_root,
+                        selection_row=row,
+                        backend=backend,
+                        binary=binary,
+                        queries=queries_path,
+                        bundle_expected=bundle_expected,
+                        max_wall_seconds=wall_limit,
+                        max_rss_bytes=args.max_rss_bytes or None,
+                    )
                 )
             finally:
                 if lock.exists():
@@ -372,19 +390,27 @@ def main() -> int:
     total_wall = time.perf_counter() - runner_start
     completed_dirs = sorted(path for path in (artifact_root / "completed").glob("*") if path.is_dir())
     peak_process_rss = 0
+    cpp_wall_sum = 0.0
+    int128_wall_sum = 0.0
     for bundle_dir in completed_dirs:
         column_payload = read_json(bundle_dir / "column.json")
         if isinstance(column_payload, dict):
             peak_process_rss = max(peak_process_rss, int(column_payload["peak_rss_bytes"]))
+            if column_payload["backend"] == "cpp_int":
+                cpp_wall_sum += float(column_payload["wall_seconds"])
+            elif column_payload["backend"] == "int128_checked":
+                int128_wall_sum += float(column_payload["wall_seconds"])
 
     write_json(
-        artifact_root / "PROVENANCE.json",
+        artifact_root / "RUNNER.json",
         {
             **env_payload,
             "runner_command": runner_command,
-            "runner_started_at_utc": provenance_start,
+            "runner_started_at_utc": runner_started_at,
             "runner_finished_at_utc": now_utc_microseconds(),
-            "orchestrator_elapsed_wall": total_wall,
+            "runner_elapsed_wall": total_wall,
+            "cpp_int_column_wall_sum": cpp_wall_sum,
+            "int128_column_wall_sum": int128_wall_sum,
             "peak_process_rss": peak_process_rss,
             "peak_total_concurrent_rss": peak_process_rss,
             "completed_bundle_count": len(completed_dirs),

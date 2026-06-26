@@ -10,7 +10,12 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SUBMIT_SHA = "7b0f638ba8678462ee8d6c12bc0c5b89d7354b4a095b31330f3ba495acfe2e2e"
-MAKE_ENV = {**os.environ, "CPLUS_INCLUDE_PATH": "/tmp/boost-headers/usr/include", "PYTHONDONTWRITEBYTECODE": "1"}
+MAKE_ENV = {
+    **os.environ,
+    "CPLUS_INCLUDE_PATH": "/tmp/boost-headers/usr/include",
+    "EXTRA_CPPFLAGS": "-I/tmp/boost-headers/usr/include",
+    "PYTHONDONTWRITEBYTECODE": "1",
+}
 
 
 @contextmanager
@@ -20,6 +25,15 @@ def clean_worktree():
         worktree = Path(tmpdir) / "worktree"
         subprocess.run(["git", "worktree", "add", "--detach", str(worktree), head], cwd=ROOT, check=True)
         try:
+            subprocess.run(
+                ["rsync", "-a", "--delete", "--exclude=.git", f"{ROOT}/", str(worktree)],
+                check=True,
+                env=MAKE_ENV,
+            )
+            subprocess.run(["git", "config", "user.name", "Codex Test"], cwd=worktree, check=True)
+            subprocess.run(["git", "config", "user.email", "codex@example.invalid"], cwd=worktree, check=True)
+            subprocess.run(["git", "add", "-A"], cwd=worktree, check=True)
+            subprocess.run(["git", "commit", "-m", "temp test snapshot"], cwd=worktree, check=True, env=MAKE_ENV)
             yield worktree
         finally:
             subprocess.run(["git", "worktree", "remove", "--force", str(worktree)], cwd=ROOT, check=True)
@@ -59,11 +73,26 @@ def main() -> None:
             "python3",
             "-X",
             "utf8",
+            "experiments/exact_way2/prepare_selector_inputs.py",
+            "--final-ru",
+            "experiments/frozen/final_ru.csv",
+            "--out",
+            str(pilot_dir),
+        )
+        run(
+            worktree,
+            "python3",
+            "-X",
+            "utf8",
             "experiments/exact_way2/select_pilot.py",
             "--final-ru",
             "experiments/frozen/final_ru.csv",
             "--final-queries",
             "experiments/frozen/final_queries.csv",
+            "--complexity-input",
+            str(pilot_dir / "COMPLEXITY_INPUT.csv"),
+            "--spotcheck-coordinates",
+            str(pilot_dir / "SPOTCHECK_COORDINATES.csv"),
             "--out",
             str(pilot_dir),
         )
@@ -120,11 +149,114 @@ def main() -> None:
         compare = json.loads((artifact_root / "COMPARE.json").read_text(encoding="utf-8"))
         assert compare["cpp_int_columns"] == 2
         assert compare["int128_columns"] == 2
+        (artifact_root / "REPEAT_SUBSET.json").write_text(
+            json.dumps(
+                {
+                    "cpp_int": {"runs": [1.0, 1.0, 1.0], "cv": 0.0, "digest_equal": True, "endpoint_equal": True},
+                    "int128_checked": {
+                        "runs": [1.0, 1.0, 1.0],
+                        "cv": 0.0,
+                        "digest_equal": True,
+                        "endpoint_equal": True,
+                    },
+                },
+                ensure_ascii=False,
+                indent=2,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+        (artifact_root / "REPEAT_SUBSET.md").write_text("# repeat\n", encoding="utf-8")
+        (artifact_root / "PIPELINE.json").write_text(
+            json.dumps(
+                {
+                    "selector_elapsed_wall": 0.1,
+                    "orchestrator_elapsed_wall": 0.2,
+                    "comparison_elapsed_wall": 0.3,
+                    "summarizer_elapsed_wall": 0.0,
+                    "total_pilot_elapsed_wall": 0.6,
+                    "peak_process_rss": 1,
+                    "peak_total_concurrent_rss": 1,
+                    "jobs": 1,
+                },
+                ensure_ascii=False,
+                indent=2,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+        run(
+            worktree,
+            "python3",
+            "-X",
+            "utf8",
+            "experiments/exact_way2/summarize_exact.py",
+            "--artifact-root",
+            str(artifact_root),
+        )
+        build_repro = {
+            "implementation_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=worktree, text=True).strip(),
+            "implementation_tree_sha": subprocess.check_output(
+                ["git", "rev-parse", "HEAD^{tree}"], cwd=worktree, text=True
+            ).strip(),
+            "clean_git_status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "clean_git_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "first_clean_build": {
+                "binary_sha256": file_sha256(binary),
+                "compiler_path": "/usr/bin/g++",
+                "compiler_version": "g++",
+                "build_command": "make recompute_frozen_exact",
+                "environment": {"CXXFLAGS": ""},
+            },
+            "second_clean_build": {
+                "binary_sha256": file_sha256(binary),
+            },
+        }
+        (artifact_root / "BUILD_REPRODUCIBILITY.json").write_text(
+            json.dumps(build_repro, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        run(
+            worktree,
+            "python3",
+            "-X",
+            "utf8",
+            "experiments/exact_way2/attest_pilot_artifacts.py",
+            "--artifact-root",
+            str(artifact_root),
+            "--artifact-committed-in-commit",
+            "1234567890abcdef1234567890abcdef12345678",
+        )
+        manifest_bytes = (artifact_root / "MANIFEST.json").read_bytes()
+        sha_bytes = (artifact_root / "SHA256SUMS.txt").read_bytes()
+        run(
+            worktree,
+            "python3",
+            "-X",
+            "utf8",
+            "experiments/exact_way2/attest_pilot_artifacts.py",
+            "--artifact-root",
+            str(artifact_root),
+            "--artifact-committed-in-commit",
+            "1234567890abcdef1234567890abcdef12345678",
+        )
+        assert manifest_bytes == (artifact_root / "MANIFEST.json").read_bytes()
+        assert sha_bytes == (artifact_root / "SHA256SUMS.txt").read_bytes()
+        manifest = json.loads((artifact_root / "MANIFEST.json").read_text(encoding="utf-8"))
+        assert all(entry["path"] not in {"MANIFEST.json", "SHA256SUMS.txt"} for entry in manifest["files"])
+        subprocess.run(
+            ["sha256sum", "-c", "SHA256SUMS.txt"],
+            cwd=artifact_root,
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+
         comparison_rows = list(
             csv.DictReader((artifact_root / "COMPARISONS.csv").open(newline="", encoding="utf-8"))
         )
         target_row_id = comparison_rows[0]["row_id"]
-
         bundles_before = {
             path.relative_to(artifact_root): file_sha256(path)
             for path in artifact_root.rglob("*")

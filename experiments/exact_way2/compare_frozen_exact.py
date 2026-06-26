@@ -9,7 +9,17 @@ import time
 from collections import Counter
 from pathlib import Path
 
-from common import COMPARE_SCHEMA, ROOT, compare_dyadic_to_decimal, read_json, write_csv, write_json
+from common import (
+    BUNDLE_SCHEMA,
+    COMPARE_SCHEMA,
+    ROOT,
+    bundle_output_sha,
+    compare_dyadic_to_decimal,
+    read_json,
+    sha256_file,
+    write_csv,
+    write_json,
+)
 
 
 def load_selection(path: Path) -> tuple[list[dict[str, str]], set[tuple[int, str]]]:
@@ -22,10 +32,7 @@ def load_snapshot_rows(path: Path, selected_keys: set[tuple[int, str]]) -> tuple
     rows: list[dict[str, str]] = []
     row_ids: set[str] = set()
     triples: set[tuple[int, str, str]] = set()
-    counts = {
-        "duplicate_row_id": 0,
-        "duplicate_ruv": 0,
-    }
+    counts = {"duplicate_row_id": 0, "duplicate_ruv": 0}
     with path.open(newline="", encoding="utf-8") as handle:
         reader = csv.DictReader(handle)
         for row in reader:
@@ -55,7 +62,38 @@ def load_snapshot_rows(path: Path, selected_keys: set[tuple[int, str]]) -> tuple
     return rows, counts
 
 
-def load_backend(root: Path, backend: str) -> tuple[dict[tuple[int, str], dict[str, object]], dict[tuple[int, str, str], dict[str, str]], dict[str, int]]:
+def validate_bundle(bundle_dir: Path) -> tuple[dict[str, object], dict[str, object]]:
+    column_path = bundle_dir / "column.json"
+    endpoints_path = bundle_dir / "endpoints.csv"
+    done_path = bundle_dir / "DONE.json"
+    if not column_path.exists() or not endpoints_path.exists() or not done_path.exists():
+        raise SystemExit(f"incomplete bundle: {bundle_dir}")
+    done = read_json(done_path)
+    column = read_json(column_path)
+    if not isinstance(done, dict) or not isinstance(column, dict):
+        raise SystemExit(f"invalid bundle payload: {bundle_dir}")
+    if done.get("schema") != BUNDLE_SCHEMA:
+        raise SystemExit(f"bundle schema mismatch: {bundle_dir}")
+    expected_column_sha = sha256_file(column_path)
+    expected_endpoints_sha = sha256_file(endpoints_path)
+    actual_output_sha = bundle_output_sha(column_path, endpoints_path)
+    if done.get("column_sha256") != expected_column_sha:
+        raise SystemExit(f"column SHA mismatch: {bundle_dir}")
+    if done.get("endpoints_sha256") != expected_endpoints_sha:
+        raise SystemExit(f"endpoints SHA mismatch: {bundle_dir}")
+    if done.get("output_sha256") != actual_output_sha:
+        raise SystemExit(f"bundle output SHA mismatch: {bundle_dir}")
+    return done, column
+
+
+def load_backend(
+    root: Path,
+    backend: str,
+) -> tuple[
+    dict[tuple[int, str], dict[str, object]],
+    dict[tuple[int, str, str], dict[str, str]],
+    dict[str, int],
+]:
     columns: dict[tuple[int, str], dict[str, object]] = {}
     endpoints: dict[tuple[int, str, str], dict[str, str]] = {}
     counts = {
@@ -67,15 +105,12 @@ def load_backend(root: Path, backend: str) -> tuple[dict[tuple[int, str], dict[s
     row_ids: set[str] = set()
     triples: set[tuple[int, str, str]] = set()
     for bundle_dir in sorted((root / "completed").glob(f"*_{backend}")):
-        done = read_json(bundle_dir / "DONE.json")
-        column = read_json(bundle_dir / "column.json")
-        if not isinstance(done, dict) or not isinstance(column, dict):
-            raise SystemExit(f"invalid bundle payload: {bundle_dir}")
+        done, column = validate_bundle(bundle_dir)
         key = (int(done["r"]), str(done["u"]).lower())
         if key in columns:
             counts["duplicate_backend_artifact"] += 1
             continue
-        columns[key] = {"done": done, "column": column}
+        columns[key] = {"done": done, "column": column, "bundle_dir": bundle_dir}
         with (bundle_dir / "endpoints.csv").open(newline="", encoding="utf-8") as handle:
             for row in csv.DictReader(handle):
                 row_id = row["row_id"]
@@ -106,10 +141,7 @@ def main() -> int:
     cpp_columns, cpp_endpoints, cpp_duplicates = load_backend(root, "cpp_int")
     int_columns, int_endpoints, int_duplicates = load_backend(root, "int128_checked")
 
-    expected_endpoint_keys = {
-        (int(row["r"]), row["u"].lower(), row["v"].lower())
-        for row in snapshot_rows
-    }
+    expected_endpoint_keys = {(int(row["r"]), row["u"].lower(), row["v"].lower()) for row in snapshot_rows}
     extra_rows = 0
     for triple in cpp_endpoints:
         if triple not in expected_endpoint_keys:
@@ -118,23 +150,56 @@ def main() -> int:
         if triple not in expected_endpoint_keys:
             extra_rows += 1
 
-    comparison_counts = Counter(
-        {
-            "EXACT_EQUAL": 0,
-            "NOT_EQUAL": 0,
-            "PARSE_ERROR": 0,
-            "MISSING_ENDPOINT": 0,
-        }
-    )
-    comparisons: list[dict[str, object]] = []
-    cross_backend_digest_mismatch = 0
-    cross_backend_endpoint_mismatch = 0
-    cross_backend_state_count_mismatch = 0
-    cross_backend_denominator_mismatch = 0
-    cross_backend_parseval_mismatch = 0
-    cross_backend_certificate_mismatch = 0
-    cross_backend_way1_mismatch = 0
+    column_keys = sorted(selected_keys)
+    cross = {
+        "cross_backend_canonical_column_digest_mismatch": 0,
+        "cross_backend_state_count_mismatch": 0,
+        "cross_backend_denominator_exp2_mismatch": 0,
+        "cross_backend_sum_squares_mismatch": 0,
+        "cross_backend_expected_sum_squares_mismatch": 0,
+        "cross_backend_completed_rounds_mismatch": 0,
+        "cross_backend_certified_no_truncation_mismatch": 0,
+        "cross_backend_certified_exact_dyadic_mismatch": 0,
+        "cross_backend_parseval_pass_mismatch": 0,
+        "cross_backend_endpoint_numerator_mismatch": 0,
+        "cross_backend_way1_normalized_numerator_mismatch": 0,
+    }
+    comparison_counts = Counter({"EXACT_EQUAL": 0, "NOT_EQUAL": 0, "PARSE_ERROR": 0, "MISSING_ENDPOINT": 0})
     missing_rows = 0
+    comparisons: list[dict[str, object]] = []
+    failing_rows: list[dict[str, object]] = []
+
+    for key in column_keys:
+        cpp_bundle = cpp_columns.get(key)
+        int_bundle = int_columns.get(key)
+        if cpp_bundle is None or int_bundle is None:
+            continue
+        cpp_column = cpp_bundle["column"]
+        int_column = int_bundle["column"]
+        cross["cross_backend_canonical_column_digest_mismatch"] += int(
+            cpp_column["canonical_column_digest"] != int_column["canonical_column_digest"]
+        )
+        cross["cross_backend_state_count_mismatch"] += int(
+            cpp_column["state_count"] != int_column["state_count"]
+        )
+        cross["cross_backend_sum_squares_mismatch"] += int(
+            cpp_column["sum_squares"] != int_column["sum_squares"]
+        )
+        cross["cross_backend_expected_sum_squares_mismatch"] += int(
+            cpp_column["expected_sum_squares"] != int_column["expected_sum_squares"]
+        )
+        cross["cross_backend_completed_rounds_mismatch"] += int(
+            cpp_column["completed_rounds"] != int_column["completed_rounds"]
+        )
+        cross["cross_backend_certified_no_truncation_mismatch"] += int(
+            cpp_column["certified_no_truncation"] != int_column["certified_no_truncation"]
+        )
+        cross["cross_backend_certified_exact_dyadic_mismatch"] += int(
+            cpp_column["certified_exact_dyadic"] != int_column["certified_exact_dyadic"]
+        )
+        cross["cross_backend_parseval_pass_mismatch"] += int(
+            cpp_column["parseval_pass"] != int_column["parseval_pass"]
+        )
 
     for row in snapshot_rows:
         r = int(row["r"])
@@ -147,114 +212,105 @@ def main() -> int:
         cpp_endpoint = cpp_endpoints.get(triple)
         int_endpoint = int_endpoints.get(triple)
 
-        status = "EXACT_EQUAL"
-        if cpp_bundle is None or int_bundle is None:
-            status = "MISSING_ENDPOINT"
-            missing_rows += 1
-        else:
+        digest_match = 0
+        state_count_match = 0
+        denominator_match = 0
+        sum_squares_match = 0
+        expected_sum_squares_match = 0
+        completed_rounds_match = 0
+        no_truncation_match = 0
+        certificate_match = 0
+        parseval_match = 0
+        endpoint_match = 0
+        way1_match = 0
+        status = "MISSING_ENDPOINT"
+
+        if cpp_bundle is not None and int_bundle is not None:
             cpp_column = cpp_bundle["column"]
             int_column = int_bundle["column"]
-            if not cpp_column["certified_exact_dyadic"] or not cpp_column["parseval_pass"]:
-                status = "MISSING_ENDPOINT"
-                missing_rows += 1
-            elif cpp_endpoint is None or int_endpoint is None:
-                status = "MISSING_ENDPOINT"
-                missing_rows += 1
-            else:
+            digest_match = int(cpp_column["canonical_column_digest"] == int_column["canonical_column_digest"])
+            state_count_match = int(cpp_column["state_count"] == int_column["state_count"])
+            sum_squares_match = int(cpp_column["sum_squares"] == int_column["sum_squares"])
+            expected_sum_squares_match = int(
+                cpp_column["expected_sum_squares"] == int_column["expected_sum_squares"]
+            )
+            completed_rounds_match = int(cpp_column["completed_rounds"] == int_column["completed_rounds"])
+            no_truncation_match = int(
+                cpp_column["certified_no_truncation"] == int_column["certified_no_truncation"]
+            )
+            certificate_match = int(
+                cpp_column["certified_exact_dyadic"] == int_column["certified_exact_dyadic"]
+            )
+            parseval_match = int(cpp_column["parseval_pass"] == int_column["parseval_pass"])
+
+            if (
+                bool(cpp_column["certified_exact_dyadic"])
+                and bool(int_column["certified_exact_dyadic"])
+                and bool(cpp_column["parseval_pass"])
+                and bool(int_column["parseval_pass"])
+                and cpp_endpoint is not None
+                and int_endpoint is not None
+            ):
+                denominator_match = int(cpp_endpoint["denominator_exp2"] == int_endpoint["denominator_exp2"])
+                endpoint_match = int(cpp_endpoint["numerator"] == int_endpoint["numerator"])
+                way1_match = int(
+                    cpp_endpoint["way1_normalized_numerator"]
+                    == int_endpoint["way1_normalized_numerator"]
+                )
                 status = compare_dyadic_to_decimal(
                     int(cpp_endpoint["numerator"]),
                     int(cpp_endpoint["denominator_exp2"]),
                     row["frozen_way2_ve"],
                 )
+            else:
+                missing_rows += 1
+        else:
+            missing_rows += 1
 
-            digest_match = int(
-                cpp_column["canonical_column_digest"] == int_column["canonical_column_digest"]
-            )
-            state_count_match = int(cpp_column["state_count"] == int_column["state_count"])
-            denominator_match = int(
-                cpp_endpoint is not None
-                and int_endpoint is not None
-                and cpp_endpoint["denominator_exp2"] == int_endpoint["denominator_exp2"]
-            )
-            parseval_match = int(cpp_column["parseval_pass"] == int_column["parseval_pass"])
-            certificate_match = int(
-                cpp_column["certified_exact_dyadic"] == int_column["certified_exact_dyadic"]
-            )
-            endpoint_match = int(
-                cpp_endpoint is not None
-                and int_endpoint is not None
-                and cpp_endpoint["numerator"] == int_endpoint["numerator"]
-            )
-            way1_match = int(
-                cpp_endpoint is not None
-                and int_endpoint is not None
-                and cpp_endpoint["way1_normalized_numerator"]
-                == int_endpoint["way1_normalized_numerator"]
-            )
-            sum_squares_match = int(cpp_column["sum_squares"] == int_column["sum_squares"])
-            expected_sum_squares_match = int(
-                cpp_column["expected_sum_squares"] == int_column["expected_sum_squares"]
-            )
-            completed_rounds_match = int(
-                cpp_column["completed_rounds"] == int_column["completed_rounds"]
-            )
+        cross["cross_backend_denominator_exp2_mismatch"] += int(not denominator_match)
+        cross["cross_backend_endpoint_numerator_mismatch"] += int(not endpoint_match)
+        cross["cross_backend_way1_normalized_numerator_mismatch"] += int(not way1_match)
 
-            cross_backend_digest_mismatch += int(not digest_match)
-            cross_backend_state_count_mismatch += int(not state_count_match)
-            cross_backend_denominator_mismatch += int(not denominator_match)
-            cross_backend_parseval_mismatch += int(not parseval_match)
-            cross_backend_certificate_mismatch += int(not certificate_match)
-            cross_backend_endpoint_mismatch += int(not endpoint_match)
-            cross_backend_way1_mismatch += int(not way1_match)
-
-            comparisons.append(
-                {
-                    "row_id": row["row_id"],
-                    "r": r,
-                    "u": u,
-                    "v": v,
-                    "comparison_status": status,
-                    "cpp_int_int128_digest_match": digest_match,
-                    "cpp_int_int128_endpoint_match": endpoint_match,
-                    "cpp_int_int128_state_count_match": state_count_match,
-                    "cpp_int_int128_denominator_match": denominator_match,
-                    "cpp_int_int128_parseval_match": parseval_match,
-                    "cpp_int_int128_certificate_match": certificate_match,
-                    "cpp_int_int128_way1_match": way1_match,
-                    "cpp_int_int128_sum_squares_match": sum_squares_match,
-                    "cpp_int_int128_expected_sum_squares_match": expected_sum_squares_match,
-                    "cpp_int_int128_completed_rounds_match": completed_rounds_match,
-                    "cpp_int_numerator": "" if cpp_endpoint is None else cpp_endpoint["numerator"],
-                    "int128_numerator": "" if int_endpoint is None else int_endpoint["numerator"],
-                    "denominator_exp2": "" if cpp_endpoint is None else cpp_endpoint["denominator_exp2"],
-                }
-            )
-            comparison_counts[status] += 1
-            continue
-
-        comparisons.append(
-            {
-                "row_id": row["row_id"],
-                "r": r,
-                "u": u,
-                "v": v,
-                "comparison_status": status,
-                "cpp_int_int128_digest_match": 0,
-                "cpp_int_int128_endpoint_match": 0,
-                "cpp_int_int128_state_count_match": 0,
-                "cpp_int_int128_denominator_match": 0,
-                "cpp_int_int128_parseval_match": 0,
-                "cpp_int_int128_certificate_match": 0,
-                "cpp_int_int128_way1_match": 0,
-                "cpp_int_int128_sum_squares_match": 0,
-                "cpp_int_int128_expected_sum_squares_match": 0,
-                "cpp_int_int128_completed_rounds_match": 0,
-                "cpp_int_numerator": "",
-                "int128_numerator": "",
-                "denominator_exp2": "",
-            }
-        )
+        comparison_row = {
+            "row_id": row["row_id"],
+            "r": r,
+            "u": u,
+            "v": v,
+            "comparison_status": status,
+            "cpp_int_int128_canonical_column_digest_match": digest_match,
+            "cpp_int_int128_state_count_match": state_count_match,
+            "cpp_int_int128_denominator_exp2_match": denominator_match,
+            "cpp_int_int128_sum_squares_match": sum_squares_match,
+            "cpp_int_int128_expected_sum_squares_match": expected_sum_squares_match,
+            "cpp_int_int128_completed_rounds_match": completed_rounds_match,
+            "cpp_int_int128_certified_no_truncation_match": no_truncation_match,
+            "cpp_int_int128_certified_exact_dyadic_match": certificate_match,
+            "cpp_int_int128_parseval_pass_match": parseval_match,
+            "cpp_int_int128_endpoint_numerator_match": endpoint_match,
+            "cpp_int_int128_way1_normalized_numerator_match": way1_match,
+            "cpp_int_numerator": "" if cpp_endpoint is None else cpp_endpoint["numerator"],
+            "int128_numerator": "" if int_endpoint is None else int_endpoint["numerator"],
+            "denominator_exp2": "" if cpp_endpoint is None else cpp_endpoint["denominator_exp2"],
+        }
+        comparisons.append(comparison_row)
         comparison_counts[status] += 1
+        if status != "EXACT_EQUAL" or any(
+            comparison_row[name] == 0
+            for name in (
+                "cpp_int_int128_canonical_column_digest_match",
+                "cpp_int_int128_state_count_match",
+                "cpp_int_int128_denominator_exp2_match",
+                "cpp_int_int128_sum_squares_match",
+                "cpp_int_int128_expected_sum_squares_match",
+                "cpp_int_int128_completed_rounds_match",
+                "cpp_int_int128_certified_no_truncation_match",
+                "cpp_int_int128_certified_exact_dyadic_match",
+                "cpp_int_int128_parseval_pass_match",
+                "cpp_int_int128_endpoint_numerator_match",
+                "cpp_int_int128_way1_normalized_numerator_match",
+            )
+        ):
+            failing_rows.append(comparison_row)
 
     way1_rows = []
     with (ROOT / "experiments/spotcheck/exact_spotcheck.csv").open(newline="", encoding="utf-8") as handle:
@@ -277,26 +333,23 @@ def main() -> int:
         "u",
         "v",
         "comparison_status",
-        "cpp_int_int128_digest_match",
-        "cpp_int_int128_endpoint_match",
+        "cpp_int_int128_canonical_column_digest_match",
         "cpp_int_int128_state_count_match",
-        "cpp_int_int128_denominator_match",
-        "cpp_int_int128_parseval_match",
-        "cpp_int_int128_certificate_match",
-        "cpp_int_int128_way1_match",
+        "cpp_int_int128_denominator_exp2_match",
         "cpp_int_int128_sum_squares_match",
         "cpp_int_int128_expected_sum_squares_match",
         "cpp_int_int128_completed_rounds_match",
+        "cpp_int_int128_certified_no_truncation_match",
+        "cpp_int_int128_certified_exact_dyadic_match",
+        "cpp_int_int128_parseval_pass_match",
+        "cpp_int_int128_endpoint_numerator_match",
+        "cpp_int_int128_way1_normalized_numerator_match",
         "cpp_int_numerator",
         "int128_numerator",
         "denominator_exp2",
     ]
     write_csv(root / "COMPARISONS.csv", comparison_fields, comparisons)
-    write_csv(
-        root / "MISMATCHES.csv",
-        comparison_fields,
-        [row for row in comparisons if row["comparison_status"] != "EXACT_EQUAL"],
-    )
+    write_csv(root / "MISMATCHES.csv", comparison_fields, failing_rows)
     write_csv(
         root / "WAY1_NUMERATOR_CHECK.csv",
         list(way1_rows[0].keys()) if way1_rows else ["r", "u", "v", "status_exact_way2"],
@@ -320,13 +373,7 @@ def main() -> int:
             },
             "cpp_int_columns": len(cpp_columns),
             "int128_columns": len(int_columns),
-            "cross_backend_digest_mismatch": cross_backend_digest_mismatch,
-            "cross_backend_endpoint_mismatch": cross_backend_endpoint_mismatch,
-            "cross_backend_state_count_mismatch": cross_backend_state_count_mismatch,
-            "cross_backend_denominator_mismatch": cross_backend_denominator_mismatch,
-            "cross_backend_parseval_mismatch": cross_backend_parseval_mismatch,
-            "cross_backend_certificate_mismatch": cross_backend_certificate_mismatch,
-            "cross_backend_way1_mismatch": cross_backend_way1_mismatch,
+            **cross,
             "duplicate_row_id": snapshot_duplicates["duplicate_row_id"]
             + cpp_duplicates["duplicate_row_id"]
             + int_duplicates["duplicate_row_id"],
