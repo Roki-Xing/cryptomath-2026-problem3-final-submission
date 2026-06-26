@@ -1,0 +1,10 @@
+{
+  "audit_sha256": "869c48f5afa6ebfe47683e16e0f791c967f947540f2882a5261e3554091c7fea",
+  "command": "python3 -X utf8 experiments/exact_way2/prepare_selector_inputs.py --final-ru experiments/frozen/final_ru.csv --audit experiments/submit_audit.csv --spotcheck-queries experiments/spotcheck/exact_spotcheck_queries.csv --out <ARTIFACT_ROOT>",
+  "complexity_input_sha256": "05359f7702df6f4b01ceff69bdd86baefa751eb741e3be1c5ff44b80b33ba310",
+  "final_ru_sha256": "941879db58f4ad63b3fcc45b27a04713215f8c7920c77ad8a76015795ec78246",
+  "schema": "exact-way2-pilot-selection-v2",
+  "source_commit": "eb0056138090a9397513335517774c44bf01e313",
+  "spotcheck_coordinates_sha256": "54b9a81d397f9b8023eee0569c48e2f68e160c71845339574075530df1761ca4",
+  "spotcheck_queries_sha256": "9f802650aa67765f3ead406c5ed8000aa4f0461f966de952c7021c8b4e3367ff"
+}

@@ -1,0 +1,3 @@
+row_id,r,u,v,numerator,denominator_exp2,exact_fraction,way1_normalized_numerator
+FQ000021,1,0x00000008,0x40040000,32768,16,"32768/2^16","2147483648"
+FQ000022,1,0x00000008,0xe00e0000,32768,16,"32768/2^16","2147483648"
