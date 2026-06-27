@@ -1,0 +1,19 @@
+{
+  "authorization_sha256": "aeeee018f5ff1dba946fdfcb2bd3386c8ec7d3fa089cf2d42695e62d4f8de533",
+  "binary_build_commit": "cb81f599ad4b4f087adf90580bd5df22bd308a98",
+  "binary_sha256": "e4c222bcb479af97aa26673ddc1ebc9799adeb9832a764204eb8bdd4a2ee90ef",
+  "build_command": "make recompute_frozen_exact",
+  "compiler_path": "/usr/bin/x86_64-linux-gnu-g++-13",
+  "compiler_version": "x86_64-linux-gnu-g++-13 (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+  "full_4760_run_started": true,
+  "git_status_porcelain_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "new_way1_run_started": false,
+  "schema": "exact-way2-full-provenance-v1",
+  "selection_sha256": "a4f3b8ec66a6757b0392c965b0a70c2fb6bba97dcb7ff05d1367ea0325631f5a",
+  "source_checkout_commit": "cb81f599ad4b4f087adf90580bd5df22bd308a98",
+  "source_tree_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "source_tree_dirty": false,
+  "source_tree_sha": "e3a4e7159eb766ce7868557e93362c7e03ce67d7",
+  "stage_b_authorized": false,
+  "submit_txt_modified": false
+}

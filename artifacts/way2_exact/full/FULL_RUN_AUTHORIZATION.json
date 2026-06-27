@@ -1,0 +1,32 @@
+{
+  "schema": "exact-way2-full-authorization-v1",
+  "authorized": true,
+  "authorized_by": "Codex",
+  "authorized_at_utc": "2026-06-27T07:06:54Z",
+  "source_commit": "cb81f599ad4b4f087adf90580bd5df22bd308a98",
+  "source_tree_sha": "e3a4e7159eb766ce7868557e93362c7e03ce67d7",
+  "source_tree_dirty": false,
+  "binary_sha256": "e4c222bcb479af97aa26673ddc1ebc9799adeb9832a764204eb8bdd4a2ee90ef",
+  "build_command": "make recompute_frozen_exact",
+  "compiler_path": "/usr/bin/x86_64-linux-gnu-g++-13",
+  "compiler_version": "x86_64-linux-gnu-g++-13 (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+  "final_ru_sha256": "941879db58f4ad63b3fcc45b27a04713215f8c7920c77ad8a76015795ec78246",
+  "final_queries_sha256": "44cef0f572d0201aed2e2d42e21deb6a5b8259743bf0a29b0665a332fbfdd93e",
+  "frozen_snapshot_sha256": "4e62da6ab4be3a9b9625aea104e4128296fd52ba0ea9ff76384dfae9000bbe91",
+  "cpp_int_selection_sha256": "a4f3b8ec66a6757b0392c965b0a70c2fb6bba97dcb7ff05d1367ea0325631f5a",
+  "int128_crosscheck_selection_sha256": "a4f3b8ec66a6757b0392c965b0a70c2fb6bba97dcb7ff05d1367ea0325631f5a",
+  "jobs": 1,
+  "per_round_timeout_seconds": {
+    "r1": 120,
+    "r2": 1200,
+    "r3": 1800
+  },
+  "total_wall_limit_seconds": 86400,
+  "cpu_limit_seconds": 129600,
+  "rss_limit_bytes": 4294967296,
+  "disk_limit_bytes": 21474836480,
+  "submit_sha256": "7b0f638ba8678462ee8d6c12bc0c5b89d7354b4a095b31330f3ba495acfe2e2e",
+  "full_4760_scope": true,
+  "stage_b_authorized": false,
+  "new_way1_run_started": false
+}
