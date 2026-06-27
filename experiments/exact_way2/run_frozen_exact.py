@@ -82,6 +82,7 @@ def verify_no_orphan_loose_outputs(root: Path) -> None:
         "FULL_RUN_AUTHORIZATION.json",
         "PROTOCOL.md",
         "SELECTOR_PROVENANCE.json",
+        "SELECTION_PROVENANCE.json",
         "COMPLEXITY_INPUT.csv",
         "SPOTCHECK_COORDINATES.csv",
         "SELECTOR_INPUT_PREPARATION.json",
