@@ -28,6 +28,7 @@ from common import (
     repo_relative,
     require_clean_worktree,
     sha256_file,
+    sibling_json_path,
     write_json,
 )
 
@@ -38,14 +39,14 @@ def selection_rows(selection_path: Path) -> list[dict[str, str]]:
 
 
 def selection_json_path(selection_path: Path, artifact_root: Path) -> Path:
-    sibling = selection_path.with_name("PILOT_SELECTION.json")
+    sibling = sibling_json_path(selection_path)
     if sibling.exists():
         return sibling
-    artifact_copy = artifact_root / "PILOT_SELECTION.json"
+    artifact_copy = artifact_root / sibling.name
     if artifact_copy.exists():
         return artifact_copy
     raise FileNotFoundError(
-        f"missing PILOT_SELECTION.json beside {selection_path} or under {artifact_root}"
+        f"missing {sibling.name} beside {selection_path} or under {artifact_root}"
     )
 
 
@@ -76,6 +77,9 @@ def verify_no_orphan_loose_outputs(root: Path) -> None:
     allowed_root_files = {
         "PILOT_SELECTION.csv",
         "PILOT_SELECTION.json",
+        "FULL_SELECTION.csv",
+        "FULL_SELECTION.json",
+        "FULL_RUN_AUTHORIZATION.json",
         "PROTOCOL.md",
         "SELECTOR_PROVENANCE.json",
         "COMPLEXITY_INPUT.csv",
@@ -301,10 +305,11 @@ def main() -> int:
     input_sha = sha256_file(queries_path)
     artifact_root_logical = logical_path(artifact_root, logical_root=args.artifact_logical_root)
     binary_logical = logical_path(binary, logical_root=args.binary_logical_path or args.binary)
+    selection_filename = selection_path.name
     selection_logical = logical_path(
         selection_path,
         logical_root=args.artifact_logical_root,
-        suffix="PILOT_SELECTION.csv",
+        suffix=selection_filename,
     )
     runner_command = (
         "python3 -X utf8 experiments/exact_way2/run_frozen_exact.py "

@@ -28,6 +28,11 @@ SUMMARY_SCHEMA = "exact-way2-pilot-summary-v2"
 PROVENANCE_SCHEMA = "exact-way2-pilot-provenance-v2"
 MANIFEST_SCHEMA = "exact-way2-pilot-manifest-v2"
 BUILD_REPRODUCIBILITY_SCHEMA = "exact-way2-build-reproducibility-v2"
+FULL_SELECTION_SCHEMA = "exact-way2-full-selection-v1"
+FULL_AUTHORIZATION_SCHEMA = "exact-way2-full-authorization-v1"
+FULL_SUMMARY_SCHEMA = "exact-way2-full-summary-v1"
+FULL_PROVENANCE_SCHEMA = "exact-way2-full-provenance-v1"
+FULL_MANIFEST_SCHEMA = "exact-way2-full-manifest-v1"
 
 
 @dataclass(frozen=True)
@@ -286,3 +291,7 @@ def population_cv(values: Sequence[float]) -> float:
         return 0.0
     variance = sum((value - mean) ** 2 for value in values) / len(values)
     return math.sqrt(variance) / mean
+
+
+def sibling_json_path(selection_path: Path) -> Path:
+    return selection_path.with_suffix(".json")

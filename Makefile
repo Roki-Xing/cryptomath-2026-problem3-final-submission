@@ -100,6 +100,9 @@ test: test_core test_linear_mask_basis test_exact_cartesian test_exact_dyadic te
 	python3 -X utf8 tests/test_exact_shard_reduction.py
 	python3 -X utf8 tests/test_exact_decimal_parser.py
 	python3 -X utf8 tests/test_exact_selector.py
+	python3 -X utf8 tests/test_full_exact_selection.py
+	PYTHONDONTWRITEBYTECODE=1 python3 -X utf8 tests/test_full_exact_authorization.py
+	PYTHONDONTWRITEBYTECODE=1 python3 -X utf8 tests/test_full_exact_small_pipeline.py
 	python3 -X utf8 tests/test_frozen_exact_pipeline.py
 	python3 -X utf8 tests/test_exact_resume.py
 	python3 -X utf8 tests/test_exact_artifact_gate.py

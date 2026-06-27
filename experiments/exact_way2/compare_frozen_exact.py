@@ -131,11 +131,12 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--artifact-root", required=True)
     parser.add_argument("--snapshot", required=True)
+    parser.add_argument("--selection")
     args = parser.parse_args()
 
     started = time.perf_counter()
     root = Path(args.artifact_root)
-    selection_path = root / "PILOT_SELECTION.csv"
+    selection_path = Path(args.selection) if args.selection else root / "PILOT_SELECTION.csv"
     selection_rows, selected_keys = load_selection(selection_path)
     snapshot_rows, snapshot_duplicates = load_snapshot_rows(Path(args.snapshot), selected_keys)
     cpp_columns, cpp_endpoints, cpp_duplicates = load_backend(root, "cpp_int")
