@@ -92,9 +92,6 @@ def binary_logical_path(binary: str) -> str:
 
 def run_repeat_subset(root: Path, selection_rows: list[dict[str, str]], binary: str, jobs: int) -> dict[str, object]:
     subset_rows = build_repeat_subset_rows(selection_rows)
-    subset_csv = root / "repeat_subset_selection.csv"
-    write_csv(subset_csv, list(subset_rows[0].keys()), subset_rows)
-    shutil.copy2(root / "PILOT_SELECTION.json", root / "repeat_subset_selection.json")
     results: dict[str, object] = {
         "subset": [{"r": int(row["r"]), "u": row["u"]} for row in subset_rows],
         "cpp_int": {"runs": []},
@@ -106,7 +103,8 @@ def run_repeat_subset(root: Path, selection_rows: list[dict[str, str]], binary: 
         for run_index in range(1, 4):
             with tempfile.TemporaryDirectory(prefix=f"exact-way2-repeat-{backend}-{run_index}-") as tmpdir:
                 repeat_root = Path(tmpdir)
-                shutil.copy2(subset_csv, repeat_root / "PILOT_SELECTION.csv")
+                subset_csv = repeat_root / "PILOT_SELECTION.csv"
+                write_csv(subset_csv, list(subset_rows[0].keys()), subset_rows)
                 shutil.copy2(root / "PILOT_SELECTION.json", repeat_root / "PILOT_SELECTION.json")
                 started = time.perf_counter()
                 run_cmd(
