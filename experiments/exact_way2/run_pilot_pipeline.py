@@ -9,6 +9,7 @@ import hashlib
 import json
 import shutil
 import subprocess
+import tempfile
 import time
 from pathlib import Path
 
@@ -103,51 +104,48 @@ def run_repeat_subset(root: Path, selection_rows: list[dict[str, str]], binary: 
         previous_canonical_digest = None
         previous_endpoints = None
         for run_index in range(1, 4):
-            repeat_root = root / f".repeat_tmp_{backend}_{run_index}"
-            if repeat_root.exists():
-                shutil.rmtree(repeat_root)
-            repeat_root.mkdir(parents=True)
-            shutil.copy2(subset_csv, repeat_root / "PILOT_SELECTION.csv")
-            shutil.copy2(root / "PILOT_SELECTION.json", repeat_root / "PILOT_SELECTION.json")
-            started = time.perf_counter()
-            run_cmd(
-                [
-                    "python3",
-                    "-X",
-                    "utf8",
-                    "experiments/exact_way2/run_frozen_exact.py",
-                    "--selection",
-                    str(repeat_root / "PILOT_SELECTION.csv"),
-                    "--backend",
-                    backend,
-                    "--jobs",
-                    str(jobs),
-                    "--resume",
-                    "--artifact-root",
-                    str(repeat_root),
-                    "--artifact-logical-root",
-                    f"artifacts/way2_exact/pilot/repeat_tmp/{backend}_{run_index}",
-                    "--binary",
-                    binary,
-                    "--binary-logical-path",
-                    binary_logical_path(binary),
-                ],
-                cwd=Path.cwd(),
-            )
-            elapsed = time.perf_counter() - started
-            bundle_sha, canonical_digest, endpoint_sha = repeat_run_metrics(repeat_root)
-            results[backend]["runs"].append(
-                {
-                    "run": run_index,
-                    "wall_seconds": elapsed,
-                    "bundle_output_sha256": bundle_sha,
-                    "canonical_column_digest": canonical_digest,
-                    "endpoint_payload_sha256": endpoint_sha,
-                }
-            )
-            previous_canonical_digest = canonical_digest if previous_canonical_digest is None else previous_canonical_digest
-            previous_endpoints = endpoint_sha if previous_endpoints is None else previous_endpoints
-            shutil.rmtree(repeat_root)
+            with tempfile.TemporaryDirectory(prefix=f"exact-way2-repeat-{backend}-{run_index}-") as tmpdir:
+                repeat_root = Path(tmpdir)
+                shutil.copy2(subset_csv, repeat_root / "PILOT_SELECTION.csv")
+                shutil.copy2(root / "PILOT_SELECTION.json", repeat_root / "PILOT_SELECTION.json")
+                started = time.perf_counter()
+                run_cmd(
+                    [
+                        "python3",
+                        "-X",
+                        "utf8",
+                        "experiments/exact_way2/run_frozen_exact.py",
+                        "--selection",
+                        str(repeat_root / "PILOT_SELECTION.csv"),
+                        "--backend",
+                        backend,
+                        "--jobs",
+                        str(jobs),
+                        "--resume",
+                        "--artifact-root",
+                        str(repeat_root),
+                        "--artifact-logical-root",
+                        f"artifacts/way2_exact/pilot/repeat_tmp/{backend}_{run_index}",
+                        "--binary",
+                        binary,
+                        "--binary-logical-path",
+                        binary_logical_path(binary),
+                    ],
+                    cwd=Path.cwd(),
+                )
+                elapsed = time.perf_counter() - started
+                bundle_sha, canonical_digest, endpoint_sha = repeat_run_metrics(repeat_root)
+                results[backend]["runs"].append(
+                    {
+                        "run": run_index,
+                        "wall_seconds": elapsed,
+                        "bundle_output_sha256": bundle_sha,
+                        "canonical_column_digest": canonical_digest,
+                        "endpoint_payload_sha256": endpoint_sha,
+                    }
+                )
+                previous_canonical_digest = canonical_digest if previous_canonical_digest is None else previous_canonical_digest
+                previous_endpoints = endpoint_sha if previous_endpoints is None else previous_endpoints
         runs = [entry["wall_seconds"] for entry in results[backend]["runs"]]
         canonical_per_run = [entry["canonical_column_digest"] for entry in results[backend]["runs"]]
         endpoint_per_run = [entry["endpoint_payload_sha256"] for entry in results[backend]["runs"]]
