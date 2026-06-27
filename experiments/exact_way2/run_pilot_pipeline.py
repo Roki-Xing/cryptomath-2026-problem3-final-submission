@@ -7,6 +7,7 @@ import argparse
 import csv
 import hashlib
 import json
+import os
 import shutil
 import subprocess
 import tempfile
@@ -17,7 +18,17 @@ from common import bundle_output_sha, nearest_rank_index, population_cv, read_js
 
 
 def run_cmd(args: list[str], *, cwd: Path) -> None:
-    subprocess.run(args, cwd=cwd, check=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    env = dict(os.environ)
+    env["PYTHONDONTWRITEBYTECODE"] = "1"
+    subprocess.run(
+        args,
+        cwd=cwd,
+        env=env,
+        check=True,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
 
 
 def load_selection_rows(path: Path) -> list[dict[str, str]]:
@@ -192,6 +203,7 @@ def main() -> int:
     cwd = Path.cwd()
     root = Path(args.artifact_root)
     root.mkdir(parents=True, exist_ok=True)
+    shutil.rmtree(Path(__file__).with_name("__pycache__"), ignore_errors=True)
 
     if args.repeat_only:
         selection_rows = load_selection_rows(root / "PILOT_SELECTION.csv")
