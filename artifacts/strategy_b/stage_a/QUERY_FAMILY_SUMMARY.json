@@ -1,0 +1,29 @@
+{
+  "a0_available_counts": {
+    "frozen-subset": 5,
+    "synthetic-frozen-shaped": 6,
+    "uniform": 6
+  },
+  "a0_query_artifacts": 17,
+  "a0_skip_unavailable_count": 1,
+  "a1_available_counts": {
+    "frozen-subset": 12,
+    "synthetic-frozen-shaped": 15,
+    "uniform": 15
+  },
+  "a1_query_artifacts": 42,
+  "a1_skip_unavailable_count": 3,
+  "a2_anchor_counts": {
+    "frozen-subset": 2,
+    "synthetic-frozen-shaped": 1
+  },
+  "query_csv_header": [
+    "row_id",
+    "r",
+    "u",
+    "v"
+  ],
+  "query_csv_header_only_row_id_r_u_v": true,
+  "schema": "strategy-b-stage-a-query-family-summary-v1",
+  "source": "bench/way1"
+}

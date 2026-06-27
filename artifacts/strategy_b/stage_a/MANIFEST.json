@@ -1,0 +1,110 @@
+{
+  "category_counts": {
+    "REQUIRED_SUMMARY": 5
+  },
+  "decision": "STAGE_A_PASS",
+  "files": [
+    {
+      "category": "REQUIRED_SUMMARY",
+      "path": "docs/STRATEGY_B_STAGE_A_PROTOCOL.md",
+      "sha256": "694ba927980a9788ee0fcd19d513ef4229c8c941a1a6ff0d9daa8e1e2ebc5cc2",
+      "size": 3731
+    },
+    {
+      "category": "REQUIRED_SUMMARY",
+      "path": "artifacts/strategy_b/stage_a/STAGE_A_SUMMARY.json",
+      "sha256": "ada1126fd8f6e7f3beefe2adac9fc3a187f3b513393953e278d9067f06bdb00d",
+      "size": 7108
+    },
+    {
+      "category": "REQUIRED_SUMMARY",
+      "path": "artifacts/strategy_b/stage_a/QUERY_FAMILY_SUMMARY.json",
+      "sha256": "898e611a8c7ae893ae8b9442cf937edd8e35e27c7c01ee95ad146a31d337341f",
+      "size": 629
+    },
+    {
+      "category": "REQUIRED_SUMMARY",
+      "path": "artifacts/strategy_b/stage_a/MISMATCH_SUMMARY.json",
+      "sha256": "38ade7d066662e10a6c7b30d5833e0ff1afe013372405db100291cad9c725a15",
+      "size": 460
+    },
+    {
+      "category": "REQUIRED_SUMMARY",
+      "path": "artifacts/strategy_b/stage_a/REDUCER_NEGATIVE_TEST_SUMMARY.json",
+      "sha256": "ca8180496e67fc7fd6f9c9fd3c4f697af6bc4fb3a9075101cbf870906375b41e",
+      "size": 463
+    }
+  ],
+  "review_state": "STRATEGY_B_STAGE_A_REVIEW",
+  "schema": "strategy-b-stage-a-manifest-v1",
+  "sha256_manifest_path": "artifacts/strategy_b/stage_a/SHA256SUMS.txt",
+  "source_evidence": [
+    {
+      "path": "bench/way1/STAGE_A_SUMMARY.json",
+      "sha256": "183d0a5a4a8c2adc2aa93198be22f48ea549790afcfabdb5d9734a7607f02358",
+      "size": 4129
+    },
+    {
+      "path": "bench/way1/SUMMARY.md",
+      "sha256": "d3a62ad9249fe9ebf0b38fede1d2f0615083dc57e314c1699c543df964d7cdee",
+      "size": 7838
+    },
+    {
+      "path": "bench/way1/PROTOCOL.md",
+      "sha256": "3e3022160795266c6f44da0d69e84b7fc18a6715f1af427726e99f27edffa137",
+      "size": 8168
+    },
+    {
+      "path": "bench/way1/MANIFEST.json",
+      "sha256": "c8511b0b697b201bf32a27f191a1b60c7603c8bba9ee0b91f92d6bd7b5618fa6",
+      "size": 1269
+    },
+    {
+      "path": "bench/way1/SHA256SUMS.txt",
+      "sha256": "c16daa25793714c94822a9a6679a6d717752cea7e9c81e72c20789c6f2e7d9ad",
+      "size": 356150
+    },
+    {
+      "path": "bench/way1/stage_a0/SUMMARY.json",
+      "sha256": "61b298f294bc8c6a5f63a4bf7c88dafd9e1cc592ba1badb76b801d1051ccbdb7",
+      "size": 533
+    },
+    {
+      "path": "bench/way1/stage_a0/MANIFEST.json",
+      "sha256": "de5d8ff3fe269dd11740f9d5fdb7f9ae25d4cf617c0c68099fe2d36cf0d16fce",
+      "size": 60675
+    },
+    {
+      "path": "bench/way1/stage_a1/SUMMARY.json",
+      "sha256": "dedd6b6ea65d5f57a69f88c297b94b85f40780f50fafa8af054de188c2dacda0",
+      "size": 534
+    },
+    {
+      "path": "bench/way1/stage_a1/MANIFEST.json",
+      "sha256": "b665785f6573d70e03537db6ac06bd3d1c557695dbcfbf66770385f93ca6d2a4",
+      "size": 40282
+    },
+    {
+      "path": "bench/way1/stage_a2/SUMMARY.json",
+      "sha256": "cbccb31f04de76fa416c3fcfa2a5949fed07c1f1541fb8a2c7407b5922ba1f9c",
+      "size": 383
+    },
+    {
+      "path": "bench/way1/stage_a2/MANIFEST.json",
+      "sha256": "7f4af8108fc233a4c854cb1ecbfd9c64dc5481cd03195c9b4259581b4323a509",
+      "size": 28303
+    },
+    {
+      "path": "bench/way1/stage_toolchain/SUMMARY.json",
+      "sha256": "f3df1d0ed29a16199c13bf71d311d84e317a8529564bfd33a53ddd0127a7d91f",
+      "size": 515
+    },
+    {
+      "path": "bench/way1/stage_toolchain/MANIFEST.json",
+      "sha256": "78a0dcfeda09f414213317e3fd8b2d454189b3e19ba0efc4cd842d7b42ba0cd7",
+      "size": 229895
+    }
+  ],
+  "stage": "STRATEGY_B_STAGE_A",
+  "summary_path": "artifacts/strategy_b/stage_a/STAGE_A_SUMMARY.json"
+}

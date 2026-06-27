@@ -1,0 +1,15 @@
+{
+  "canonical_shuffled_mismatch_count": 0,
+  "cross_variant_mismatch_count": 0,
+  "nonzero_exit_count": 0,
+  "numerator_mismatch_count": 0,
+  "oom_count": 0,
+  "sanitizer_diagnostic_count": 0,
+  "schema": "strategy-b-stage-a-mismatch-summary-v1",
+  "semantic_mismatch_count_a0": 0,
+  "semantic_mismatch_count_a1": 0,
+  "semantic_mismatch_count_a2": 0,
+  "semantic_mismatch_count_toolchain": 0,
+  "single_multithread_mismatch_count": 0,
+  "timeout_count": 0
+}

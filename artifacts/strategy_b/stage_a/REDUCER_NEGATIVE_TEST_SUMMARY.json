@@ -1,0 +1,20 @@
+{
+  "all_cases_passed": true,
+  "cases": [
+    "start_boundary_mismatch",
+    "end_boundary_mismatch",
+    "half_open_overlap",
+    "half_open_gap",
+    "duplicate_shard",
+    "missing_shard",
+    "overlap_range_drift",
+    "gap_range_drift",
+    "query_sha_mismatch",
+    "program_sha_mismatch",
+    "mixed_implementation",
+    "denominator_mismatch"
+  ],
+  "passed_cases": 12,
+  "schema": "strategy-b-stage-a-reducer-negative-summary-v1",
+  "total_cases": 12
+}

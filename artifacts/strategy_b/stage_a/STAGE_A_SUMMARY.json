@@ -1,0 +1,254 @@
+{
+  "decision": "STAGE_A_PASS",
+  "evidence_sources": [
+    {
+      "path": "bench/way1/STAGE_A_SUMMARY.json",
+      "sha256": "183d0a5a4a8c2adc2aa93198be22f48ea549790afcfabdb5d9734a7607f02358",
+      "size": 4129
+    },
+    {
+      "path": "bench/way1/SUMMARY.md",
+      "sha256": "d3a62ad9249fe9ebf0b38fede1d2f0615083dc57e314c1699c543df964d7cdee",
+      "size": 7838
+    },
+    {
+      "path": "bench/way1/PROTOCOL.md",
+      "sha256": "3e3022160795266c6f44da0d69e84b7fc18a6715f1af427726e99f27edffa137",
+      "size": 8168
+    },
+    {
+      "path": "bench/way1/MANIFEST.json",
+      "sha256": "c8511b0b697b201bf32a27f191a1b60c7603c8bba9ee0b91f92d6bd7b5618fa6",
+      "size": 1269
+    },
+    {
+      "path": "bench/way1/SHA256SUMS.txt",
+      "sha256": "c16daa25793714c94822a9a6679a6d717752cea7e9c81e72c20789c6f2e7d9ad",
+      "size": 356150
+    },
+    {
+      "path": "bench/way1/stage_a0/SUMMARY.json",
+      "sha256": "61b298f294bc8c6a5f63a4bf7c88dafd9e1cc592ba1badb76b801d1051ccbdb7",
+      "size": 533
+    },
+    {
+      "path": "bench/way1/stage_a0/MANIFEST.json",
+      "sha256": "de5d8ff3fe269dd11740f9d5fdb7f9ae25d4cf617c0c68099fe2d36cf0d16fce",
+      "size": 60675
+    },
+    {
+      "path": "bench/way1/stage_a1/SUMMARY.json",
+      "sha256": "dedd6b6ea65d5f57a69f88c297b94b85f40780f50fafa8af054de188c2dacda0",
+      "size": 534
+    },
+    {
+      "path": "bench/way1/stage_a1/MANIFEST.json",
+      "sha256": "b665785f6573d70e03537db6ac06bd3d1c557695dbcfbf66770385f93ca6d2a4",
+      "size": 40282
+    },
+    {
+      "path": "bench/way1/stage_a2/SUMMARY.json",
+      "sha256": "cbccb31f04de76fa416c3fcfa2a5949fed07c1f1541fb8a2c7407b5922ba1f9c",
+      "size": 383
+    },
+    {
+      "path": "bench/way1/stage_a2/MANIFEST.json",
+      "sha256": "7f4af8108fc233a4c854cb1ecbfd9c64dc5481cd03195c9b4259581b4323a509",
+      "size": 28303
+    },
+    {
+      "path": "bench/way1/stage_toolchain/SUMMARY.json",
+      "sha256": "f3df1d0ed29a16199c13bf71d311d84e317a8529564bfd33a53ddd0127a7d91f",
+      "size": 515
+    },
+    {
+      "path": "bench/way1/stage_toolchain/MANIFEST.json",
+      "sha256": "78a0dcfeda09f414213317e3fd8b2d454189b3e19ba0efc4cd842d7b42ba0cd7",
+      "size": 229895
+    }
+  ],
+  "gates": {
+    "binary_sha_stable": true,
+    "canonical_shuffled_identical_as_map": true,
+    "current_grouped_u_grouped_uv_numerators_identical": true,
+    "frozen_subset_family_passed": true,
+    "no_oom": true,
+    "no_signed_integer_overflow": true,
+    "no_timeout": true,
+    "numerator_mismatch_count": 0,
+    "output_sha_stable": true,
+    "program_source_command_sha_recorded": true,
+    "query_sha_stable": true,
+    "reducer_rejects_corrupted_shards": true,
+    "repeated_u_v_query_cases_passed": true,
+    "shard_negative_test_pass_count": 12,
+    "shard_reductions_equal_single_process": true,
+    "single_thread_multi_thread_identical": true,
+    "submit_sha_unchanged": true,
+    "synthetic_frozen_shaped_family_passed": true,
+    "total_score_unchanged": true,
+    "uniform_family_passed": true,
+    "valid_count_unchanged": true
+  },
+  "generation_base_commit": "080d6a5d8afbc5fa7aba3379384f861c1f45dfb0",
+  "implementations_tested": [
+    "current",
+    "grouped_u",
+    "grouped_uv"
+  ],
+  "matrices": {
+    "a0": {
+      "available_query_artifacts": 17,
+      "domain_bits": 16,
+      "order_modes": [
+        "canonical",
+        "shuffled"
+      ],
+      "q_values": [
+        64,
+        512
+      ],
+      "query_families": [
+        "uniform",
+        "frozen-subset",
+        "synthetic-frozen-shaped"
+      ],
+      "query_spec_count": 18,
+      "result_row_count": 204,
+      "rounds": [
+        1,
+        2,
+        3
+      ],
+      "run_case_count": 68,
+      "skip_unavailable_count": 1,
+      "status": "STAGE_A0_PASS",
+      "thread_modes": [
+        1,
+        "default_test_thread_count"
+      ]
+    },
+    "a1": {
+      "available_query_artifacts": 42,
+      "q_domain_bits": {
+        "16384": 12,
+        "4096": 14,
+        "512": 17,
+        "64": 20,
+        "8": 22
+      },
+      "query_families": [
+        "uniform",
+        "frozen-subset",
+        "synthetic-frozen-shaped"
+      ],
+      "query_spec_count": 45,
+      "result_row_count": 150,
+      "rounds": [
+        1,
+        2,
+        3
+      ],
+      "run_case_count": 50,
+      "skip_unavailable_count": 3,
+      "status": "STAGE_A1_PASS",
+      "variants": [
+        "current",
+        "grouped_u",
+        "grouped_uv"
+      ]
+    },
+    "a2": {
+      "anchor_query_families": {
+        "frozen-subset": 2,
+        "synthetic-frozen-shaped": 1
+      },
+      "matrix_case_count": 31,
+      "raw_shard_count": 172,
+      "reducer_corruption_cases_passed": 12,
+      "shard_layouts": [
+        1,
+        2,
+        7,
+        16
+      ],
+      "status": "STAGE_A2_PASS",
+      "variants": [
+        "current",
+        "grouped_u",
+        "grouped_uv"
+      ]
+    },
+    "toolchain": {
+      "asan_cases": 9,
+      "compiler_matrix": [
+        "gcc",
+        "clang",
+        "-O0",
+        "-O3",
+        "ubsan",
+        "asan",
+        "tsan"
+      ],
+      "matrix_case_count": 69,
+      "optimization_cases": 36,
+      "sanitizer_diagnostic_count": 0,
+      "semantic_mismatch_count": 0,
+      "status": "STAGE_TOOLCHAIN_PASS",
+      "tsan_cases": 6,
+      "ubsan_cases": 18
+    }
+  },
+  "next_state": "STRATEGY_B_STAGE_A_REVIEW",
+  "protocol_doc": "docs/STRATEGY_B_STAGE_A_PROTOCOL.md",
+  "protocol_doc_sha256": "694ba927980a9788ee0fcd19d513ef4229c8c941a1a6ff0d9daa8e1e2ebc5cc2",
+  "query_family_counts": {
+    "a0_available_counts": {
+      "frozen-subset": 5,
+      "synthetic-frozen-shaped": 6,
+      "uniform": 6
+    },
+    "a0_query_artifacts": 17,
+    "a0_skip_unavailable_count": 1,
+    "a1_available_counts": {
+      "frozen-subset": 12,
+      "synthetic-frozen-shaped": 15,
+      "uniform": 15
+    },
+    "a1_query_artifacts": 42,
+    "a1_skip_unavailable_count": 3,
+    "a2_anchor_counts": {
+      "frozen-subset": 2,
+      "synthetic-frozen-shaped": 1
+    },
+    "query_csv_header": [
+      "row_id",
+      "r",
+      "u",
+      "v"
+    ],
+    "query_csv_header_only_row_id_r_u_v": true,
+    "schema": "strategy-b-stage-a-query-family-summary-v1",
+    "source": "bench/way1"
+  },
+  "schema": "strategy-b-stage-a-summary-v1",
+  "source_benchmark_manifest_sha256": "c8511b0b697b201bf32a27f191a1b60c7603c8bba9ee0b91f92d6bd7b5618fa6",
+  "source_benchmark_protocol_sha256": "3e3022160795266c6f44da0d69e84b7fc18a6715f1af427726e99f27edffa137",
+  "source_benchmark_root": "bench/way1",
+  "source_benchmark_summary_sha256": "183d0a5a4a8c2adc2aa93198be22f48ea549790afcfabdb5d9734a7607f02358",
+  "stage": "STRATEGY_B_STAGE_A",
+  "status_flags": {
+    "full_138338_way1_started": false,
+    "full_2_32_run_started": false,
+    "new_way1_run_started": false,
+    "stage_b_authorized": false,
+    "strategy_b_final_file_generated": false,
+    "submit_txt_modified": false,
+    "vt_provenance_closed": false
+  },
+  "submission": {
+    "sha256": "7b0f638ba8678462ee8d6c12bc0c5b89d7354b4a095b31330f3ba495acfe2e2e",
+    "total_score": "105843.622442471292742994",
+    "valid_count": 138338
+  }
+}
