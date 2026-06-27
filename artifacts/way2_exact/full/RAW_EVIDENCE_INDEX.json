@@ -1,0 +1,125 @@
+{
+  "archive_count": 6,
+  "archives": [
+    {
+      "archive_sha256": "68b88b06204dfee4cba9440ea1fc109b0a24c9c17f99388f4448393d583c1b2a",
+      "bundle_count": 120,
+      "file_count": 360,
+      "source_commit": "cb81f599ad4b4f087adf90580bd5df22bd308a98",
+      "source_tree_sha": "e3a4e7159eb766ce7868557e93362c7e03ce67d7",
+      "total_bytes": 334072,
+      "unpacked_manifest_sha256": "a56e1c70b1e0aa0109fdc7d84ba907a6ad7a1d5cf54042ac55bbe199e3bd9214",
+      "archive_group": "r1_cpp_int",
+      "archive_name": "r1_cpp_int.tar.zst",
+      "archive_format": "tar.zst",
+      "release_asset_name": "r1_cpp_int.tar.zst",
+      "release_asset_uri_template": "https://github.com/Roki-Xing/cryptomath-2026-problem3-final-submission/releases/download/{release_tag}/r1_cpp_int.tar.zst",
+      "local_generation_diagnostics": {
+        "archive_output_path": "/tmp/full-exact-way2-archives/r1_cpp_int.tar.zst"
+      }
+    },
+    {
+      "archive_sha256": "61f0575cf9099daa1058069d3858e19df8767c53835b2b529e46a670ef7c07a1",
+      "bundle_count": 120,
+      "file_count": 360,
+      "source_commit": "cb81f599ad4b4f087adf90580bd5df22bd308a98",
+      "source_tree_sha": "e3a4e7159eb766ce7868557e93362c7e03ce67d7",
+      "total_bytes": 335751,
+      "unpacked_manifest_sha256": "a56e1c70b1e0aa0109fdc7d84ba907a6ad7a1d5cf54042ac55bbe199e3bd9214",
+      "archive_group": "r1_int128_checked",
+      "archive_name": "r1_int128_checked.tar.zst",
+      "archive_format": "tar.zst",
+      "release_asset_name": "r1_int128_checked.tar.zst",
+      "release_asset_uri_template": "https://github.com/Roki-Xing/cryptomath-2026-problem3-final-submission/releases/download/{release_tag}/r1_int128_checked.tar.zst",
+      "local_generation_diagnostics": {
+        "archive_output_path": "/tmp/full-exact-way2-archives/r1_int128_checked.tar.zst"
+      }
+    },
+    {
+      "archive_sha256": "56a8ce9511609f250df0dfcd1ab153ff07d846eb92d296d21bf1dacb70a2a078",
+      "bundle_count": 4544,
+      "file_count": 13632,
+      "source_commit": "cb81f599ad4b4f087adf90580bd5df22bd308a98",
+      "source_tree_sha": "e3a4e7159eb766ce7868557e93362c7e03ce67d7",
+      "total_bytes": 19024881,
+      "unpacked_manifest_sha256": "a56e1c70b1e0aa0109fdc7d84ba907a6ad7a1d5cf54042ac55bbe199e3bd9214",
+      "archive_group": "r2_cpp_int",
+      "archive_name": "r2_cpp_int.tar.zst",
+      "archive_format": "tar.zst",
+      "release_asset_name": "r2_cpp_int.tar.zst",
+      "release_asset_uri_template": "https://github.com/Roki-Xing/cryptomath-2026-problem3-final-submission/releases/download/{release_tag}/r2_cpp_int.tar.zst",
+      "local_generation_diagnostics": {
+        "archive_output_path": "/tmp/full-exact-way2-archives/r2_cpp_int.tar.zst"
+      }
+    },
+    {
+      "archive_sha256": "3ca8cdedd344b7156b1f188b8cf0d72692478a38cd66425a67db568c230154db",
+      "bundle_count": 4544,
+      "file_count": 13632,
+      "source_commit": "cb81f599ad4b4f087adf90580bd5df22bd308a98",
+      "source_tree_sha": "e3a4e7159eb766ce7868557e93362c7e03ce67d7",
+      "total_bytes": 19088672,
+      "unpacked_manifest_sha256": "a56e1c70b1e0aa0109fdc7d84ba907a6ad7a1d5cf54042ac55bbe199e3bd9214",
+      "archive_group": "r2_int128_checked",
+      "archive_name": "r2_int128_checked.tar.zst",
+      "archive_format": "tar.zst",
+      "release_asset_name": "r2_int128_checked.tar.zst",
+      "release_asset_uri_template": "https://github.com/Roki-Xing/cryptomath-2026-problem3-final-submission/releases/download/{release_tag}/r2_int128_checked.tar.zst",
+      "local_generation_diagnostics": {
+        "archive_output_path": "/tmp/full-exact-way2-archives/r2_int128_checked.tar.zst"
+      }
+    },
+    {
+      "archive_sha256": "1b2296fb5cd9b7e4060e6a9038e3dfb322ad9fd471a5d27630c4c8387d4f8232",
+      "bundle_count": 96,
+      "file_count": 288,
+      "source_commit": "cb81f599ad4b4f087adf90580bd5df22bd308a98",
+      "source_tree_sha": "e3a4e7159eb766ce7868557e93362c7e03ce67d7",
+      "total_bytes": 4309495,
+      "unpacked_manifest_sha256": "a56e1c70b1e0aa0109fdc7d84ba907a6ad7a1d5cf54042ac55bbe199e3bd9214",
+      "archive_group": "r3_cpp_int",
+      "archive_name": "r3_cpp_int.tar.zst",
+      "archive_format": "tar.zst",
+      "release_asset_name": "r3_cpp_int.tar.zst",
+      "release_asset_uri_template": "https://github.com/Roki-Xing/cryptomath-2026-problem3-final-submission/releases/download/{release_tag}/r3_cpp_int.tar.zst",
+      "local_generation_diagnostics": {
+        "archive_output_path": "/tmp/full-exact-way2-archives/r3_cpp_int.tar.zst"
+      }
+    },
+    {
+      "archive_sha256": "745b7c7a7b07e6f211a272045bdb5316f39beced6c9ff7e2945c88c63ac3c620",
+      "bundle_count": 96,
+      "file_count": 288,
+      "source_commit": "cb81f599ad4b4f087adf90580bd5df22bd308a98",
+      "source_tree_sha": "e3a4e7159eb766ce7868557e93362c7e03ce67d7",
+      "total_bytes": 4310872,
+      "unpacked_manifest_sha256": "a56e1c70b1e0aa0109fdc7d84ba907a6ad7a1d5cf54042ac55bbe199e3bd9214",
+      "archive_group": "r3_int128_checked",
+      "archive_name": "r3_int128_checked.tar.zst",
+      "archive_format": "tar.zst",
+      "release_asset_name": "r3_int128_checked.tar.zst",
+      "release_asset_uri_template": "https://github.com/Roki-Xing/cryptomath-2026-problem3-final-submission/releases/download/{release_tag}/r3_int128_checked.tar.zst",
+      "local_generation_diagnostics": {
+        "archive_output_path": "/tmp/full-exact-way2-archives/r3_int128_checked.tar.zst"
+      }
+    }
+  ],
+  "bundle_count": 9520,
+  "representative_bundles": [
+    "r1_0x00000001_cpp_int",
+    "r1_0x00000001_int128_checked",
+    "r2_0x00000001_cpp_int",
+    "r2_0x00000001_int128_checked",
+    "r3_0x00000001_cpp_int",
+    "r3_0x00000001_int128_checked"
+  ],
+  "retention_policy": {
+    "ci_artifacts_are_mirror_only": true,
+    "competition_package_excludes_full_raw_archives": true,
+    "full_raw_bundles_committed_as_loose_files": false,
+    "git_contains_compact_only": true,
+    "release_assets_are_primary_long_term_carrier": true
+  },
+  "source_commit": "cb81f599ad4b4f087adf90580bd5df22bd308a98",
+  "source_tree_sha": "e3a4e7159eb766ce7868557e93362c7e03ce67d7"
+}

@@ -1,0 +1,22 @@
+{
+  "artifact_generated_at_commit": "cb81f599ad4b4f087adf90580bd5df22bd308a98",
+  "artifact_root": "artifacts/way2_exact/full",
+  "backend_mode": "both",
+  "binary_build_commit": "cb81f599ad4b4f087adf90580bd5df22bd308a98",
+  "binary_path": "full-exact-way2-recompute_frozen_exact",
+  "binary_sha256": "e4c222bcb479af97aa26673ddc1ebc9799adeb9832a764204eb8bdd4a2ee90ef",
+  "command_sha256": "85956017ba071752a552f53ed7fcee9ff1ce3b6b459a231d8746c146f1010934",
+  "final_queries_sha256": "44cef0f572d0201aed2e2d42e21deb6a5b8259743bf0a29b0665a332fbfdd93e",
+  "final_ru_sha256": "941879db58f4ad63b3fcc45b27a04713215f8c7920c77ad8a76015795ec78246",
+  "git_status_porcelain_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "jobs": 1,
+  "queries_path": "experiments/frozen/final_queries.csv",
+  "runner_commit": "cb81f599ad4b4f087adf90580bd5df22bd308a98",
+  "selection_path": "artifacts/way2_exact/full/FULL_SELECTION.csv",
+  "selection_sha256": "a4f3b8ec66a6757b0392c965b0a70c2fb6bba97dcb7ff05d1367ea0325631f5a",
+  "selector_commit": "cb81f599ad4b4f087adf90580bd5df22bd308a98",
+  "source_checkout_commit": "cb81f599ad4b4f087adf90580bd5df22bd308a98",
+  "source_tree_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "source_tree_dirty": false,
+  "source_tree_sha": "e3a4e7159eb766ce7868557e93362c7e03ce67d7"
+}

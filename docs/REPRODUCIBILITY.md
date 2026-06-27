@@ -13,6 +13,12 @@ The frozen query authority is `experiments/frozen/BASELINE.json`; the historical
 - Linux / WSL2
 - `make` and a C++17 compiler
 - `python3`
+- `python3 -m pip install -r requirements-dev.txt`
+
+The full exact-way2 archive path requires the Python package `zstandard`. The
+repository declares it in `requirements-dev.txt`; if it is missing,
+`experiments/exact_way2/archive_full_evidence.py` fails closed with an explicit
+install message instead of silently skipping archive generation.
 
 ## Quick Check
 

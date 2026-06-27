@@ -9,6 +9,7 @@ import math
 import os
 import re
 import subprocess
+from collections import Counter
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from fractions import Fraction
@@ -28,6 +29,18 @@ SUMMARY_SCHEMA = "exact-way2-pilot-summary-v2"
 PROVENANCE_SCHEMA = "exact-way2-pilot-provenance-v2"
 MANIFEST_SCHEMA = "exact-way2-pilot-manifest-v2"
 BUILD_REPRODUCIBILITY_SCHEMA = "exact-way2-build-reproducibility-v2"
+FULL_SELECTION_SCHEMA = "exact-way2-full-selection-v1"
+FULL_AUTHORIZATION_SCHEMA = "exact-way2-full-authorization-v1"
+FULL_SUMMARY_SCHEMA = "exact-way2-full-summary-v1"
+FULL_PROVENANCE_SCHEMA = "exact-way2-full-provenance-v1"
+FULL_MANIFEST_SCHEMA = "exact-way2-full-manifest-v1"
+FULL_EXPECTED_RU_COUNT = 4760
+FULL_EXPECTED_ROUND_DISTRIBUTION = {1: 120, 2: 4544, 3: 96}
+FULL_EXPECTED_ROUND_DISTRIBUTION_JSON = {
+    "1": FULL_EXPECTED_ROUND_DISTRIBUTION[1],
+    "2": FULL_EXPECTED_ROUND_DISTRIBUTION[2],
+    "3": FULL_EXPECTED_ROUND_DISTRIBUTION[3],
+}
 
 
 @dataclass(frozen=True)
@@ -136,6 +149,116 @@ def load_final_ru(path: Path) -> list[tuple[int, str]]:
     with path.open(newline="", encoding="utf-8") as handle:
         reader = csv.DictReader(handle)
         return [(int(row["r"]), row["u"].lower()) for row in reader]
+
+
+def load_full_selection_csv(path: Path) -> list[tuple[int, str]]:
+    with path.open(newline="", encoding="utf-8") as handle:
+        reader = csv.DictReader(handle)
+        rows: list[tuple[int, str]] = []
+        for row in reader:
+            rows.append((int(row["r"]), row["u"].lower()))
+    return rows
+
+
+def validate_full_selection_csv(selection_path: Path, final_ru_path: Path) -> dict[str, object]:
+    rows = load_full_selection_csv(selection_path)
+    expected_rows = sorted(load_final_ru(final_ru_path))
+    expected_unique = set(expected_rows)
+    if len(expected_rows) != len(expected_unique):
+        raise ValueError("final_ru.csv must contain unique (r,u) rows")
+    if len(expected_rows) != FULL_EXPECTED_RU_COUNT:
+        raise ValueError(
+            f"final_ru.csv must contain exactly {FULL_EXPECTED_RU_COUNT} unique (r,u) rows; got {len(expected_rows)}"
+        )
+    if rows != sorted(rows):
+        raise ValueError("FULL_SELECTION.csv must be deterministically sorted by (r,u)")
+    if len(rows) != FULL_EXPECTED_RU_COUNT:
+        raise ValueError(f"FULL_SELECTION.csv must contain exactly {FULL_EXPECTED_RU_COUNT} rows; got {len(rows)}")
+    row_counter = Counter(rows)
+    duplicates = sorted(key for key, count in row_counter.items() if count > 1)
+    if duplicates:
+        sample = ", ".join(f"(r={r},u={u})" for r, u in duplicates[:3])
+        raise ValueError(f"FULL_SELECTION.csv contains duplicate (r,u) rows: {sample}")
+    unique_rows = set(rows)
+    missing = sorted(expected_unique - unique_rows)
+    extra = sorted(unique_rows - expected_unique)
+    if missing:
+        sample = ", ".join(f"(r={r},u={u})" for r, u in missing[:3])
+        raise ValueError(f"FULL_SELECTION.csv is missing final_ru rows: {sample}")
+    if extra:
+        sample = ", ".join(f"(r={r},u={u})" for r, u in extra[:3])
+        raise ValueError(f"FULL_SELECTION.csv contains extra rows not in final_ru: {sample}")
+    distribution_counter = Counter(r for r, _ in rows)
+    distribution = {
+        1: distribution_counter.get(1, 0),
+        2: distribution_counter.get(2, 0),
+        3: distribution_counter.get(3, 0),
+    }
+    if distribution != FULL_EXPECTED_ROUND_DISTRIBUTION:
+        raise ValueError(
+            "FULL_SELECTION.csv round distribution mismatch: "
+            f"actual={distribution} expected={FULL_EXPECTED_ROUND_DISTRIBUTION}"
+        )
+    return {
+        "row_count": len(rows),
+        "unique_ru_count": len(unique_rows),
+        "round_distribution": distribution,
+        "round_distribution_json": {
+            "1": distribution[1],
+            "2": distribution[2],
+            "3": distribution[3],
+        },
+        "selection_sha256": sha256_file(selection_path),
+        "rows": rows,
+    }
+
+
+def validate_full_selection_json(
+    selection_json_path: Path,
+    *,
+    expected_csv_sha256: str,
+    expected_row_count: int,
+    expected_unique_ru_count: int,
+    expected_round_distribution_json: dict[str, int],
+    expected_rows: Sequence[tuple[int, str]],
+) -> dict[str, object]:
+    payload = read_json(selection_json_path)
+    if not isinstance(payload, dict):
+        raise ValueError("FULL_SELECTION.json must be a JSON object")
+    if payload.get("schema") != FULL_SELECTION_SCHEMA:
+        raise ValueError(f"FULL_SELECTION.json schema mismatch: {payload.get('schema')!r}")
+    if int(payload.get("selected_columns", -1)) != expected_row_count:
+        raise ValueError(
+            "FULL_SELECTION.json selected_columns mismatch: "
+            f"actual={payload.get('selected_columns')!r} expected={expected_row_count}"
+        )
+    if int(payload.get("unique_ru_count", -1)) != expected_unique_ru_count:
+        raise ValueError(
+            "FULL_SELECTION.json unique_ru_count mismatch: "
+            f"actual={payload.get('unique_ru_count')!r} expected={expected_unique_ru_count}"
+        )
+    if payload.get("selection_payload_sha256") != expected_csv_sha256:
+        raise ValueError("FULL_SELECTION.json selection_payload_sha256 mismatch")
+    if payload.get("round_distribution_by_r") != expected_round_distribution_json:
+        raise ValueError(
+            "FULL_SELECTION.json round_distribution_by_r mismatch: "
+            f"actual={payload.get('round_distribution_by_r')!r} expected={expected_round_distribution_json!r}"
+        )
+    expected_round_distribution = {
+        f"r{round_number}": count for round_number, count in expected_round_distribution_json.items()
+    }
+    if payload.get("round_distribution") != expected_round_distribution:
+        raise ValueError(
+            "FULL_SELECTION.json round_distribution mismatch: "
+            f"actual={payload.get('round_distribution')!r} expected={expected_round_distribution!r}"
+        )
+    selection_rows = payload.get("selection")
+    if not isinstance(selection_rows, list):
+        raise ValueError("FULL_SELECTION.json selection must be a list")
+    actual_rows = [(int(row["r"]), str(row["u"]).lower()) for row in selection_rows]
+    if actual_rows != list(expected_rows):
+        raise ValueError("FULL_SELECTION.json selection rows do not match FULL_SELECTION.csv")
+    return payload
 
 
 def parse_exact_decimal(text: str, *, max_digits: int = 10000, max_exponent: int = 10000) -> Fraction:
@@ -286,3 +409,7 @@ def population_cv(values: Sequence[float]) -> float:
         return 0.0
     variance = sum((value - mean) ** 2 for value in values) / len(values)
     return math.sqrt(variance) / mean
+
+
+def sibling_json_path(selection_path: Path) -> Path:
+    return selection_path.with_suffix(".json")

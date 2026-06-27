@@ -1,0 +1,10 @@
+{
+  "comparison_elapsed_wall": 5.197367192005913,
+  "jobs": 1,
+  "orchestrator_elapsed_wall": 793.9869347470012,
+  "peak_process_rss": 44175360,
+  "peak_total_concurrent_rss": 44175360,
+  "selector_elapsed_wall": 0.0,
+  "summarizer_elapsed_wall": 0.8904912400030298,
+  "total_full_elapsed_wall": 800.1687662490003
+}

@@ -1,0 +1,106 @@
+{
+  "binary_sha256_match": true,
+  "clean_git_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "clean_git_status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "first_clean_build": {
+    "binary_sha256": "e4c222bcb479af97aa26673ddc1ebc9799adeb9832a764204eb8bdd4a2ee90ef",
+    "boost_inventory_sha256": "ac72b7b7f92f9ab8820a10c886e7fded3d26547593fa79cf02ab4fdfb0467c45",
+    "boost_root": "/tmp/boost-headers/usr/include",
+    "boost_version_header_sha256": "a547ee7eddf1b96695027922345b471feba8bcba79a8572399d282247c02e4ab",
+    "boost_version_macro": "1_83",
+    "build_command": "make recompute_frozen_exact",
+    "build_finished_at_utc": "2026-06-27T07:06:19.658566Z",
+    "build_started_at_utc": "2026-06-27T07:06:09.985476Z",
+    "compiler_path": "/usr/bin/x86_64-linux-gnu-g++-13",
+    "compiler_version": "x86_64-linux-gnu-g++-13 (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+    "environment": {
+      "CPATH": "",
+      "CPLUS_INCLUDE_PATH": "/tmp/boost-headers/usr/include",
+      "CPPFLAGS": "",
+      "CXX": "",
+      "CXXFLAGS": "",
+      "PATH": "/home/xing-12_26/.local/bin:/home/xing-12_26/bin:/home/xing-12_26/.nvm/versions/node/v22.21.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-linux-x64/vendor/x86_64-unknown-linux-musl/codex-path:/home/xing-12_26/.codex-plus/tmp/arg0/codex-arg0q5e33j:/home/xing-12_26/.local/bin:/home/xing-12_26/bin:/home/xing-12_26/.cargo/bin:/home/xing-12_26/.local/bin:/home/xing-12_26/.nvm/versions/node/v22.21.1/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/lib/wsl/lib:/mnt/c/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v11.8/bin:/mnt/c/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v11.8/libnvvp:/mnt/c/Program Files (x86)/VMware/VMware Workstation/bin/:/mnt/c/Windows/system32:/mnt/c/Windows:/mnt/c/Windows/System32/Wbem:/mnt/c/Windows/System32/WindowsPowerShell/v1.0/:/mnt/c/Windows/System32/OpenSSH/:/mnt/c/Program Files (x86)/NVIDIA Corporation/PhysX/Common:/mnt/c/Program Files/Microsoft SQL Server/110/Tools/Binn/:/mnt/c/Program Files/Git/cmd:/mnt/c/new/2024/bin/windows:/mnt/c/Program Files/MATLAB/R2024b/bin:/mnt/c/WINDOWS/system32:/mnt/c/WINDOWS:/mnt/c/WINDOWS/System32/Wbem:/mnt/c/WINDOWS/System32/WindowsPowerShell/v1.0/:/mnt/c/WINDOWS/System32/OpenSSH/:/mnt/c/Program Files/dotnet/:/mnt/c/WINDOWS/system32/downlevel:/mnt/c/Program Files (x86)/Windows Kits/10/Windows Performance Toolkit/:/mnt/c/Program Files/NVIDIA Corporation/Nsight Compute 2022.3.0/:/mnt/c/Users/Xing/AppData/Local/Pandoc:/mnt/c/Program Files/Microsoft VS Code/bin:/mnt/c/Anaconda3/Scripts:/mnt/c/Anaconda3:/mnt/c/Program Files/NVIDIA Corporation/NVIDIA App/NvDLISR:/mnt/c/Program Files/nodejs/:/mnt/c/Program Files (x86)/PowerShell/7/:/mnt/c/Program Files/Go/bin:/mnt/c/Program Files/GitHub CLI/:/mnt/c/Program Files/Docker/Docker/resources/bin:/mnt/c/Users/Xing/.local/bin:/mnt/c/Users/Xing/dotnet:/mnt/c/Users/Xing/AppData/Local/Programs/Python/Python313/Scripts/:/mnt/c/Users/Xing/AppData/Local/Programs/Python/Python313/:/mnt/c/Users/Xing/PyCharm Community Edition 2024.3.4/bin:/mnt/c/Users/Xing/AppData/Local/Programs/Microsoft VS Code/bin:/mnt/c/Users/Xing/AppData/Local/Pandoc/:/mnt/c/Users/Xing/.dotnet/tools:/mnt/c/Users/Xing/.lmstudio/bin:/mnt/c/Users/Xing/AppData/Roaming/npm:/mnt/c/Users/Xing/AppData/Local/Programs/Antigravity/bin:/mnt/c/Users/Xing/bin:/mnt/c/Users/Xing/bin:/mnt/c/Users/Xing/go/bin:/snap/bin"
+    },
+    "git_status_porcelain_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "link_command": "g++ -Iinclude -I/tmp/boost-headers/usr/include -O3 -std=c++17 -Wall -Wextra -pedantic -pthread -o recompute_frozen_exact apps/recompute_frozen_exact.cpp build/sbox_corr.o build/linear_layer.o build/exact_cartesian.o build/exact_dyadic.o",
+    "make_clean_command": "make clean",
+    "objects": [
+      {
+        "command": "g++ -Iinclude -I/tmp/boost-headers/usr/include -O3 -std=c++17 -Wall -Wextra -pedantic -pthread -c -o build/sbox_corr.o src/sbox_corr.cpp",
+        "path": "build/sbox_corr.o",
+        "sha256": "918d8861cd03321d54ec39d16511ded78510dead2f68b83c8288215fbd539c4b"
+      },
+      {
+        "command": "g++ -Iinclude -I/tmp/boost-headers/usr/include -O3 -std=c++17 -Wall -Wextra -pedantic -pthread -c -o build/linear_layer.o src/linear_layer.cpp",
+        "path": "build/linear_layer.o",
+        "sha256": "925e2f35c3bd2a775e9beaef986d183935c6d6a09c10a75975a456c78d5b94ea"
+      },
+      {
+        "command": "g++ -Iinclude -I/tmp/boost-headers/usr/include -O3 -std=c++17 -Wall -Wextra -pedantic -pthread -c -o build/exact_cartesian.o src/exact_cartesian.cpp",
+        "path": "build/exact_cartesian.o",
+        "sha256": "ae298492c242254d718b7b4f33e443143f7e1780385e7e1c0e4d8574155c732b"
+      },
+      {
+        "command": "g++ -Iinclude -I/tmp/boost-headers/usr/include -O3 -std=c++17 -Wall -Wextra -pedantic -pthread -c -o build/exact_dyadic.o src/exact_dyadic.cpp",
+        "path": "build/exact_dyadic.o",
+        "sha256": "58bf2d06738d0436ea445a5f761ebdaab258b0b8b2cd99a2fe1c052c7d544c1e"
+      }
+    ],
+    "schema": "exact-way2-build-reproducibility-v2",
+    "source_checkout_commit": "cb81f599ad4b4f087adf90580bd5df22bd308a98",
+    "source_tree_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source_tree_sha": "e3a4e7159eb766ce7868557e93362c7e03ce67d7"
+  },
+  "implementation_commit": "cb81f599ad4b4f087adf90580bd5df22bd308a98",
+  "implementation_tree_sha": "e3a4e7159eb766ce7868557e93362c7e03ce67d7",
+  "schema": "exact-way2-build-reproducibility-v2",
+  "second_clean_build": {
+    "binary_sha256": "e4c222bcb479af97aa26673ddc1ebc9799adeb9832a764204eb8bdd4a2ee90ef",
+    "boost_inventory_sha256": "ac72b7b7f92f9ab8820a10c886e7fded3d26547593fa79cf02ab4fdfb0467c45",
+    "boost_root": "/tmp/boost-headers/usr/include",
+    "boost_version_header_sha256": "a547ee7eddf1b96695027922345b471feba8bcba79a8572399d282247c02e4ab",
+    "boost_version_macro": "1_83",
+    "build_command": "make recompute_frozen_exact",
+    "build_finished_at_utc": "2026-06-27T07:06:19.992693Z",
+    "build_started_at_utc": "2026-06-27T07:06:10.308390Z",
+    "compiler_path": "/usr/bin/x86_64-linux-gnu-g++-13",
+    "compiler_version": "x86_64-linux-gnu-g++-13 (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+    "environment": {
+      "CPATH": "",
+      "CPLUS_INCLUDE_PATH": "/tmp/boost-headers/usr/include",
+      "CPPFLAGS": "",
+      "CXX": "",
+      "CXXFLAGS": "",
+      "PATH": "/home/xing-12_26/.local/bin:/home/xing-12_26/bin:/home/xing-12_26/.nvm/versions/node/v22.21.1/lib/node_modules/@openai/codex/node_modules/@openai/codex-linux-x64/vendor/x86_64-unknown-linux-musl/codex-path:/home/xing-12_26/.codex-plus/tmp/arg0/codex-arg0q5e33j:/home/xing-12_26/.local/bin:/home/xing-12_26/bin:/home/xing-12_26/.cargo/bin:/home/xing-12_26/.local/bin:/home/xing-12_26/.nvm/versions/node/v22.21.1/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/lib/wsl/lib:/mnt/c/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v11.8/bin:/mnt/c/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v11.8/libnvvp:/mnt/c/Program Files (x86)/VMware/VMware Workstation/bin/:/mnt/c/Windows/system32:/mnt/c/Windows:/mnt/c/Windows/System32/Wbem:/mnt/c/Windows/System32/WindowsPowerShell/v1.0/:/mnt/c/Windows/System32/OpenSSH/:/mnt/c/Program Files (x86)/NVIDIA Corporation/PhysX/Common:/mnt/c/Program Files/Microsoft SQL Server/110/Tools/Binn/:/mnt/c/Program Files/Git/cmd:/mnt/c/new/2024/bin/windows:/mnt/c/Program Files/MATLAB/R2024b/bin:/mnt/c/WINDOWS/system32:/mnt/c/WINDOWS:/mnt/c/WINDOWS/System32/Wbem:/mnt/c/WINDOWS/System32/WindowsPowerShell/v1.0/:/mnt/c/WINDOWS/System32/OpenSSH/:/mnt/c/Program Files/dotnet/:/mnt/c/WINDOWS/system32/downlevel:/mnt/c/Program Files (x86)/Windows Kits/10/Windows Performance Toolkit/:/mnt/c/Program Files/NVIDIA Corporation/Nsight Compute 2022.3.0/:/mnt/c/Users/Xing/AppData/Local/Pandoc:/mnt/c/Program Files/Microsoft VS Code/bin:/mnt/c/Anaconda3/Scripts:/mnt/c/Anaconda3:/mnt/c/Program Files/NVIDIA Corporation/NVIDIA App/NvDLISR:/mnt/c/Program Files/nodejs/:/mnt/c/Program Files (x86)/PowerShell/7/:/mnt/c/Program Files/Go/bin:/mnt/c/Program Files/GitHub CLI/:/mnt/c/Program Files/Docker/Docker/resources/bin:/mnt/c/Users/Xing/.local/bin:/mnt/c/Users/Xing/dotnet:/mnt/c/Users/Xing/AppData/Local/Programs/Python/Python313/Scripts/:/mnt/c/Users/Xing/AppData/Local/Programs/Python/Python313/:/mnt/c/Users/Xing/PyCharm Community Edition 2024.3.4/bin:/mnt/c/Users/Xing/AppData/Local/Programs/Microsoft VS Code/bin:/mnt/c/Users/Xing/AppData/Local/Pandoc/:/mnt/c/Users/Xing/.dotnet/tools:/mnt/c/Users/Xing/.lmstudio/bin:/mnt/c/Users/Xing/AppData/Roaming/npm:/mnt/c/Users/Xing/AppData/Local/Programs/Antigravity/bin:/mnt/c/Users/Xing/bin:/mnt/c/Users/Xing/bin:/mnt/c/Users/Xing/go/bin:/snap/bin"
+    },
+    "git_status_porcelain_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "link_command": "g++ -Iinclude -I/tmp/boost-headers/usr/include -O3 -std=c++17 -Wall -Wextra -pedantic -pthread -o recompute_frozen_exact apps/recompute_frozen_exact.cpp build/sbox_corr.o build/linear_layer.o build/exact_cartesian.o build/exact_dyadic.o",
+    "make_clean_command": "make clean",
+    "objects": [
+      {
+        "command": "g++ -Iinclude -I/tmp/boost-headers/usr/include -O3 -std=c++17 -Wall -Wextra -pedantic -pthread -c -o build/sbox_corr.o src/sbox_corr.cpp",
+        "path": "build/sbox_corr.o",
+        "sha256": "918d8861cd03321d54ec39d16511ded78510dead2f68b83c8288215fbd539c4b"
+      },
+      {
+        "command": "g++ -Iinclude -I/tmp/boost-headers/usr/include -O3 -std=c++17 -Wall -Wextra -pedantic -pthread -c -o build/linear_layer.o src/linear_layer.cpp",
+        "path": "build/linear_layer.o",
+        "sha256": "925e2f35c3bd2a775e9beaef986d183935c6d6a09c10a75975a456c78d5b94ea"
+      },
+      {
+        "command": "g++ -Iinclude -I/tmp/boost-headers/usr/include -O3 -std=c++17 -Wall -Wextra -pedantic -pthread -c -o build/exact_cartesian.o src/exact_cartesian.cpp",
+        "path": "build/exact_cartesian.o",
+        "sha256": "ae298492c242254d718b7b4f33e443143f7e1780385e7e1c0e4d8574155c732b"
+      },
+      {
+        "command": "g++ -Iinclude -I/tmp/boost-headers/usr/include -O3 -std=c++17 -Wall -Wextra -pedantic -pthread -c -o build/exact_dyadic.o src/exact_dyadic.cpp",
+        "path": "build/exact_dyadic.o",
+        "sha256": "58bf2d06738d0436ea445a5f761ebdaab258b0b8b2cd99a2fe1c052c7d544c1e"
+      }
+    ],
+    "schema": "exact-way2-build-reproducibility-v2",
+    "source_checkout_commit": "cb81f599ad4b4f087adf90580bd5df22bd308a98",
+    "source_tree_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source_tree_sha": "e3a4e7159eb766ce7868557e93362c7e03ce67d7"
+  }
+}
