@@ -22,3 +22,7 @@
 - cpp_int column wall sum: `7.716504444000004`
 - int128 column wall sum: `5.055539733999999`
 - peak RSS bytes: `23068672`
+- repeat subset cpp_int canonical digest equal: `True`
+- repeat subset cpp_int endpoint payload equal: `True`
+- repeat subset int128_checked canonical digest equal: `True`
+- repeat subset int128_checked endpoint payload equal: `True`

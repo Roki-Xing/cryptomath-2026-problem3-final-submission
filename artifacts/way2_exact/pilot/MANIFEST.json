@@ -58,8 +58,8 @@
     {
       "category": "REQUIRED_SUMMARY",
       "path": "PIPELINE.json",
-      "sha256": "4cc32a138f54dc57846e4e36ab1e907077142a415258425d387bb168a1149a28",
-      "size": 3133
+      "sha256": "73a4cae814167854a8aea859481bb23474fd32f7ca4e48e531c55e2ffd3c770e",
+      "size": 6063
     },
     {
       "category": "REQUIRED_SUMMARY",
@@ -70,20 +70,20 @@
     {
       "category": "REQUIRED_SUMMARY",
       "path": "PROVENANCE.json",
-      "sha256": "56ae4851e409a203898bcad88ee1ac6a6809b918978f124e855c2cd0ca884df1",
+      "sha256": "76146fe9d3c63a762f01d01c69c42cd8aeb90aed31d0b2a826e975555e3b1617",
       "size": 2899
     },
     {
       "category": "REQUIRED_SUMMARY",
       "path": "REPEAT_SUBSET.json",
-      "sha256": "9a6cf1144a37c65665afd1cb64f0dbfbaa3beaa94c80b02a9814f069fab636c5",
-      "size": 2578
+      "sha256": "022e6be5744191d396be42c28a58801b90c61204be5d98e2415f47aa9fc37a8c",
+      "size": 5428
     },
     {
       "category": "REQUIRED_SUMMARY",
       "path": "REPEAT_SUBSET.md",
-      "sha256": "5df585cd43edf4184ec17f36a898e3d7ac393ce20a33751cd50a8d131fd6388f",
-      "size": 130
+      "sha256": "22adcfab6585c5ffe989b18d40370b97279e2f71816a4489bc85ed6bd7d9c952",
+      "size": 308
     },
     {
       "category": "REQUIRED_SUMMARY",
@@ -118,14 +118,14 @@
     {
       "category": "REQUIRED_SUMMARY",
       "path": "SUMMARY.json",
-      "sha256": "b09c45e31e75dfeff3f38b2cb1fb6d8e4177caaed4b13c340edd0f7b8b2b18ce",
-      "size": 4661
+      "sha256": "323da71ea44b67f02880b4bad23fc4defeb05578f6ffab35909a9689cddd9fd9",
+      "size": 7591
     },
     {
       "category": "REQUIRED_SUMMARY",
       "path": "SUMMARY.md",
-      "sha256": "5a49b78798621fce20dfbdd7c6f8e4f4ae543ea4256a74ed85b18b7f3c6d7f16",
-      "size": 759
+      "sha256": "727c6f504310dc7cd0e07c171ff93636d5e7c82afdd8d8bc50d45ff546a0039d",
+      "size": 993
     },
     {
       "category": "REQUIRED_SUMMARY",
