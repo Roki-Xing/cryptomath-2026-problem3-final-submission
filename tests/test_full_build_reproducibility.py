@@ -27,42 +27,44 @@ def clean_worktree():
 
 
 def main() -> None:
-    with clean_worktree() as worktree, tempfile.TemporaryDirectory() as tmpdir:
+    with tempfile.TemporaryDirectory() as tmpdir:
         tmp = Path(tmpdir)
         first = tmp / "first.json"
         second = tmp / "second.json"
         merged = tmp / "merged.json"
         for output in (first, second):
+            with clean_worktree() as worktree:
+                subprocess.run(
+                    [
+                        "python3",
+                        "-X",
+                        "utf8",
+                        "experiments/exact_way2/capture_build_reproducibility.py",
+                        "--out",
+                        str(output),
+                    ],
+                    cwd=worktree,
+                    check=True,
+                    env=MAKE_ENV,
+                )
+        with clean_worktree() as worktree:
             subprocess.run(
                 [
                     "python3",
                     "-X",
                     "utf8",
-                    "experiments/exact_way2/capture_build_reproducibility.py",
+                    "experiments/exact_way2/merge_build_reproducibility.py",
+                    "--first",
+                    str(first),
+                    "--second",
+                    str(second),
                     "--out",
-                    str(output),
+                    str(merged),
                 ],
                 cwd=worktree,
                 check=True,
                 env=MAKE_ENV,
             )
-        subprocess.run(
-            [
-                "python3",
-                "-X",
-                "utf8",
-                "experiments/exact_way2/merge_build_reproducibility.py",
-                "--first",
-                str(first),
-                "--second",
-                str(second),
-                "--out",
-                str(merged),
-            ],
-            cwd=worktree,
-            check=True,
-            env=MAKE_ENV,
-        )
         payload = json.loads(merged.read_text(encoding="utf-8"))
         assert payload["binary_sha256_match"] is True
         assert payload["first_clean_build"]["binary_sha256"] == payload["second_clean_build"]["binary_sha256"]
