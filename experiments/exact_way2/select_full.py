@@ -17,6 +17,8 @@ from common import (
     repo_relative,
     sha256_file,
     sha256_text,
+    validate_full_selection_csv,
+    validate_full_selection_json,
     write_csv,
     write_json,
     write_text,
@@ -64,7 +66,8 @@ def main() -> int:
     fieldnames = ["r", "u", "selection_reason", "active_count", "query_count", "deterministic_hash"]
     selection_csv_path = out_dir / "FULL_SELECTION.csv"
     write_csv(selection_csv_path, fieldnames, selection)
-    selection_sha = sha256_file(selection_csv_path)
+    selection_summary = validate_full_selection_csv(selection_csv_path, final_ru_path)
+    selection_sha = str(selection_summary["selection_sha256"])
     selector_command = (
         "python3 -X utf8 experiments/exact_way2/select_full.py "
         f"--final-ru {repo_relative(final_ru_path)} "
@@ -75,6 +78,8 @@ def main() -> int:
         "schema": FULL_SELECTION_SCHEMA,
         "selected_columns": len(selection),
         "round_distribution": distribution,
+        "round_distribution_by_r": selection_summary["round_distribution_json"],
+        "unique_ru_count": selection_summary["unique_ru_count"],
         "selector_source_commit": source_commit,
         "selector_command": selector_command,
         "final_ru_sha256": sha256_file(final_ru_path),
@@ -82,7 +87,16 @@ def main() -> int:
         "selection_payload_sha256": selection_sha,
         "selection": selection,
     }
-    write_json(out_dir / "FULL_SELECTION.json", payload)
+    selection_json_path = out_dir / "FULL_SELECTION.json"
+    write_json(selection_json_path, payload)
+    validate_full_selection_json(
+        selection_json_path,
+        expected_csv_sha256=selection_sha,
+        expected_row_count=int(selection_summary["row_count"]),
+        expected_unique_ru_count=int(selection_summary["unique_ru_count"]),
+        expected_round_distribution_json=dict(selection_summary["round_distribution_json"]),
+        expected_rows=list(selection_summary["rows"]),
+    )
 
     protocol_text = "\n".join(
         [
@@ -96,6 +110,9 @@ def main() -> int:
             f"- final_ru_sha256: `{sha256_file(final_ru_path)}`",
             f"- final_queries_sha256: `{sha256_file(final_queries_path)}`",
             f"- selection_payload_sha256: `{selection_sha}`",
+            f"- full_selection_row_count: `{selection_summary['row_count']}`",
+            f"- unique_ru_count: `{selection_summary['unique_ru_count']}`",
+            f"- round_distribution_by_r: `{selection_summary['round_distribution_json']}`",
             "- selection scope: `all 4760 unique (r,u) columns from final_ru.csv`",
             "- compute phase inputs remain limited to `row_id,r,u,v` from the frozen query file",
         ]

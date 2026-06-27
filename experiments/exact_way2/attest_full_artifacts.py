@@ -10,6 +10,7 @@ from common import (
     BUILD_REPRODUCIBILITY_SCHEMA,
     FULL_MANIFEST_SCHEMA,
     FULL_PROVENANCE_SCHEMA,
+    ROOT,
     read_json,
     sha256_file,
     write_json,
@@ -45,6 +46,13 @@ def categorize(path: Path) -> str:
     if relative in {"MANIFEST.json", "SHA256SUMS.txt"}:
         return "REQUIRED_MANIFEST"
     return "EXCLUDE_FROM_SUBMISSION_PACKAGE"
+
+
+def sha_inventory_path(path: Path, artifact_root: Path) -> str:
+    try:
+        return str(path.resolve().relative_to(ROOT.resolve())).replace("\\", "/")
+    except ValueError:
+        return "./" + str(path.relative_to(artifact_root)).replace("\\", "/")
 
 
 def main() -> int:
@@ -109,7 +117,7 @@ def main() -> int:
     )
     sha_lines = []
     for path in sorted(path for path in root.rglob("*") if path.is_file() and path.name != "SHA256SUMS.txt"):
-        rel = "./" + str(path.relative_to(root)).replace("\\", "/")
+        rel = sha_inventory_path(path, root)
         sha_lines.append(f"{sha256_file(path)}  {rel}")
     write_text(root / "SHA256SUMS.txt", "\n".join(sha_lines) + "\n")
     return 0

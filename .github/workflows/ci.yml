@@ -20,6 +20,8 @@ jobs:
             cxx: clang++
     steps:
       - uses: actions/checkout@v4
+      - name: Install Python dependencies
+        run: python3 -m pip install -r requirements-dev.txt
       - name: Prepare Boost headers
         run: |
           mkdir -p /tmp/boost-deb /tmp/boost-headers
@@ -49,6 +51,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Install Python dependencies
+        run: python3 -m pip install -r requirements-dev.txt
       - name: Run sanitizer and compiler consistency gates
         run: |
           python3 -X utf8 bench/way1/run_stage_toolchain.py \

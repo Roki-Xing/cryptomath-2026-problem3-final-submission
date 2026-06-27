@@ -53,6 +53,34 @@ def file_sha256(path: Path) -> str:
     return subprocess.check_output(["sha256sum", str(path)], text=True).split()[0]
 
 
+def expect_missing_zstandard_message(worktree: Path, artifact_root: Path, archive_root: Path) -> None:
+    blocker_root = artifact_root.parent / "block-zstd"
+    blocker_root.mkdir(parents=True, exist_ok=True)
+    (blocker_root / "zstandard.py").write_text("raise ModuleNotFoundError('blocked by test')\n", encoding="utf-8")
+    env = dict(MAKE_ENV)
+    env["PYTHONPATH"] = str(blocker_root)
+    failed = subprocess.run(
+        [
+            "python3",
+            "-X",
+            "utf8",
+            "experiments/exact_way2/archive_full_evidence.py",
+            "--artifact-root",
+            str(artifact_root),
+            "--archive-root",
+            str(archive_root),
+        ],
+        cwd=worktree,
+        env=env,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=False,
+    )
+    assert failed.returncode != 0
+    assert "missing python dependency 'zstandard'" in (failed.stderr + failed.stdout).lower()
+
+
 def main() -> None:
     with clean_worktree() as worktree, tempfile.TemporaryDirectory() as tmpdir:
         tmp = Path(tmpdir)
@@ -118,6 +146,10 @@ def main() -> None:
             "frozen_snapshot_sha256": file_sha256(worktree / "experiments/frozen/final_values_snapshot.csv"),
             "cpp_int_selection_sha256": file_sha256(tiny_csv),
             "int128_crosscheck_selection_sha256": file_sha256(tiny_csv),
+            "full_selection_sha256": file_sha256(tiny_csv),
+            "full_selection_row_count": 2,
+            "unique_ru_count": 2,
+            "round_distribution": {"1": 2, "2": 0, "3": 0},
             "jobs": 1,
             "per_round_timeout_seconds": {"r1": 120, "r2": 1200, "r3": 1800},
             "total_wall_limit_seconds": 7200,
@@ -139,23 +171,37 @@ def main() -> None:
             "python3",
             "-X",
             "utf8",
-            "experiments/exact_way2/run_full_pipeline.py",
-            "--artifact-root",
-            str(artifact_root),
-            "--authorization",
-            str(artifact_root / "FULL_RUN_AUTHORIZATION.json"),
+            "experiments/exact_way2/run_frozen_exact.py",
             "--selection",
             str(tiny_csv),
+            "--backend",
+            "both",
+            "--jobs",
+            "1",
+            "--resume",
+            "--artifact-root",
+            str(artifact_root),
             "--artifact-logical-root",
             "artifacts/way2_exact/full",
             "--binary",
             str(binary),
+            "--binary-logical-path",
+            "recompute_frozen_exact",
             "--queries",
             "experiments/frozen/final_queries.csv",
+        )
+        run(
+            worktree,
+            "python3",
+            "-X",
+            "utf8",
+            "experiments/exact_way2/compare_frozen_exact.py",
+            "--artifact-root",
+            str(artifact_root),
             "--snapshot",
             "experiments/frozen/final_values_snapshot.csv",
-            "--jobs",
-            "1",
+            "--selection",
+            str(tiny_csv),
         )
         compare = json.loads((artifact_root / "COMPARE.json").read_text(encoding="utf-8"))
         assert compare["selected_columns"] == 2
@@ -184,7 +230,35 @@ def main() -> None:
             json.dumps(build_repro, ensure_ascii=False, indent=2) + "\n",
             encoding="utf-8",
         )
+        (artifact_root / "PIPELINE.json").write_text(
+            json.dumps(
+                {
+                    "selector_elapsed_wall": 0.0,
+                    "orchestrator_elapsed_wall": 0.0,
+                    "comparison_elapsed_wall": float(compare.get("comparison_elapsed_wall", 0.0)),
+                    "summarizer_elapsed_wall": 0.0,
+                    "total_full_elapsed_wall": 0.0,
+                    "peak_process_rss": 0,
+                    "peak_total_concurrent_rss": 0,
+                    "jobs": 1,
+                },
+                ensure_ascii=False,
+                indent=2,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+        run(
+            worktree,
+            "python3",
+            "-X",
+            "utf8",
+            "experiments/exact_way2/summarize_full_exact.py",
+            "--artifact-root",
+            str(artifact_root),
+        )
         archive_root = tmp / "archives"
+        expect_missing_zstandard_message(worktree, artifact_root, archive_root)
         run(
             worktree,
             "python3",
@@ -214,9 +288,26 @@ def main() -> None:
             stderr=subprocess.PIPE,
         )
         manifest = json.loads((artifact_root / "MANIFEST.json").read_text(encoding="utf-8"))
+        raw_index = json.loads((artifact_root / "RAW_EVIDENCE_INDEX.json").read_text(encoding="utf-8"))
         manifest_paths = {entry["path"] for entry in manifest["files"]}
         assert "MANIFEST.json" not in manifest_paths
         assert "SHA256SUMS.txt" not in manifest_paths
+        assert raw_index["archive_count"] == 2
+        for archive in raw_index["archives"]:
+            assert archive["archive_group"] in {"r1_cpp_int", "r1_int128_checked"}
+            assert archive["archive_format"] == "tar.zst"
+            assert archive["archive_name"].endswith(".tar.zst")
+            assert archive["release_asset_name"] == archive["archive_name"]
+            assert archive["release_asset_uri_template"].endswith(archive["archive_name"])
+            assert "archive_path" not in archive
+            authority_fields = [
+                archive["archive_name"],
+                archive["release_asset_name"],
+                archive["release_asset_uri_template"],
+            ]
+            assert not any(
+                field.startswith(("/tmp/", "/home/", "C:\\")) for field in authority_fields if isinstance(field, str)
+            )
     print("full exact small pipeline tests passed")
 
 

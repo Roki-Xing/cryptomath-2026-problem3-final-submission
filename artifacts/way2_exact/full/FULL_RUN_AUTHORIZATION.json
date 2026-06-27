@@ -28,5 +28,13 @@
   "submit_sha256": "7b0f638ba8678462ee8d6c12bc0c5b89d7354b4a095b31330f3ba495acfe2e2e",
   "full_4760_scope": true,
   "stage_b_authorized": false,
-  "new_way1_run_started": false
+  "new_way1_run_started": false,
+  "full_selection_sha256": "a4f3b8ec66a6757b0392c965b0a70c2fb6bba97dcb7ff05d1367ea0325631f5a",
+  "full_selection_row_count": 4760,
+  "unique_ru_count": 4760,
+  "round_distribution": {
+    "1": 120,
+    "2": 4544,
+    "3": 96
+  }
 }

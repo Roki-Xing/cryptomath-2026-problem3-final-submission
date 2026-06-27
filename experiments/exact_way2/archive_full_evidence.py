@@ -11,9 +11,21 @@ import tarfile
 from collections import defaultdict
 from pathlib import Path
 
-import zstandard
-
 from common import current_source_commit, current_source_tree_sha, read_json, sha256_file, write_json
+
+REPOSITORY = "Roki-Xing/cryptomath-2026-problem3-final-submission"
+ARCHIVE_FORMAT = "tar.zst"
+
+
+def require_zstandard():
+    try:
+        import zstandard  # type: ignore
+    except ModuleNotFoundError as exc:
+        raise SystemExit(
+            "missing Python dependency 'zstandard'; install it with "
+            "'python3 -m pip install -r requirements-dev.txt'"
+        ) from exc
+    return zstandard
 
 
 def bundle_total_bytes(bundle_dir: Path) -> int:
@@ -38,6 +50,7 @@ def representative_keys(root: Path) -> list[str]:
 
 
 def create_archive(archive_path: Path, source_root: Path, bundle_dirs: list[Path]) -> dict[str, object]:
+    zstandard = require_zstandard()
     if archive_path.exists():
         archive_path.unlink()
     with archive_path.open("wb") as raw_handle:
@@ -61,11 +74,16 @@ def create_archive(archive_path: Path, source_root: Path, bundle_dirs: list[Path
     file_count = sum(1 for path in bundle_dirs for _ in path.rglob("*") if _.is_file())
     total_bytes = sum(bundle_total_bytes(path) for path in bundle_dirs)
     return {
-        "archive_path": str(archive_path),
+        "archive_name": archive_path.name,
+        "archive_group": archive_path.stem.replace(".tar", ""),
+        "archive_format": ARCHIVE_FORMAT,
         "archive_sha256": sha256_file(archive_path),
         "file_count": file_count,
         "total_bytes": total_bytes,
         "bundle_count": len(bundle_dirs),
+        "local_generation_diagnostics": {
+            "archive_output_path": str(archive_path),
+        },
     }
 
 
@@ -117,10 +135,13 @@ def main() -> int:
     for group, bundle_dirs in sorted(grouped.items()):
         archive_path = archive_root / f"{group}.tar.zst"
         archive_info = create_archive(archive_path, completed_root, bundle_dirs)
-        archive_info["group"] = group
         archive_info["unpacked_manifest_sha256"] = raw_manifest_sha
         archive_info["source_commit"] = current_source_commit()
         archive_info["source_tree_sha"] = current_source_tree_sha()
+        archive_info["release_asset_name"] = archive_info["archive_name"]
+        archive_info["release_asset_uri_template"] = (
+            f"https://github.com/{REPOSITORY}/releases/download/{{release_tag}}/{archive_info['archive_name']}"
+        )
         archives.append(archive_info)
 
     representative_root = root / "representative_completed"
