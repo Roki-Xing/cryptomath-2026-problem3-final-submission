@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import hashlib
 import json
 import shutil
 import subprocess
@@ -58,8 +59,9 @@ def build_repeat_subset_rows(selection_rows: list[dict[str, str]]) -> list[dict[
     return sorted(subset, key=lambda row: (int(row["r"]), row["u"]))
 
 
-def combined_bundle_sha(root: Path) -> tuple[str, str]:
+def repeat_run_metrics(root: Path) -> tuple[str, str, str]:
     bundle_lines = []
+    digest_lines = []
     endpoint_lines = []
     for bundle_dir in sorted((root / "completed").glob("*")):
         done = read_json(bundle_dir / "DONE.json")
@@ -68,10 +70,12 @@ def combined_bundle_sha(root: Path) -> tuple[str, str]:
         column_path = bundle_dir / "column.json"
         endpoints_path = bundle_dir / "endpoints.csv"
         bundle_lines.append(f"{bundle_dir.name}:{bundle_output_sha(column_path, endpoints_path)}")
+        digest_lines.append(f"{bundle_dir.name}:{done['canonical_column_digest']}")
         endpoint_lines.append(f"{bundle_dir.name}:{done['endpoints_sha256']}")
     return (
-        __import__("hashlib").sha256("\n".join(bundle_lines).encode("utf-8")).hexdigest(),
-        __import__("hashlib").sha256("\n".join(endpoint_lines).encode("utf-8")).hexdigest(),
+        hashlib.sha256("\n".join(bundle_lines).encode("utf-8")).hexdigest(),
+        hashlib.sha256("\n".join(digest_lines).encode("utf-8")).hexdigest(),
+        hashlib.sha256("\n".join(endpoint_lines).encode("utf-8")).hexdigest(),
     )
 
 
@@ -96,7 +100,7 @@ def run_repeat_subset(root: Path, selection_rows: list[dict[str, str]], binary: 
         "int128_checked": {"runs": []},
     }
     for backend in ("cpp_int", "int128_checked"):
-        previous_digest = None
+        previous_canonical_digest = None
         previous_endpoints = None
         for run_index in range(1, 4):
             repeat_root = root / f".repeat_tmp_{backend}_{run_index}"
@@ -131,31 +135,45 @@ def run_repeat_subset(root: Path, selection_rows: list[dict[str, str]], binary: 
                 cwd=Path.cwd(),
             )
             elapsed = time.perf_counter() - started
-            bundle_sha, endpoint_sha = combined_bundle_sha(repeat_root)
+            bundle_sha, canonical_digest, endpoint_sha = repeat_run_metrics(repeat_root)
             results[backend]["runs"].append(
                 {
                     "run": run_index,
                     "wall_seconds": elapsed,
                     "bundle_output_sha256": bundle_sha,
+                    "canonical_column_digest": canonical_digest,
                     "endpoint_payload_sha256": endpoint_sha,
                 }
             )
-            previous_digest = bundle_sha if previous_digest is None else previous_digest
+            previous_canonical_digest = canonical_digest if previous_canonical_digest is None else previous_canonical_digest
             previous_endpoints = endpoint_sha if previous_endpoints is None else previous_endpoints
-            if previous_digest != bundle_sha or previous_endpoints != endpoint_sha:
-                results[backend]["digest_equal"] = False
-                results[backend]["endpoint_equal"] = False
             shutil.rmtree(repeat_root)
         runs = [entry["wall_seconds"] for entry in results[backend]["runs"]]
+        canonical_per_run = [entry["canonical_column_digest"] for entry in results[backend]["runs"]]
+        endpoint_per_run = [entry["endpoint_payload_sha256"] for entry in results[backend]["runs"]]
+        bundle_per_run = [entry["bundle_output_sha256"] for entry in results[backend]["runs"]]
         results[backend]["cv"] = population_cv(runs)
-        results[backend].setdefault("digest_equal", True)
-        results[backend].setdefault("endpoint_equal", True)
+        results[backend]["bundle_output_sha256_is_diagnostic"] = True
+        results[backend]["bundle_output_sha256_note"] = (
+            "Diagnostic only; column bundles may differ across repeat runs because "
+            "column.json contains timing/provenance metadata. Numerical stability is "
+            "gated by canonical_column_digest and endpoint_payload_sha256."
+        )
+        results[backend]["bundle_output_sha256_per_run"] = bundle_per_run
+        results[backend]["canonical_column_digest_per_run"] = canonical_per_run
+        results[backend]["canonical_column_digest_equal"] = len(set(canonical_per_run)) == 1
+        results[backend]["endpoint_payload_sha256_per_run"] = endpoint_per_run
+        results[backend]["endpoint_payload_equal"] = len(set(endpoint_per_run)) == 1
     lines = [
         "# Exact Way-2 Repeat Subset",
         "",
         f"- subset size: `{len(subset_rows)}`",
         f"- cpp_int CV: `{results['cpp_int']['cv']}`",
         f"- int128_checked CV: `{results['int128_checked']['cv']}`",
+        f"- cpp_int canonical digest equal: `{results['cpp_int']['canonical_column_digest_equal']}`",
+        f"- cpp_int endpoint payload equal: `{results['cpp_int']['endpoint_payload_equal']}`",
+        f"- int128_checked canonical digest equal: `{results['int128_checked']['canonical_column_digest_equal']}`",
+        f"- int128_checked endpoint payload equal: `{results['int128_checked']['endpoint_payload_equal']}`",
     ]
     write_json(root / "REPEAT_SUBSET.json", results)
     (root / "REPEAT_SUBSET.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
@@ -172,11 +190,34 @@ def main() -> int:
     parser.add_argument("--artifact-root", required=True)
     parser.add_argument("--binary", default="recompute_frozen_exact")
     parser.add_argument("--jobs", type=int, default=1)
+    parser.add_argument("--repeat-only", action="store_true")
     args = parser.parse_args()
 
     cwd = Path.cwd()
     root = Path(args.artifact_root)
     root.mkdir(parents=True, exist_ok=True)
+
+    if args.repeat_only:
+        selection_rows = load_selection_rows(root / "PILOT_SELECTION.csv")
+        repeat_subset = run_repeat_subset(root, selection_rows, args.binary, args.jobs)
+        pipeline = read_json(root / "PIPELINE.json")
+        if not isinstance(pipeline, dict):
+            raise SystemExit("invalid PIPELINE.json")
+        pipeline["repeat_subset"] = repeat_subset
+        write_json(root / "PIPELINE.json", pipeline)
+        run_cmd(
+            [
+                "python3",
+                "-X",
+                "utf8",
+                "experiments/exact_way2/summarize_exact.py",
+                "--artifact-root",
+                str(root),
+            ],
+            cwd=cwd,
+        )
+        return 0
+
     total_started = time.perf_counter()
 
     selector_started = time.perf_counter()

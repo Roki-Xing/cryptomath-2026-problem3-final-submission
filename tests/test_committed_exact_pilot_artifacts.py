@@ -59,6 +59,14 @@ def main() -> None:
     assert category_counts == manifest["category_counts"]
     assert compare["cross_backend_canonical_column_digest_mismatch"] == 0
     assert compare["cross_backend_endpoint_numerator_mismatch"] == 0
+    repeat_cpp = summary["repeat_subset"]["cpp_int"]
+    repeat_int = summary["repeat_subset"]["int128_checked"]
+    assert repeat_cpp["canonical_column_digest_equal"] is True
+    assert repeat_cpp["endpoint_payload_equal"] is True
+    assert repeat_int["canonical_column_digest_equal"] is True
+    assert repeat_int["endpoint_payload_equal"] is True
+    assert repeat_cpp["bundle_output_sha256_is_diagnostic"] is True
+    assert repeat_int["bundle_output_sha256_is_diagnostic"] is True
     sha_lines = (ARTIFACT_ROOT / "SHA256SUMS.txt").read_text(encoding="utf-8").splitlines()
     assert any(line.endswith("  ./artifacts/way2_exact/pilot/MANIFEST.json") for line in sha_lines)
 

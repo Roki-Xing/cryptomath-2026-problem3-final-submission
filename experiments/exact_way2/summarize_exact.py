@@ -27,8 +27,14 @@ def main() -> int:
         or not isinstance(selection, dict)
         or not isinstance(runner, dict)
         or not isinstance(pipeline, dict)
+        or not isinstance(repeat_subset, dict)
     ):
         raise SystemExit("invalid summary prerequisites")
+
+    repeat_cpp = repeat_subset.get("cpp_int")
+    repeat_int = repeat_subset.get("int128_checked")
+    if not isinstance(repeat_cpp, dict) or not isinstance(repeat_int, dict):
+        raise SystemExit("invalid repeat subset payload")
 
     bundles = sorted(path for path in (root / "completed").glob("*") if path.is_dir())
     cpp_columns = 0
@@ -90,6 +96,12 @@ def main() -> int:
         compare["way1_spotcheck_rows"] != 18,
         compare["way1_spotcheck_mismatch"] != 0,
         partial_or_orphan_artifact != 0,
+        not bool(repeat_cpp.get("canonical_column_digest_equal")),
+        not bool(repeat_cpp.get("endpoint_payload_equal")),
+        not bool(repeat_int.get("canonical_column_digest_equal")),
+        not bool(repeat_int.get("endpoint_payload_equal")),
+        float(repeat_cpp.get("cv", 1.0)) >= 0.1,
+        float(repeat_int.get("cv", 1.0)) >= 0.1,
     ]
     if any(failure_checks):
         status = "PILOT_FAIL"
@@ -173,6 +185,10 @@ def main() -> int:
         f"- cpp_int column wall sum: `{runner['cpp_int_column_wall_sum']}`",
         f"- int128 column wall sum: `{runner['int128_column_wall_sum']}`",
         f"- peak RSS bytes: `{runner['peak_process_rss']}`",
+        f"- repeat subset cpp_int canonical digest equal: `{repeat_cpp.get('canonical_column_digest_equal')}`",
+        f"- repeat subset cpp_int endpoint payload equal: `{repeat_cpp.get('endpoint_payload_equal')}`",
+        f"- repeat subset int128_checked canonical digest equal: `{repeat_int.get('canonical_column_digest_equal')}`",
+        f"- repeat subset int128_checked endpoint payload equal: `{repeat_int.get('endpoint_payload_equal')}`",
     ]
     write_text(root / "SUMMARY.md", "\n".join(lines) + "\n")
     return 0

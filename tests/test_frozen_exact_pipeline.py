@@ -152,12 +152,27 @@ def main() -> None:
         (artifact_root / "REPEAT_SUBSET.json").write_text(
             json.dumps(
                 {
-                    "cpp_int": {"runs": [1.0, 1.0, 1.0], "cv": 0.0, "digest_equal": True, "endpoint_equal": True},
+                    "cpp_int": {
+                        "runs": [1.0, 1.0, 1.0],
+                        "cv": 0.0,
+                        "bundle_output_sha256_is_diagnostic": True,
+                        "bundle_output_sha256_note": "diagnostic",
+                        "bundle_output_sha256_per_run": ["a", "b", "c"],
+                        "canonical_column_digest_per_run": ["d", "d", "d"],
+                        "canonical_column_digest_equal": True,
+                        "endpoint_payload_sha256_per_run": ["e", "e", "e"],
+                        "endpoint_payload_equal": True,
+                    },
                     "int128_checked": {
                         "runs": [1.0, 1.0, 1.0],
                         "cv": 0.0,
-                        "digest_equal": True,
-                        "endpoint_equal": True,
+                        "bundle_output_sha256_is_diagnostic": True,
+                        "bundle_output_sha256_note": "diagnostic",
+                        "bundle_output_sha256_per_run": ["f", "g", "h"],
+                        "canonical_column_digest_per_run": ["i", "i", "i"],
+                        "canonical_column_digest_equal": True,
+                        "endpoint_payload_sha256_per_run": ["j", "j", "j"],
+                        "endpoint_payload_equal": True,
                     },
                 },
                 ensure_ascii=False,
