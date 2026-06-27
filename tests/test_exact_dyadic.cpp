@@ -86,6 +86,12 @@ int main() {
             const Mask u = set_nibble(0, pos, static_cast<Nibble>(in));
             const auto result = run(1, u, ExactNumericBackend::CppInt);
             assert(result.completed_normally);
+            assert(result.exact_cartesian_complete);
+            assert(result.no_state_pruning);
+            assert(result.exact_integer_backend);
+            assert(result.no_overflow);
+            assert(result.all_rounds_completed);
+            assert(result.completed_rounds == 1);
             assert(result.certified_no_truncation);
             assert(result.certified_exact_dyadic);
             assert(result.parseval_pass);
@@ -138,6 +144,73 @@ int main() {
         assert(result.sum_squares == (cpp_int(1) << (32 * rounds)));
     }
 
+    {
+        ExactDyadicResult synthetic;
+        synthetic.rounds = 3;
+        synthetic.completed_normally = true;
+        synthetic.exact_cartesian_complete = true;
+        synthetic.no_state_pruning = true;
+        synthetic.exact_integer_backend = true;
+        synthetic.no_overflow = true;
+        synthetic.completed_rounds = 3;
+        synthetic.sum_squares = 7;
+        synthetic.expected_sum_squares = 8;
+        finalize_exact_dyadic_certification(synthetic);
+        assert(synthetic.certified_no_truncation);
+        assert(synthetic.certified_exact_dyadic);
+        assert(!synthetic.parseval_pass);
+    }
+
+    {
+        ExactDyadicResult incomplete;
+        incomplete.rounds = 3;
+        incomplete.completed_normally = true;
+        incomplete.exact_cartesian_complete = true;
+        incomplete.no_state_pruning = true;
+        incomplete.exact_integer_backend = true;
+        incomplete.no_overflow = true;
+        incomplete.completed_rounds = 2;
+        incomplete.sum_squares = 1;
+        incomplete.expected_sum_squares = 1;
+        finalize_exact_dyadic_certification(incomplete);
+        assert(!incomplete.all_rounds_completed);
+        assert(!incomplete.certified_no_truncation);
+        assert(!incomplete.certified_exact_dyadic);
+        assert(incomplete.parseval_pass);
+    }
+
+    {
+        ExactDyadicResult overflow;
+        overflow.rounds = 2;
+        overflow.completed_normally = true;
+        overflow.exact_cartesian_complete = true;
+        overflow.no_state_pruning = true;
+        overflow.exact_integer_backend = true;
+        overflow.no_overflow = false;
+        overflow.completed_rounds = 2;
+        overflow.sum_squares = 1;
+        overflow.expected_sum_squares = 1;
+        finalize_exact_dyadic_certification(overflow);
+        assert(!overflow.certified_exact_dyadic);
+        assert(overflow.parseval_pass);
+    }
+
+    {
+        ExactDyadicResult fake_parseval;
+        fake_parseval.rounds = 1;
+        fake_parseval.completed_normally = false;
+        fake_parseval.exact_cartesian_complete = true;
+        fake_parseval.no_state_pruning = true;
+        fake_parseval.exact_integer_backend = true;
+        fake_parseval.no_overflow = true;
+        fake_parseval.completed_rounds = 1;
+        fake_parseval.sum_squares = 4;
+        fake_parseval.expected_sum_squares = 4;
+        finalize_exact_dyadic_certification(fake_parseval);
+        assert(fake_parseval.parseval_pass);
+        assert(!fake_parseval.certified_exact_dyadic);
+    }
+
     ExactDyadicOptions interrupted;
     interrupted.rounds = 2;
     interrupted.u = 0x00002000u;
@@ -146,8 +219,49 @@ int main() {
     const auto failed = compute_exact_dyadic(interrupted);
     assert(!failed.completed_normally);
     assert(!failed.exact_cartesian_complete);
+    assert(!failed.exact_integer_backend);
+    assert(!failed.no_overflow);
+    assert(!failed.all_rounds_completed);
+    assert(failed.completed_rounds == 0);
     assert(!failed.certified_no_truncation);
     assert(!failed.certified_exact_dyadic);
     assert(!failed.failure_reason.empty());
     assert(failed.states.empty());
+
+    ExactDyadicOptions cancelled;
+    cancelled.rounds = 2;
+    cancelled.u = 0x00002000u;
+    cancelled.backend = ExactNumericBackend::CppInt;
+    bool stop = false;
+    cancelled.should_cancel = [&stop] {
+        if (!stop) {
+            stop = true;
+            return false;
+        }
+        return true;
+    };
+    const auto cancelled_result = compute_exact_dyadic(cancelled);
+    assert(!cancelled_result.completed_normally);
+    assert(!cancelled_result.certified_no_truncation);
+    assert(!cancelled_result.certified_exact_dyadic);
+
+    ExactDyadicOptions limited_states;
+    limited_states.rounds = 1;
+    limited_states.u = 0x00000001u;
+    limited_states.backend = ExactNumericBackend::CppInt;
+    limited_states.max_states = 1;
+    const auto limited = compute_exact_dyadic(limited_states);
+    assert(!limited.completed_normally);
+    assert(!limited.certified_no_truncation);
+    assert(!limited.certified_exact_dyadic);
+
+    ExactDyadicOptions overflow_run;
+    overflow_run.rounds = 3;
+    overflow_run.u = 0x00002000u;
+    overflow_run.backend = ExactNumericBackend::Int128Checked;
+    const auto overflow_result = compute_exact_dyadic(overflow_run);
+    if (!overflow_result.completed_normally) {
+        assert(!overflow_result.no_overflow);
+        assert(!overflow_result.certified_exact_dyadic);
+    }
 }

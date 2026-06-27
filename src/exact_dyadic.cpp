@@ -43,11 +43,14 @@ void fail(ExactDyadicResult& result, const std::string& reason) {
     result.completed_normally = false;
     result.exact_cartesian_complete = false;
     result.no_state_pruning = false;
-    result.certified_no_truncation = false;
-    result.certified_exact_dyadic = false;
-    result.parseval_pass = false;
+    result.exact_integer_backend = false;
+    result.no_overflow = false;
+    result.all_rounds_completed = false;
     result.states.clear();
     result.sum_squares = 0;
+    result.expected_sum_squares = 0;
+    result.completed_rounds = 0;
+    finalize_exact_dyadic_certification(result);
 }
 
 bool checked_mul(Int128 lhs, int rhs, Int128& product) {
@@ -61,6 +64,7 @@ bool checked_add(Int128 lhs, Int128 rhs, Int128& sum) {
 template <typename Number, typename Multiply, typename Add>
 ExactDyadicResult run_backend(const ExactDyadicOptions& options,
                              const ExactBranchTable& branches,
+                             bool exact_integer_backend,
                              Multiply multiply,
                              Add add) {
     ExactDyadicResult result;
@@ -68,6 +72,8 @@ ExactDyadicResult run_backend(const ExactDyadicOptions& options,
     result.u = options.u;
     result.denominator_exp2 = 16 * options.rounds;
     result.no_state_pruning = true;
+    result.exact_integer_backend = exact_integer_backend;
+    result.no_overflow = true;
 
     StateMap<Number> current;
     current.emplace(options.u, Number(1));
@@ -127,6 +133,7 @@ ExactDyadicResult run_backend(const ExactDyadicOptions& options,
 
             if (!stats.complete) {
                 if (!arithmetic_ok) {
+                    result.no_overflow = false;
                     fail(result, "checked integer arithmetic overflow");
                 } else if (cancelled) {
                     fail(result, "execution cancelled");
@@ -138,8 +145,11 @@ ExactDyadicResult run_backend(const ExactDyadicOptions& options,
                 return result;
             }
         }
+        result.completed_rounds = round + 1;
         current = std::move(next);
     }
+
+    result.all_rounds_completed = result.completed_rounds == options.rounds;
 
     for (const auto& [mask, value] : sorted_states(current)) {
         if constexpr (std::is_same_v<Number, cpp_int>) {
@@ -154,11 +164,9 @@ ExactDyadicResult run_backend(const ExactDyadicOptions& options,
     }
     result.expected_sum_squares = 1;
     result.expected_sum_squares <<= 32 * options.rounds;
-    result.parseval_pass = result.sum_squares == result.expected_sum_squares;
     result.completed_normally = true;
     result.exact_cartesian_complete = true;
-    result.certified_no_truncation = true;
-    result.certified_exact_dyadic = result.parseval_pass;
+    finalize_exact_dyadic_certification(result);
     if (!result.parseval_pass) result.failure_reason = "Parseval invariant failed";
     return result;
 }
@@ -174,6 +182,16 @@ void exact_accumulate(std::map<Mask, cpp_int>& accumulator, Mask mask, const cpp
     }
     it->second += delta;
     if (it->second == 0) accumulator.erase(it);
+}
+
+void finalize_exact_dyadic_certification(ExactDyadicResult& result) {
+    result.all_rounds_completed = result.completed_rounds == result.rounds;
+    result.certified_no_truncation =
+        result.exact_cartesian_complete && result.no_state_pruning && result.all_rounds_completed;
+    result.certified_exact_dyadic =
+        result.completed_normally && result.exact_cartesian_complete && result.no_state_pruning &&
+        result.exact_integer_backend && result.no_overflow && result.all_rounds_completed;
+    result.parseval_pass = result.sum_squares == result.expected_sum_squares;
 }
 
 ExactDyadicResult compute_exact_dyadic(const ExactDyadicOptions& options) {
@@ -196,7 +214,7 @@ ExactDyadicResult compute_exact_dyadic(const ExactDyadicOptions& options) {
 
     if (options.backend == ExactNumericBackend::CppInt) {
         return run_backend<cpp_int>(
-            options, branches,
+            options, branches, true,
             [](const cpp_int& lhs, int rhs, cpp_int& product) {
                 product = lhs * rhs;
                 return true;
@@ -208,7 +226,7 @@ ExactDyadicResult compute_exact_dyadic(const ExactDyadicOptions& options) {
     }
 
     return run_backend<Int128>(
-        options, branches,
+        options, branches, true,
         [](Int128 lhs, int rhs, Int128& product) { return checked_mul(lhs, rhs, product); },
         [](Int128 lhs, Int128 rhs, Int128& sum) { return checked_add(lhs, rhs, sum); });
 }

@@ -1,0 +1,3 @@
+row_id,r,u,v,numerator,denominator_exp2,exact_fraction,way1_normalized_numerator
+FQ037885,2,0x0b0000e0,0x00000b0b,536870912,32,"536870912/2^32","536870912"
+FQ037886,2,0x0b0000e0,0x00000c0c,-536870912,32,"-536870912/2^32","-536870912"

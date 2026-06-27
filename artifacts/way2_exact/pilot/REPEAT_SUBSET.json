@@ -1,0 +1,142 @@
+{
+  "cpp_int": {
+    "bundle_output_sha256_is_diagnostic": true,
+    "bundle_output_sha256_note": "Diagnostic only; column bundles may differ across repeat runs because column.json contains timing/provenance metadata. Numerical stability is gated by canonical_column_digest and endpoint_payload_sha256.",
+    "bundle_output_sha256_per_run": [
+      "33ff7a7b91d3ae8cf47cad4745bc82b52b0b486ec952c40a38ff8922a0e6a607",
+      "b2d759204df7cb7edb39456d8090be6aac164dbff0763c92d884d552f3c56639",
+      "501810830dfc2895fc8c5a71aae6f49acec51fa34805dcbf0097830842815376"
+    ],
+    "canonical_column_digest_equal": true,
+    "canonical_column_digest_per_run": [
+      "33a0042e23389338c5e738013a299d551c7aaa1e1b701f4d9055297d2664bf69",
+      "33a0042e23389338c5e738013a299d551c7aaa1e1b701f4d9055297d2664bf69",
+      "33a0042e23389338c5e738013a299d551c7aaa1e1b701f4d9055297d2664bf69"
+    ],
+    "cv": 0.012408165584986995,
+    "endpoint_payload_equal": true,
+    "endpoint_payload_sha256_per_run": [
+      "f2cafe9c58698515aaf14d5b241ac17d6d99338d7a7936a9c1c1dd6036109d53",
+      "f2cafe9c58698515aaf14d5b241ac17d6d99338d7a7936a9c1c1dd6036109d53",
+      "f2cafe9c58698515aaf14d5b241ac17d6d99338d7a7936a9c1c1dd6036109d53"
+    ],
+    "runs": [
+      {
+        "bundle_output_sha256": "33ff7a7b91d3ae8cf47cad4745bc82b52b0b486ec952c40a38ff8922a0e6a607",
+        "canonical_column_digest": "33a0042e23389338c5e738013a299d551c7aaa1e1b701f4d9055297d2664bf69",
+        "endpoint_payload_sha256": "f2cafe9c58698515aaf14d5b241ac17d6d99338d7a7936a9c1c1dd6036109d53",
+        "run": 1,
+        "wall_seconds": 1.9387993029995414
+      },
+      {
+        "bundle_output_sha256": "b2d759204df7cb7edb39456d8090be6aac164dbff0763c92d884d552f3c56639",
+        "canonical_column_digest": "33a0042e23389338c5e738013a299d551c7aaa1e1b701f4d9055297d2664bf69",
+        "endpoint_payload_sha256": "f2cafe9c58698515aaf14d5b241ac17d6d99338d7a7936a9c1c1dd6036109d53",
+        "run": 2,
+        "wall_seconds": 1.9382799880004313
+      },
+      {
+        "bundle_output_sha256": "501810830dfc2895fc8c5a71aae6f49acec51fa34805dcbf0097830842815376",
+        "canonical_column_digest": "33a0042e23389338c5e738013a299d551c7aaa1e1b701f4d9055297d2664bf69",
+        "endpoint_payload_sha256": "f2cafe9c58698515aaf14d5b241ac17d6d99338d7a7936a9c1c1dd6036109d53",
+        "run": 3,
+        "wall_seconds": 1.8879597800005286
+      }
+    ]
+  },
+  "int128_checked": {
+    "bundle_output_sha256_is_diagnostic": true,
+    "bundle_output_sha256_note": "Diagnostic only; column bundles may differ across repeat runs because column.json contains timing/provenance metadata. Numerical stability is gated by canonical_column_digest and endpoint_payload_sha256.",
+    "bundle_output_sha256_per_run": [
+      "59f06f3547ed06f1796d63c61f8adb89f1678c30134e5f8ab20418b25fa00c41",
+      "787db2c06cd5feca7023711bf358715f0c12c0e8669b2773f076518e5072fb57",
+      "774d50c3cc3879a27f3859b6f89f833dc016f60533f7aadd1e8a4f392f67586c"
+    ],
+    "canonical_column_digest_equal": true,
+    "canonical_column_digest_per_run": [
+      "04e45401d60dd47dc312bc71f4b3e057e9b9ba8a58a4bb134b92e95690c41a05",
+      "04e45401d60dd47dc312bc71f4b3e057e9b9ba8a58a4bb134b92e95690c41a05",
+      "04e45401d60dd47dc312bc71f4b3e057e9b9ba8a58a4bb134b92e95690c41a05"
+    ],
+    "cv": 0.009439261029773605,
+    "endpoint_payload_equal": true,
+    "endpoint_payload_sha256_per_run": [
+      "e984c528fe29cb83379bd0f5420996f8f33ae3e941afbb762680ed07a535e73f",
+      "e984c528fe29cb83379bd0f5420996f8f33ae3e941afbb762680ed07a535e73f",
+      "e984c528fe29cb83379bd0f5420996f8f33ae3e941afbb762680ed07a535e73f"
+    ],
+    "runs": [
+      {
+        "bundle_output_sha256": "59f06f3547ed06f1796d63c61f8adb89f1678c30134e5f8ab20418b25fa00c41",
+        "canonical_column_digest": "04e45401d60dd47dc312bc71f4b3e057e9b9ba8a58a4bb134b92e95690c41a05",
+        "endpoint_payload_sha256": "e984c528fe29cb83379bd0f5420996f8f33ae3e941afbb762680ed07a535e73f",
+        "run": 1,
+        "wall_seconds": 1.5187201860026107
+      },
+      {
+        "bundle_output_sha256": "787db2c06cd5feca7023711bf358715f0c12c0e8669b2773f076518e5072fb57",
+        "canonical_column_digest": "04e45401d60dd47dc312bc71f4b3e057e9b9ba8a58a4bb134b92e95690c41a05",
+        "endpoint_payload_sha256": "e984c528fe29cb83379bd0f5420996f8f33ae3e941afbb762680ed07a535e73f",
+        "run": 2,
+        "wall_seconds": 1.5307010779979464
+      },
+      {
+        "bundle_output_sha256": "774d50c3cc3879a27f3859b6f89f833dc016f60533f7aadd1e8a4f392f67586c",
+        "canonical_column_digest": "04e45401d60dd47dc312bc71f4b3e057e9b9ba8a58a4bb134b92e95690c41a05",
+        "endpoint_payload_sha256": "e984c528fe29cb83379bd0f5420996f8f33ae3e941afbb762680ed07a535e73f",
+        "run": 3,
+        "wall_seconds": 1.4961998959988705
+      }
+    ]
+  },
+  "subset": [
+    {
+      "r": 1,
+      "u": "0x00000003"
+    },
+    {
+      "r": 1,
+      "u": "0x000000c0"
+    },
+    {
+      "r": 1,
+      "u": "0x00000700"
+    },
+    {
+      "r": 1,
+      "u": "0x0000e000"
+    },
+    {
+      "r": 2,
+      "u": "0x00004000"
+    },
+    {
+      "r": 2,
+      "u": "0x0d007000"
+    },
+    {
+      "r": 2,
+      "u": "0x2100d000"
+    },
+    {
+      "r": 2,
+      "u": "0x800a7000"
+    },
+    {
+      "r": 3,
+      "u": "0x000000d0"
+    },
+    {
+      "r": 3,
+      "u": "0x000c0000"
+    },
+    {
+      "r": 3,
+      "u": "0x000d0000"
+    },
+    {
+      "r": 3,
+      "u": "0x00300000"
+    }
+  ]
+}

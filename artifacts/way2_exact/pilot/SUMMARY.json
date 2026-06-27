@@ -1,0 +1,196 @@
+{
+  "certified_exact_dyadic_cpp_int": 344,
+  "certified_exact_dyadic_int128_checked": 344,
+  "comparison_elapsed_wall": 1.419439898998462,
+  "cpp_int_column_wall_sum": 7.716504444000004,
+  "cpp_int_completed_columns": 344,
+  "cross_backend_canonical_column_digest_mismatch": 0,
+  "cross_backend_certified_exact_dyadic_mismatch": 0,
+  "cross_backend_certified_no_truncation_mismatch": 0,
+  "cross_backend_completed_rounds_mismatch": 0,
+  "cross_backend_denominator_exp2_mismatch": 0,
+  "cross_backend_endpoint_numerator_mismatch": 0,
+  "cross_backend_expected_sum_squares_mismatch": 0,
+  "cross_backend_parseval_pass_mismatch": 0,
+  "cross_backend_state_count_mismatch": 0,
+  "cross_backend_sum_squares_mismatch": 0,
+  "cross_backend_way1_normalized_numerator_mismatch": 0,
+  "duplicate_backend_artifact": 0,
+  "duplicate_column_key": 0,
+  "duplicate_row_id": 0,
+  "duplicate_ruv": 0,
+  "extra_row": 0,
+  "frozen_comparison": {
+    "EXACT_EQUAL": 50540,
+    "MISSING_ENDPOINT": 0,
+    "NOT_EQUAL": 0,
+    "PARSE_ERROR": 0
+  },
+  "int128_column_wall_sum": 5.055539733999999,
+  "int128_completed_columns": 344,
+  "jobs": 1,
+  "missing_row": 0,
+  "orchestrator_elapsed_wall": 55.67166660200019,
+  "parseval_cpp_int": 344,
+  "parseval_int128_checked": 344,
+  "partial_or_orphan_artifact": 0,
+  "peak_process_rss": 23068672,
+  "peak_total_concurrent_rss": 23068672,
+  "repeat_subset": {
+    "cpp_int": {
+      "bundle_output_sha256_is_diagnostic": true,
+      "bundle_output_sha256_note": "Diagnostic only; column bundles may differ across repeat runs because column.json contains timing/provenance metadata. Numerical stability is gated by canonical_column_digest and endpoint_payload_sha256.",
+      "bundle_output_sha256_per_run": [
+        "33ff7a7b91d3ae8cf47cad4745bc82b52b0b486ec952c40a38ff8922a0e6a607",
+        "b2d759204df7cb7edb39456d8090be6aac164dbff0763c92d884d552f3c56639",
+        "501810830dfc2895fc8c5a71aae6f49acec51fa34805dcbf0097830842815376"
+      ],
+      "canonical_column_digest_equal": true,
+      "canonical_column_digest_per_run": [
+        "33a0042e23389338c5e738013a299d551c7aaa1e1b701f4d9055297d2664bf69",
+        "33a0042e23389338c5e738013a299d551c7aaa1e1b701f4d9055297d2664bf69",
+        "33a0042e23389338c5e738013a299d551c7aaa1e1b701f4d9055297d2664bf69"
+      ],
+      "cv": 0.012408165584986995,
+      "endpoint_payload_equal": true,
+      "endpoint_payload_sha256_per_run": [
+        "f2cafe9c58698515aaf14d5b241ac17d6d99338d7a7936a9c1c1dd6036109d53",
+        "f2cafe9c58698515aaf14d5b241ac17d6d99338d7a7936a9c1c1dd6036109d53",
+        "f2cafe9c58698515aaf14d5b241ac17d6d99338d7a7936a9c1c1dd6036109d53"
+      ],
+      "runs": [
+        {
+          "bundle_output_sha256": "33ff7a7b91d3ae8cf47cad4745bc82b52b0b486ec952c40a38ff8922a0e6a607",
+          "canonical_column_digest": "33a0042e23389338c5e738013a299d551c7aaa1e1b701f4d9055297d2664bf69",
+          "endpoint_payload_sha256": "f2cafe9c58698515aaf14d5b241ac17d6d99338d7a7936a9c1c1dd6036109d53",
+          "run": 1,
+          "wall_seconds": 1.9387993029995414
+        },
+        {
+          "bundle_output_sha256": "b2d759204df7cb7edb39456d8090be6aac164dbff0763c92d884d552f3c56639",
+          "canonical_column_digest": "33a0042e23389338c5e738013a299d551c7aaa1e1b701f4d9055297d2664bf69",
+          "endpoint_payload_sha256": "f2cafe9c58698515aaf14d5b241ac17d6d99338d7a7936a9c1c1dd6036109d53",
+          "run": 2,
+          "wall_seconds": 1.9382799880004313
+        },
+        {
+          "bundle_output_sha256": "501810830dfc2895fc8c5a71aae6f49acec51fa34805dcbf0097830842815376",
+          "canonical_column_digest": "33a0042e23389338c5e738013a299d551c7aaa1e1b701f4d9055297d2664bf69",
+          "endpoint_payload_sha256": "f2cafe9c58698515aaf14d5b241ac17d6d99338d7a7936a9c1c1dd6036109d53",
+          "run": 3,
+          "wall_seconds": 1.8879597800005286
+        }
+      ]
+    },
+    "int128_checked": {
+      "bundle_output_sha256_is_diagnostic": true,
+      "bundle_output_sha256_note": "Diagnostic only; column bundles may differ across repeat runs because column.json contains timing/provenance metadata. Numerical stability is gated by canonical_column_digest and endpoint_payload_sha256.",
+      "bundle_output_sha256_per_run": [
+        "59f06f3547ed06f1796d63c61f8adb89f1678c30134e5f8ab20418b25fa00c41",
+        "787db2c06cd5feca7023711bf358715f0c12c0e8669b2773f076518e5072fb57",
+        "774d50c3cc3879a27f3859b6f89f833dc016f60533f7aadd1e8a4f392f67586c"
+      ],
+      "canonical_column_digest_equal": true,
+      "canonical_column_digest_per_run": [
+        "04e45401d60dd47dc312bc71f4b3e057e9b9ba8a58a4bb134b92e95690c41a05",
+        "04e45401d60dd47dc312bc71f4b3e057e9b9ba8a58a4bb134b92e95690c41a05",
+        "04e45401d60dd47dc312bc71f4b3e057e9b9ba8a58a4bb134b92e95690c41a05"
+      ],
+      "cv": 0.009439261029773605,
+      "endpoint_payload_equal": true,
+      "endpoint_payload_sha256_per_run": [
+        "e984c528fe29cb83379bd0f5420996f8f33ae3e941afbb762680ed07a535e73f",
+        "e984c528fe29cb83379bd0f5420996f8f33ae3e941afbb762680ed07a535e73f",
+        "e984c528fe29cb83379bd0f5420996f8f33ae3e941afbb762680ed07a535e73f"
+      ],
+      "runs": [
+        {
+          "bundle_output_sha256": "59f06f3547ed06f1796d63c61f8adb89f1678c30134e5f8ab20418b25fa00c41",
+          "canonical_column_digest": "04e45401d60dd47dc312bc71f4b3e057e9b9ba8a58a4bb134b92e95690c41a05",
+          "endpoint_payload_sha256": "e984c528fe29cb83379bd0f5420996f8f33ae3e941afbb762680ed07a535e73f",
+          "run": 1,
+          "wall_seconds": 1.5187201860026107
+        },
+        {
+          "bundle_output_sha256": "787db2c06cd5feca7023711bf358715f0c12c0e8669b2773f076518e5072fb57",
+          "canonical_column_digest": "04e45401d60dd47dc312bc71f4b3e057e9b9ba8a58a4bb134b92e95690c41a05",
+          "endpoint_payload_sha256": "e984c528fe29cb83379bd0f5420996f8f33ae3e941afbb762680ed07a535e73f",
+          "run": 2,
+          "wall_seconds": 1.5307010779979464
+        },
+        {
+          "bundle_output_sha256": "774d50c3cc3879a27f3859b6f89f833dc016f60533f7aadd1e8a4f392f67586c",
+          "canonical_column_digest": "04e45401d60dd47dc312bc71f4b3e057e9b9ba8a58a4bb134b92e95690c41a05",
+          "endpoint_payload_sha256": "e984c528fe29cb83379bd0f5420996f8f33ae3e941afbb762680ed07a535e73f",
+          "run": 3,
+          "wall_seconds": 1.4961998959988705
+        }
+      ]
+    },
+    "subset": [
+      {
+        "r": 1,
+        "u": "0x00000003"
+      },
+      {
+        "r": 1,
+        "u": "0x000000c0"
+      },
+      {
+        "r": 1,
+        "u": "0x00000700"
+      },
+      {
+        "r": 1,
+        "u": "0x0000e000"
+      },
+      {
+        "r": 2,
+        "u": "0x00004000"
+      },
+      {
+        "r": 2,
+        "u": "0x0d007000"
+      },
+      {
+        "r": 2,
+        "u": "0x2100d000"
+      },
+      {
+        "r": 2,
+        "u": "0x800a7000"
+      },
+      {
+        "r": 3,
+        "u": "0x000000d0"
+      },
+      {
+        "r": 3,
+        "u": "0x000c0000"
+      },
+      {
+        "r": 3,
+        "u": "0x000d0000"
+      },
+      {
+        "r": 3,
+        "u": "0x00300000"
+      }
+    ]
+  },
+  "round_distribution": {
+    "r1": 120,
+    "r2": 128,
+    "r3": 96
+  },
+  "schema": "exact-way2-pilot-summary-v2",
+  "selected_columns": 344,
+  "selector_elapsed_wall": 1.8768501080012356,
+  "status": "PILOT_PASS_READY_FOR_FULL_EXACT_WAY2_REVIEW",
+  "summarizer_elapsed_wall": 0.05959102799897664,
+  "total_column_wall_sum": 12.772044178000003,
+  "total_endpoint_count": 50540,
+  "total_pilot_elapsed_wall": 69.15833899300014,
+  "way1_spotcheck_numerator_mismatch": 0,
+  "way1_spotcheck_rows": 18
+}
