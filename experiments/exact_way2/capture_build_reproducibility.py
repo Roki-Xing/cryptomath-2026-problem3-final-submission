@@ -22,8 +22,8 @@ from common import (
 )
 
 
-OBJECT_RE = re.compile(r"\b-o\s+(build/[^\s]+\.o)\b")
-LINK_RE = re.compile(r"\b-o\s+recompute_frozen_exact\b")
+OBJECT_RE = re.compile(r"(?:^|\s)-o\s+(build/[^\s]+\.o)(?:\s|$)")
+LINK_RE = re.compile(r"(?:^|\s)-o\s+recompute_frozen_exact(?:\s|$)")
 
 
 def read_first_line(args: list[str], *, cwd: Path) -> str:
