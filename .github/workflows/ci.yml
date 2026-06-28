@@ -66,3 +66,15 @@ jobs:
           name: stage-a-toolchain-${{ github.run_id }}-${{ github.run_attempt }}
           path: /tmp/stage_toolchain
           if-no-files-found: error
+
+  strategy-b-stage-a:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Python dependencies
+        run: python3 -m pip install -r requirements-dev.txt
+      - name: Verify compact Strategy-B Stage-A artifacts
+        run: |
+          python3 -X utf8 scripts/build_strategy_b_stage_a_artifacts.py --check
+          python3 -X utf8 tests/test_strategy_b_stage_a_artifacts.py
+          sha256sum -c artifacts/strategy_b/stage_a/SHA256SUMS.txt
