@@ -6,6 +6,7 @@ from __future__ import annotations
 import csv
 import json
 import subprocess
+import tempfile
 from pathlib import Path
 
 
@@ -29,6 +30,49 @@ def query_header(path: Path) -> list[str]:
         return next(csv.reader(handle))
 
 
+def run_builder(*args: str, check: bool = True) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(
+        ["python3", "-X", "utf8", str(SCRIPT), *args],
+        cwd=ROOT,
+        check=check,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+    )
+
+
+def rewrite_sha256s(target: Path) -> None:
+    lines = []
+    for path in sorted(target.glob("*.json")):
+        if path.name == "SHA256SUMS.txt":
+            continue
+        lines.append(f"{sha256(path)}  ./{path.name}\n")
+    (target / "SHA256SUMS.txt").write_text("".join(lines), encoding="utf-8")
+
+
+def mutate_self_consistent_stale_summary(target: Path) -> None:
+    summary_path = target / "STAGE_A_SUMMARY.json"
+    summary = read_json(summary_path)
+    summary["generation_base_commit"] = "0" * 40
+    summary_path.write_text(
+        json.dumps(summary, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+
+    manifest_path = target / "MANIFEST.json"
+    manifest = read_json(manifest_path)
+    for entry in manifest["files"]:
+        if entry["path"] == "STAGE_A_SUMMARY.json":
+            entry["sha256"] = sha256(summary_path)
+            entry["size"] = summary_path.stat().st_size
+            break
+    manifest_path.write_text(
+        json.dumps(manifest, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    rewrite_sha256s(target)
+
+
 def main() -> None:
     required = [
         ROOT / "docs" / "STRATEGY_B_STAGE_A_PROTOCOL.md",
@@ -43,14 +87,7 @@ def main() -> None:
         print("strategy-b Stage-A artifact test skipped")
         return
 
-    subprocess.run(
-        ["python3", "-X", "utf8", str(SCRIPT), "--check"],
-        cwd=ROOT,
-        check=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        text=True,
-    )
+    run_builder("--check")
 
     summary = read_json(ARTIFACT_ROOT / "STAGE_A_SUMMARY.json")
     families = read_json(ARTIFACT_ROOT / "QUERY_FAMILY_SUMMARY.json")
@@ -160,6 +197,24 @@ def main() -> None:
         stderr=subprocess.PIPE,
         text=True,
     )
+
+    with tempfile.TemporaryDirectory(prefix="strategy-b-stage-a-") as tmpdir:
+        external_root = Path(tmpdir) / "stage-a"
+        run_builder("--out-dir", str(external_root))
+        run_builder("--check", "--out-dir", str(external_root))
+
+        external_manifest = read_json(external_root / "MANIFEST.json")
+        assert external_manifest["summary_path"] == "STAGE_A_SUMMARY.json"
+        assert external_manifest["sha256_manifest_path"] == "SHA256SUMS.txt"
+        for entry in external_manifest["files"]:
+            assert not str(entry["path"]).startswith("/")
+            assert "/tmp/" not in str(entry["path"])
+            assert "/home/" not in str(entry["path"])
+
+        mutate_self_consistent_stale_summary(external_root)
+        stale = run_builder("--check", "--out-dir", str(external_root), check=False)
+        assert stale.returncode != 0
+
     print("strategy-b Stage-A artifact tests passed")
 
 

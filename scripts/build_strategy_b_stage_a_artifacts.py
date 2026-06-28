@@ -7,7 +7,9 @@ import argparse
 import csv
 import hashlib
 import json
+import shutil
 import subprocess
+import tempfile
 from collections import Counter
 from pathlib import Path
 
@@ -23,6 +25,19 @@ EXPECTED_SUBMIT_SHA = (
 EXPECTED_VALID_COUNT = 138338
 EXPECTED_TOTAL_SCORE = "105843.622442471292742994"
 QUERY_HEADER = ["row_id", "r", "u", "v"]
+PROTOCOL_COPY_NAME = "PROTOCOL.md"
+SUMMARY_ARTIFACTS = [
+    PROTOCOL_COPY_NAME,
+    "STAGE_A_SUMMARY.json",
+    "QUERY_FAMILY_SUMMARY.json",
+    "MISMATCH_SUMMARY.json",
+    "REDUCER_NEGATIVE_TEST_SUMMARY.json",
+]
+GENERATED_ARTIFACTS = [
+    *SUMMARY_ARTIFACTS,
+    "MANIFEST.json",
+    "SHA256SUMS.txt",
+]
 REDUCER_NEGATIVE_CASES = [
     "start_boundary_mismatch",
     "end_boundary_mismatch",
@@ -69,6 +84,41 @@ def git_head() -> str:
     ).strip()
 
 
+def generation_base_commit() -> str:
+    base_ref = "refs/heads/main"
+    has_main = subprocess.run(
+        ["git", "rev-parse", "--verify", base_ref],
+        cwd=ROOT,
+        check=False,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+    if has_main.returncode == 0:
+        return subprocess.check_output(
+            ["git", "merge-base", "HEAD", base_ref],
+            cwd=ROOT,
+            text=True,
+        ).strip()
+    return git_head()
+
+
+def out_dir_within_repo(out_dir: Path) -> bool:
+    return out_dir.resolve().is_relative_to(ROOT)
+
+
+def logical_output_path(final_out_dir: Path, name: str) -> str:
+    target = final_out_dir / name
+    if out_dir_within_repo(final_out_dir):
+        return target.resolve().relative_to(ROOT).as_posix()
+    return name
+
+
+def resolve_logical_output_path(out_dir: Path, logical_path: str) -> Path:
+    if out_dir_within_repo(out_dir):
+        return ROOT / logical_path
+    return out_dir / logical_path
+
+
 def query_header_ok(path: Path) -> bool:
     with path.open(encoding="utf-8", newline="") as handle:
         reader = csv.reader(handle)
@@ -106,7 +156,7 @@ def stage_a2_anchor_family_counts(manifest: dict[str, object]) -> dict[str, int]
     return dict(sorted(counts.items()))
 
 
-def build_summary() -> tuple[
+def build_summary(protocol_artifact_path: str) -> tuple[
     dict[str, object],
     dict[str, object],
     dict[str, object],
@@ -222,12 +272,13 @@ def build_summary() -> tuple[
         "stage": "STRATEGY_B_STAGE_A",
         "decision": "STAGE_A_PASS",
         "next_state": "STRATEGY_B_STAGE_A_REVIEW",
-        "generation_base_commit": git_head(),
+        "generation_base_commit": generation_base_commit(),
         "source_benchmark_root": "bench/way1",
         "source_benchmark_summary_sha256": sha256_file(BENCH_ROOT / "STAGE_A_SUMMARY.json"),
         "source_benchmark_protocol_sha256": sha256_file(BENCH_ROOT / "PROTOCOL.md"),
         "source_benchmark_manifest_sha256": sha256_file(BENCH_ROOT / "MANIFEST.json"),
-        "protocol_doc": "docs/STRATEGY_B_STAGE_A_PROTOCOL.md",
+        "protocol_doc_source_path": "docs/STRATEGY_B_STAGE_A_PROTOCOL.md",
+        "protocol_doc_artifact_path": protocol_artifact_path,
         "protocol_doc_sha256": sha256_file(DOC_PATH),
         "status_flags": {
             "stage_b_authorized": False,
@@ -345,39 +396,34 @@ def build_summary() -> tuple[
     return summary, query_family_summary, mismatch_summary, reducer_negative_summary, source_refs
 
 
-def repo_file_entries(out_dir: Path) -> list[dict[str, object]]:
+def summary_file_entries(final_out_dir: Path, rendered_dir: Path) -> list[dict[str, object]]:
     entries: list[dict[str, object]] = []
-    for relpath, category in (
-        ("docs/STRATEGY_B_STAGE_A_PROTOCOL.md", "REQUIRED_SUMMARY"),
-        ("artifacts/strategy_b/stage_a/STAGE_A_SUMMARY.json", "REQUIRED_SUMMARY"),
-        (
-            "artifacts/strategy_b/stage_a/QUERY_FAMILY_SUMMARY.json",
-            "REQUIRED_SUMMARY",
-        ),
-        (
-            "artifacts/strategy_b/stage_a/MISMATCH_SUMMARY.json",
-            "REQUIRED_SUMMARY",
-        ),
-        (
-            "artifacts/strategy_b/stage_a/REDUCER_NEGATIVE_TEST_SUMMARY.json",
-            "REQUIRED_SUMMARY",
-        ),
-    ):
-        path = ROOT / relpath
+    for name in SUMMARY_ARTIFACTS:
+        path = rendered_dir / name
         entries.append(
             {
-                "path": relpath,
+                "path": logical_output_path(final_out_dir, name),
                 "sha256": sha256_file(path),
                 "size": path.stat().st_size,
-                "category": category,
+                "category": "REQUIRED_SUMMARY",
             }
         )
     return entries
 
 
-def write_outputs(out_dir: Path) -> None:
-    out_dir.mkdir(parents=True, exist_ok=True)
-    summary, query_family, mismatch, reducer_negative, source_refs = build_summary()
+def write_json(path: Path, payload: dict[str, object]) -> None:
+    path.write_text(
+        json.dumps(payload, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+
+
+def render_outputs(rendered_dir: Path, final_out_dir: Path) -> None:
+    rendered_dir.mkdir(parents=True, exist_ok=False)
+    shutil.copyfile(DOC_PATH, rendered_dir / PROTOCOL_COPY_NAME)
+    summary, query_family, mismatch, reducer_negative, source_refs = build_summary(
+        logical_output_path(final_out_dir, PROTOCOL_COPY_NAME)
+    )
 
     targets = {
         "STAGE_A_SUMMARY.json": summary,
@@ -386,12 +432,9 @@ def write_outputs(out_dir: Path) -> None:
         "REDUCER_NEGATIVE_TEST_SUMMARY.json": reducer_negative,
     }
     for name, payload in targets.items():
-        (out_dir / name).write_text(
-            json.dumps(payload, indent=2, sort_keys=True) + "\n",
-            encoding="utf-8",
-        )
+        write_json(rendered_dir / name, payload)
 
-    files = repo_file_entries(out_dir)
+    files = summary_file_entries(final_out_dir, rendered_dir)
     category_counts = dict(sorted(Counter(entry["category"] for entry in files).items()))
     manifest = {
         "schema": "strategy-b-stage-a-manifest-v1",
@@ -401,38 +444,95 @@ def write_outputs(out_dir: Path) -> None:
         "files": files,
         "category_counts": category_counts,
         "source_evidence": source_refs,
-        "summary_path": "artifacts/strategy_b/stage_a/STAGE_A_SUMMARY.json",
-        "sha256_manifest_path": "artifacts/strategy_b/stage_a/SHA256SUMS.txt",
+        "summary_path": logical_output_path(final_out_dir, "STAGE_A_SUMMARY.json"),
+        "sha256_manifest_path": logical_output_path(final_out_dir, "SHA256SUMS.txt"),
     }
-    (out_dir / "MANIFEST.json").write_text(
-        json.dumps(manifest, indent=2, sort_keys=True) + "\n",
-        encoding="utf-8",
-    )
+    write_json(rendered_dir / "MANIFEST.json", manifest)
 
     sha_targets = [
-        ROOT / "docs" / "STRATEGY_B_STAGE_A_PROTOCOL.md",
-        out_dir / "STAGE_A_SUMMARY.json",
-        out_dir / "QUERY_FAMILY_SUMMARY.json",
-        out_dir / "MISMATCH_SUMMARY.json",
-        out_dir / "REDUCER_NEGATIVE_TEST_SUMMARY.json",
-        out_dir / "MANIFEST.json",
+        rendered_dir / PROTOCOL_COPY_NAME,
+        rendered_dir / "STAGE_A_SUMMARY.json",
+        rendered_dir / "QUERY_FAMILY_SUMMARY.json",
+        rendered_dir / "MISMATCH_SUMMARY.json",
+        rendered_dir / "REDUCER_NEGATIVE_TEST_SUMMARY.json",
+        rendered_dir / "MANIFEST.json",
     ]
     lines = []
     for path in sha_targets:
-        relpath = path.relative_to(ROOT).as_posix()
-        lines.append(f"{sha256_file(path)}  ./{relpath}\n")
-    (out_dir / "SHA256SUMS.txt").write_text("".join(lines), encoding="utf-8")
+        logical_path = logical_output_path(final_out_dir, path.name)
+        lines.append(f"{sha256_file(path)}  ./{logical_path}\n")
+    (rendered_dir / "SHA256SUMS.txt").write_text("".join(lines), encoding="utf-8")
+
+
+def swap_directory(staged_dir: Path, out_dir: Path) -> None:
+    backup_dir: Path | None = None
+    try:
+        if out_dir.exists():
+            backup_dir = out_dir.parent / f".{out_dir.name}.backup"
+            if backup_dir.exists():
+                shutil.rmtree(backup_dir)
+            out_dir.rename(backup_dir)
+        staged_dir.rename(out_dir)
+    except Exception:
+        if backup_dir is not None and backup_dir.exists() and not out_dir.exists():
+            backup_dir.rename(out_dir)
+        raise
+    else:
+        if backup_dir is not None and backup_dir.exists():
+            shutil.rmtree(backup_dir)
+
+
+def write_outputs(out_dir: Path) -> None:
+    out_dir.parent.mkdir(parents=True, exist_ok=True)
+    staged_root = Path(
+        tempfile.mkdtemp(prefix=f".{out_dir.name}.staging.", dir=str(out_dir.parent))
+    )
+    staged_dir = staged_root / out_dir.name
+    try:
+        render_outputs(staged_dir, out_dir)
+        swap_directory(staged_dir, out_dir)
+    except Exception:
+        shutil.rmtree(staged_root, ignore_errors=True)
+        raise
+    else:
+        shutil.rmtree(staged_root, ignore_errors=True)
+
+
+def compare_regenerated_outputs(out_dir: Path) -> None:
+    with tempfile.TemporaryDirectory(
+        prefix=f".{out_dir.name}.regen.", dir=str(out_dir.parent)
+    ) as tmpdir:
+        regenerated = Path(tmpdir) / out_dir.name
+        render_outputs(regenerated, out_dir)
+        target_names = sorted(path.name for path in out_dir.iterdir() if path.is_file())
+        if target_names != sorted(GENERATED_ARTIFACTS):
+            raise SystemExit(
+                "unexpected Strategy-B Stage-A artifact set: "
+                f"{target_names} != {sorted(GENERATED_ARTIFACTS)}"
+            )
+        for name in GENERATED_ARTIFACTS:
+            target_path = out_dir / name
+            regenerated_path = regenerated / name
+            if target_path.read_bytes() != regenerated_path.read_bytes():
+                raise SystemExit(f"regenerated artifact mismatch: {name}")
+
+
+def validate_sha_file(out_dir: Path) -> None:
+    sha_file = out_dir / "SHA256SUMS.txt"
+    for raw_line in sha_file.read_text(encoding="utf-8").splitlines():
+        line = raw_line.strip()
+        if not line:
+            continue
+        expected, logical = line.split("  ", 1)
+        normalized = logical[2:] if logical.startswith("./") else logical
+        path = resolve_logical_output_path(out_dir, normalized)
+        if sha256_file(path) != expected:
+            raise SystemExit(f"SHA256SUMS mismatch: {normalized}")
 
 
 def check_outputs(out_dir: Path) -> None:
     required = [
-        DOC_PATH,
-        out_dir / "STAGE_A_SUMMARY.json",
-        out_dir / "QUERY_FAMILY_SUMMARY.json",
-        out_dir / "MISMATCH_SUMMARY.json",
-        out_dir / "REDUCER_NEGATIVE_TEST_SUMMARY.json",
-        out_dir / "MANIFEST.json",
-        out_dir / "SHA256SUMS.txt",
+        out_dir / name for name in GENERATED_ARTIFACTS
     ]
     for path in required:
         if not path.is_file():
@@ -452,22 +552,13 @@ def check_outputs(out_dir: Path) -> None:
     if dict(sorted(category_counts.items())) != manifest["category_counts"]:
         raise SystemExit("manifest category_counts drifted")
     for entry in files:
-        path = ROOT / str(entry["path"])
+        path = resolve_logical_output_path(out_dir, str(entry["path"]))
         if sha256_file(path) != entry["sha256"]:
             raise SystemExit(f"manifest SHA mismatch: {path}")
         if path.stat().st_size != int(entry["size"]):
             raise SystemExit(f"manifest size mismatch: {path}")
-
-    completed = subprocess.run(
-        ["sha256sum", "-c", str(out_dir / "SHA256SUMS.txt")],
-        cwd=ROOT,
-        check=False,
-        text=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-    )
-    if completed.returncode != 0:
-        raise SystemExit(completed.stdout + completed.stderr)
+    validate_sha_file(out_dir)
+    compare_regenerated_outputs(out_dir)
 
 
 def main() -> None:

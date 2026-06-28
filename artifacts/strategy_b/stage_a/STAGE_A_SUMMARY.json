@@ -200,8 +200,9 @@
     }
   },
   "next_state": "STRATEGY_B_STAGE_A_REVIEW",
-  "protocol_doc": "docs/STRATEGY_B_STAGE_A_PROTOCOL.md",
+  "protocol_doc_artifact_path": "artifacts/strategy_b/stage_a/PROTOCOL.md",
   "protocol_doc_sha256": "694ba927980a9788ee0fcd19d513ef4229c8c941a1a6ff0d9daa8e1e2ebc5cc2",
+  "protocol_doc_source_path": "docs/STRATEGY_B_STAGE_A_PROTOCOL.md",
   "query_family_counts": {
     "a0_available_counts": {
       "frozen-subset": 5,
