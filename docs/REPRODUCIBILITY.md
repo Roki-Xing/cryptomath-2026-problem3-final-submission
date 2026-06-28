@@ -8,6 +8,20 @@ by an actually executed way-1 run. See `docs/VT_VE_COMPLIANCE.md`.
 The frozen query authority is `experiments/frozen/BASELINE.json`; the historical integration evidence remains
 `experiments/manifests/E13_final_integration.md`.
 
+Current evidence state:
+
+```text
+FULL_EXACT_WAY2_CLOSED
+Strategy-B Stage-A = STAGE_A_PASS
+stage_b_authorized=false
+full_2_32_run_started=false
+full_138338_way1_started=false
+new_way1_run_started=false
+strategy_b_final_file_generated=false
+submit_txt_modified=false
+vt_provenance_closed=false
+```
+
 ## Requirements
 
 - Linux / WSL2
@@ -201,6 +215,69 @@ mismatch_count=0
 The E06 count is the number of rows in `experiments/spotcheck/exact_spotcheck_queries.csv` where
 `category=r3_active2_e06`.
 
+## Full Exact-Way2 Evidence
+
+The full exact-way2 recomputation is a repository evidence artifact and does
+not modify `submit.txt`.
+
+```bash
+sha256sum -c artifacts/way2_exact/full/SHA256SUMS.txt
+python3 -X utf8 - <<'PY'
+import json
+s = json.load(open("artifacts/way2_exact/full/SUMMARY.json", encoding="utf-8"))
+c = json.load(open("artifacts/way2_exact/full/COMPARE.json", encoding="utf-8"))
+print(s["selected_columns"], s["cpp_int_completed_columns"], s["int128_completed_columns"])
+print(s["certified_exact_dyadic_cpp_int"], s["certified_exact_dyadic_int128_checked"])
+print(s["parseval_cpp_int"], s["parseval_int128_checked"])
+print(c["frozen_comparison"])
+PY
+```
+
+Expected:
+
+```text
+4760 4760 4760
+4760 4760
+4760 4760
+{'EXACT_EQUAL': 138338, 'MISSING_ENDPOINT': 0, 'NOT_EQUAL': 0, 'PARSE_ERROR': 0}
+```
+
+This closes the way-2 mathematical and numerical evidence chain. It does not
+close full way-1 `VT` provenance.
+
+## Strategy-B Stage-A Evidence
+
+Strategy-B Stage-A validates bounded way-1 batch tooling only. It does not run
+the full `2^32` plaintext domain, does not run the full 138338-query way-1
+workload, and does not generate a Strategy-B final file.
+
+```bash
+sha256sum -c artifacts/strategy_b/stage_a/SHA256SUMS.txt
+python3 -X utf8 scripts/build_strategy_b_stage_a_artifacts.py --check
+python3 -X utf8 - <<'PY'
+import json
+s = json.load(open("artifacts/strategy_b/stage_a/STAGE_A_SUMMARY.json", encoding="utf-8"))
+print(s["stage"], s["decision"], s["next_state"])
+print(s["matrices"]["a0"]["status"], s["matrices"]["a0"]["run_case_count"])
+print(s["matrices"]["a1"]["status"], s["matrices"]["a1"]["run_case_count"])
+print(s["matrices"]["a2"]["status"], s["matrices"]["a2"]["matrix_case_count"])
+print(s["matrices"]["toolchain"]["status"], s["matrices"]["toolchain"]["matrix_case_count"])
+print(s["gates"]["numerator_mismatch_count"], s["gates"]["shard_negative_test_pass_count"])
+print(s["status_flags"])
+PY
+```
+
+Expected status:
+
+```text
+STRATEGY_B_STAGE_A STAGE_A_PASS STRATEGY_B_STAGE_A_REVIEW
+STAGE_A0_PASS 68
+STAGE_A1_PASS 50
+STAGE_A2_PASS 31
+STAGE_TOOLCHAIN_PASS 69
+0 12
+```
+
 ## Toy Exact Compare
 
 Reduced-domain toy comparisons validate the same DP algebra against exact enumeration on small domains:
@@ -223,7 +300,7 @@ See `experiments/manifests/E04_toy_exact_compare.md`.
 - `参赛论文/参赛论文_赛题三_稳稳接住.tex`
 - `参赛论文/figures/`
 
-提供方 PDF 与 TeX 的 SHA-256 已和原清单核对一致。PDF 已检查标题、17 页页数以及最终
-`valid_count=138338` 和 `total_score=105843.622442471292742994`。当前 WSL 环境缺少 TeX
-指定的物理中文字体，因此没有在本机重新导出 PDF；如需重导出，应在具备对应中文字体的
-XeLaTeX 环境中连续编译两次并人工检查公式、表格和字体。
+当前 TeX 源文件已同步 `FULL_EXACT_WAY2_CLOSED` 与 Strategy-B Stage-A 状态。PDF
+未在本机重导出：本环境执行 `latexmk -xelatex` 时，`xdvipdfmx` 因缺少
+`ntx-Regular-tlf-ot1r` 字体映射失败。提交前应在具备完整 TeX 字体映射的 XeLaTeX
+环境中重导出 PDF，并人工检查首页、公式、表格、图片、页码、参考文献和最终分数。
