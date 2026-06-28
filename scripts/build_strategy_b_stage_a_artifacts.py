@@ -76,32 +76,6 @@ def read_json(path: Path) -> dict[str, object]:
     return data
 
 
-def git_head() -> str:
-    return subprocess.check_output(
-        ["git", "rev-parse", "HEAD"],
-        cwd=ROOT,
-        text=True,
-    ).strip()
-
-
-def generation_base_commit() -> str:
-    base_ref = "refs/heads/main"
-    has_main = subprocess.run(
-        ["git", "rev-parse", "--verify", base_ref],
-        cwd=ROOT,
-        check=False,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-    )
-    if has_main.returncode == 0:
-        return subprocess.check_output(
-            ["git", "merge-base", "HEAD", base_ref],
-            cwd=ROOT,
-            text=True,
-        ).strip()
-    return git_head()
-
-
 def out_dir_within_repo(out_dir: Path) -> bool:
     return out_dir.resolve().is_relative_to(ROOT)
 
@@ -272,7 +246,10 @@ def build_summary(protocol_artifact_path: str) -> tuple[
         "stage": "STRATEGY_B_STAGE_A",
         "decision": "STAGE_A_PASS",
         "next_state": "STRATEGY_B_STAGE_A_REVIEW",
-        "generation_base_commit": generation_base_commit(),
+        # Bind to the committed Stage-A integration evidence head instead of the
+        # transient local checkout HEAD so regeneration is stable across branch,
+        # push-CI and pull_request merge checkouts.
+        "generation_base_commit": str(bench_summary["integration_head_commit"]),
         "source_benchmark_root": "bench/way1",
         "source_benchmark_summary_sha256": sha256_file(BENCH_ROOT / "STAGE_A_SUMMARY.json"),
         "source_benchmark_protocol_sha256": sha256_file(BENCH_ROOT / "PROTOCOL.md"),
