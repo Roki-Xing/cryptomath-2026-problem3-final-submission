@@ -78,3 +78,13 @@ jobs:
           python3 -X utf8 scripts/build_strategy_b_stage_a_artifacts.py --check
           python3 -X utf8 tests/test_strategy_b_stage_a_artifacts.py
           sha256sum -c artifacts/strategy_b/stage_a/SHA256SUMS.txt
+
+  paper-preflight:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Lint paper template and compliance text
+        run: |
+          python3 -X utf8 scripts/lint_paper_template.py \
+            参赛论文/参赛论文_赛题三_稳稳接住.tex \
+            REPORT.md README.md docs

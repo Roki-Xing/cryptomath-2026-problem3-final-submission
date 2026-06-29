@@ -1,0 +1,5 @@
+$pdf_mode = 5;
+$xelatex = 'xelatex -interaction=nonstopmode -halt-on-error %O %S';
+$out_dir = '.';
+$aux_dir = '.';
+@generated_exts = (@generated_exts, 'xdv');
