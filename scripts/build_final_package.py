@@ -17,6 +17,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 PACKAGE_DIR = ROOT / "submission_final"
 ARCHIVE_PATH = ROOT / "submission_final.zip"
+FINAL_PACKAGE_STATUS = "FINAL_PACKAGE_RELEASE_CANDIDATE_READY"
 PACKAGE_MANIFEST = ROOT / "PACKAGE_MANIFEST.md"
 ROOT_SHA256SUMS = ROOT / "SHA256SUMS.txt"
 REPOSITORY = "Roki-Xing/cryptomath-2026-problem3-final-submission"
@@ -272,11 +273,13 @@ def write_text_files(generated_at: str, source_commit: str, source_tree: str) ->
             [
                 "# Final Submission Package Release Candidate",
                 "",
-                "Status: `FINAL_PACKAGE_PREFLIGHT_PENDING`.",
+                f"Status: `{FINAL_PACKAGE_STATUS}`.",
                 "",
                 "This package preserves the frozen way-2 result file. It does not start Stage-B,",
                 "does not run a new way-1 computation, and does not claim full way-1 `VT`",
                 "provenance is closed.",
+                "Manual PDF and figure-manuscript preflight have been recorded in",
+                "`paper/PDF_PREFLIGHT.md` and `paper/FIGURE_MANUSCRIPT_PREFLIGHT.md`.",
                 "",
                 "## Required Checks",
                 "",
@@ -407,7 +410,7 @@ def write_manifest(
             [
                 "# Final Package Manifest",
                 "",
-                "Status: `FINAL_PACKAGE_PREFLIGHT_PENDING`.",
+                f"Status: `{FINAL_PACKAGE_STATUS}`.",
                 "",
                 "| field | value |",
                 "|---|---|",
