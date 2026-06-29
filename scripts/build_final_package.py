@@ -17,7 +17,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 PACKAGE_DIR = ROOT / "submission_final"
 ARCHIVE_PATH = ROOT / "submission_final.zip"
-FINAL_PACKAGE_STATUS = "FINAL_PACKAGE_RELEASE_CANDIDATE_READY"
+FINAL_PACKAGE_READY = "FINAL_PACKAGE_RELEASE_CANDIDATE_READY"
+FINAL_PACKAGE_PENDING = "FINAL_PACKAGE_PREFLIGHT_PENDING"
 PACKAGE_MANIFEST = ROOT / "PACKAGE_MANIFEST.md"
 ROOT_SHA256SUMS = ROOT / "SHA256SUMS.txt"
 REPOSITORY = "Roki-Xing/cryptomath-2026-problem3-final-submission"
@@ -25,6 +26,8 @@ SUBMIT_SHA = "7b0f638ba8678462ee8d6c12bc0c5b89d7354b4a095b31330f3ba495acfe2e2e"
 VALID_COUNT = "138338"
 TOTAL_SCORE = "105843.622442471292742994"
 ZIP_TIMESTAMP = (1980, 1, 1, 0, 0, 0)
+PDF_PREFLIGHT = ROOT / "参赛论文" / "PDF_PREFLIGHT.md"
+FIGURE_PREFLIGHT = ROOT / "参赛论文" / "FIGURE_MANUSCRIPT_PREFLIGHT.md"
 PACKAGE_SOURCE_APP_FILES = [
     "apps/enumerate_r1_positive.cpp",
     "apps/estimator.cpp",
@@ -71,6 +74,37 @@ def git_output(args: list[str]) -> str:
         Stripped command stdout.
     """
     return subprocess.check_output(["git", *args], cwd=ROOT, text=True).strip()
+
+
+def extract_status(path: Path) -> str:
+    """Extract the Markdown status token from a preflight file.
+
+    Args:
+        path: Markdown file that contains a ``Status: `...`` line.
+
+    Returns:
+        The extracted status token.
+    """
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if line.startswith("Status: `") and line.endswith("`."):
+            return line[len("Status: `") : -2]
+    raise SystemExit(f"missing status line in {path}")
+
+
+def final_package_status() -> tuple[str, str, str]:
+    """Derive package readiness from the current preflight files.
+
+    Returns:
+        Package status, PDF preflight status, and figure-manuscript preflight status.
+    """
+    pdf_status = extract_status(PDF_PREFLIGHT)
+    figure_status = extract_status(FIGURE_PREFLIGHT)
+    if (
+        pdf_status == "FINAL_PACKAGE_PREFLIGHT_PASSED"
+        and figure_status == "FINAL_PACKAGE_PREFLIGHT_PASSED"
+    ):
+        return FINAL_PACKAGE_READY, pdf_status, figure_status
+    return FINAL_PACKAGE_PENDING, pdf_status, figure_status
 
 
 def package_source_makefile() -> str:
@@ -260,27 +294,38 @@ def copy_source_tree() -> None:
     (PACKAGE_DIR / "source" / "Makefile").write_text(package_source_makefile(), encoding="utf-8")
 
 
-def write_text_files(generated_at: str, source_commit: str, source_tree: str) -> None:
+def write_text_files(
+    generated_at: str,
+    source_commit: str,
+    source_tree: str,
+    package_status: str,
+    pdf_preflight_status: str,
+    figure_preflight_status: str,
+) -> None:
     """Write package-local README, score report, and source metadata.
 
     Args:
         generated_at: RFC3339 UTC generation time.
         source_commit: Source commit used for the package.
         source_tree: Git tree SHA for the source commit.
+        package_status: Release-candidate readiness status for the package.
+        pdf_preflight_status: Current PDF preflight status.
+        figure_preflight_status: Current figure-manuscript preflight status.
     """
     (PACKAGE_DIR / "README_FIRST.md").write_text(
         "\n".join(
             [
                 "# Final Submission Package Release Candidate",
                 "",
-                f"Status: `{FINAL_PACKAGE_STATUS}`.",
+                f"Status: `{package_status}`.",
                 "",
                 "This package preserves the frozen way-2 result file. It does not start Stage-B,",
                 "does not run a new way-1 computation, and does not claim full way-1 `VT`",
                 "provenance is closed.",
-                "Manual PDF and figure-manuscript preflight were completed before this",
-                "release-candidate package was staged; see `docs/SUBMISSION_MANIFEST.md`",
-                "for the recorded package state.",
+                f"PDF preflight status: `{pdf_preflight_status}`.",
+                f"Figure-manuscript preflight status: `{figure_preflight_status}`.",
+                "See `docs/SUBMISSION_MANIFEST.md` for the recorded package state and",
+                "current manual-review boundary.",
                 "",
                 "## Required Checks",
                 "",
@@ -394,6 +439,9 @@ def write_manifest(
     package_files: list[Path],
     archive_sha: str,
     archive_size: int,
+    package_status: str,
+    pdf_preflight_status: str,
+    figure_preflight_status: str,
 ) -> None:
     """Write the root package manifest.
 
@@ -404,6 +452,9 @@ def write_manifest(
         package_files: Package file list relative to ``submission_final``.
         archive_sha: SHA-256 of the generated archive.
         archive_size: Archive byte size.
+        package_status: Release-candidate readiness status for the package.
+        pdf_preflight_status: Current PDF preflight status.
+        figure_preflight_status: Current figure-manuscript preflight status.
     """
     package_sha = sha256_file(PACKAGE_DIR / "SHA256SUMS.txt")
     PACKAGE_MANIFEST.write_text(
@@ -411,7 +462,7 @@ def write_manifest(
             [
                 "# Final Package Manifest",
                 "",
-                f"Status: `{FINAL_PACKAGE_STATUS}`.",
+                f"Status: `{package_status}`.",
                 "",
                 "| field | value |",
                 "|---|---|",
@@ -419,6 +470,8 @@ def write_manifest(
                 f"| source_commit | `{source_commit}` |",
                 f"| source_tree_sha | `{source_tree}` |",
                 f"| generated_at_utc | `{generated_at}` |",
+                f"| pdf_preflight_status | `{pdf_preflight_status}` |",
+                f"| figure_preflight_status | `{figure_preflight_status}` |",
                 f"| submit_sha256 | `{SUBMIT_SHA}` |",
                 f"| valid_count | `{VALID_COUNT}` |",
                 f"| total_score | `{TOTAL_SCORE}` |",
@@ -509,13 +562,31 @@ def main() -> None:
     generated_at = args.generated_at_utc or datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     source_commit = git_output(["rev-parse", "HEAD"])
     source_tree = git_output(["rev-parse", "HEAD^{tree}"])
+    package_status, pdf_preflight_status, figure_preflight_status = final_package_status()
 
     copy_submission_artifacts()
     copy_source_tree()
-    write_text_files(generated_at, source_commit, source_tree)
+    write_text_files(
+        generated_at,
+        source_commit,
+        source_tree,
+        package_status,
+        pdf_preflight_status,
+        figure_preflight_status,
+    )
     package_files = write_package_sha256s()
     archive_sha, archive_size = build_archive()
-    write_manifest(generated_at, source_commit, source_tree, package_files, archive_sha, archive_size)
+    write_manifest(
+        generated_at,
+        source_commit,
+        source_tree,
+        package_files,
+        archive_sha,
+        archive_size,
+        package_status,
+        pdf_preflight_status,
+        figure_preflight_status,
+    )
     write_root_sha256s()
 
     print(f"package_dir={PACKAGE_DIR.relative_to(ROOT)}")

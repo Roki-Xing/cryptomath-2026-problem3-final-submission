@@ -1,9 +1,11 @@
 # Figure Manuscript Preflight Checklist
 
-Status: `FINAL_PACKAGE_PREFLIGHT_PASSED`.
+Status: `FINAL_PACKAGE_PREFLIGHT_PENDING`.
 
 The template requires all figures to be collected in a separate Word figure
-manuscript. The repository contains:
+manuscript. The repository contains the same Word figure manuscript as the
+historically reviewed build, but the paper PDF changed under a docs-only
+erratum, so figure-to-paper consistency should be rechecked before release.
 
 - `第十一届0000002243图稿/第十一届0000002243图稿.docx`
 - `第十一届0000002243图稿/图0000002243.1.svg`
@@ -14,10 +16,11 @@ manuscript. The repository contains:
 - `第十一届0000002243图稿/图0000002243.3.pdf`
 
 ```text
-reviewed_by = human reviewer
-reviewed_at_utc = 2026-06-29T11:52:17Z
-reviewed_pdf_sha256 = f92ecc521e719da3b0f4aff49111d0016138f0f527c4dc93d61992042d6066b5
-reviewed_figure_manuscript_sha256 = 4da2425f5ea49f15873d583d9fe00e7fb61b9716e630fd3e4774aef8b61731a7
+historical_reviewed_by = human reviewer
+historical_reviewed_at_utc = 2026-06-29T11:52:17Z
+historical_reviewed_pdf_sha256 = f92ecc521e719da3b0f4aff49111d0016138f0f527c4dc93d61992042d6066b5
+current_pdf_sha256 = 78f7f33e0d032e2d859d32ee4e71fad99523987ab9ccd930741a68ee3b846bbd
+historical_reviewed_figure_manuscript_sha256 = 4da2425f5ea49f15873d583d9fe00e7fb61b9716e630fd3e4774aef8b61731a7
 submit_sha256 = 7b0f638ba8678462ee8d6c12bc0c5b89d7354b4a095b31330f3ba495acfe2e2e
 ```
 
@@ -31,7 +34,9 @@ Boundary notes:
 - Full `2^32` was not run.
 - Full 138338-query way-1 was not run.
 
-Manual review checklist:
+- [ ] 针对 `current_pdf_sha256` 重新确认图稿与当前论文 PDF 的对应关系。
+
+Historical manual review checklist:
 
 - [x] Word file name contains team number `0000002243`.
 - [x] Figure folder name contains team number `0000002243`.

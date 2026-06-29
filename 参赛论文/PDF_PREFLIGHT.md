@@ -1,15 +1,18 @@
 # PDF Preflight Checklist
 
-Status: `FINAL_PACKAGE_PREFLIGHT_PASSED`.
+Status: `FINAL_PACKAGE_PREFLIGHT_PENDING`.
 
-This checklist records the completed manual review of
-`参赛论文_赛题三_稳稳接住.pdf` generated from the current TeX source.
+This checklist records the historical completed manual review of
+`参赛论文_赛题三_稳稳接住.pdf`. A docs-only erratum changed the current TeX
+source and regenerated the PDF, so the current PDF must be reviewed again
+before release.
 
 ```text
-reviewed_by = human reviewer
-reviewed_at_utc = 2026-06-29T11:52:17Z
-reviewed_pdf_sha256 = f92ecc521e719da3b0f4aff49111d0016138f0f527c4dc93d61992042d6066b5
-reviewed_figure_manuscript_sha256 = 4da2425f5ea49f15873d583d9fe00e7fb61b9716e630fd3e4774aef8b61731a7
+historical_reviewed_by = human reviewer
+historical_reviewed_at_utc = 2026-06-29T11:52:17Z
+historical_reviewed_pdf_sha256 = f92ecc521e719da3b0f4aff49111d0016138f0f527c4dc93d61992042d6066b5
+current_pdf_sha256 = 78f7f33e0d032e2d859d32ee4e71fad99523987ab9ccd930741a68ee3b846bbd
+historical_reviewed_figure_manuscript_sha256 = 4da2425f5ea49f15873d583d9fe00e7fb61b9716e630fd3e4774aef8b61731a7
 submit_sha256 = 7b0f638ba8678462ee8d6c12bc0c5b89d7354b4a095b31330f3ba495acfe2e2e
 ```
 
@@ -23,7 +26,8 @@ Boundary notes:
 - Full `2^32` was not run.
 - Full 138338-query way-1 was not run.
 
-- [x] 首页标题为“SPN 型置换相关矩阵坐标的可认证稀疏路线壳求和”。
+- [ ] 针对 `current_pdf_sha256` 重新执行人工逐页视觉检查并确认以下项目。
+- [x] 历史检查中, 首页标题为“SPN 型置换相关矩阵坐标的可认证稀疏路线壳求和”。
 - [x] 作者、指导教师、学校、邮箱、战队名称、战队序号 `0000002243` 正确。
 - [x] 摘要约 300-500 字。
 - [x] 关键词为 3-5 个。
