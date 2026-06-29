@@ -2,8 +2,8 @@
 
 Status: `FULL_EXACT_WAY2_CLOSED` with Strategy-B Stage-A `STAGE_A_PASS`.
 Final package status: `FINAL_PACKAGE_RELEASE_CANDIDATE_READY`.
-Manual PDF and figure-manuscript preflight have been recorded in
-`参赛论文/PDF_PREFLIGHT.md` and `参赛论文/FIGURE_MANUSCRIPT_PREFLIGHT.md`.
+Manual PDF and figure-manuscript preflight have been completed and reflected in
+the final package release-candidate state recorded by this manifest.
 The `valid_count=138338` and `total_score=105843.622442471292742994` values are
 the frozen self-score results for the unchanged `submit.txt`. Full exact-way2
 dual-backend recomputation closed the way-2 mathematical and numerical
@@ -17,10 +17,10 @@ evidence chain. Complete way-1 `VT` provenance has not yet been closed.
 - `submit.txt`：最终 138338 条有效记录，自算分 105843.622442471292742994。
 - `REPORT.md`：论文 Markdown 源及方法、证明、实验文本备份。
 - `FINAL_CHECK.md`：最终得分、审计、复杂度与抽样摘要。
-- `参赛论文/参赛论文_赛题三_稳稳接住.pdf`：由当前 TeX 在 XeLaTeX 环境中重导出的论文阅读版本；人工逐页检查结果见 `参赛论文/PDF_PREFLIGHT.md`。
+- `参赛论文/参赛论文_赛题三_稳稳接住.pdf`：由当前 TeX 在 XeLaTeX 环境中重导出的论文阅读版本；人工逐页检查已完成。
 - `参赛论文/参赛论文_赛题三_稳稳接住.tex`：已同步当前证据状态的最终论文 TeX 源文件。
 - `参赛论文/figures/`：TeX 源文件引用的三组 PDF/SVG 图。
-- `第十一届0000002243图稿/`：独立图稿 Word 文件和三组 SVG/PDF；人工检查结果见 `参赛论文/FIGURE_MANUSCRIPT_PREFLIGHT.md`。
+- `第十一届0000002243图稿/`：独立图稿 Word 文件和三组 SVG/PDF；人工检查已完成。
 
 ## 可运行源码
 
