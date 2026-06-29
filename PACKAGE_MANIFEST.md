@@ -5,9 +5,9 @@ Status: `FINAL_PACKAGE_PREFLIGHT_PENDING`.
 | field | value |
 |---|---|
 | repository | `Roki-Xing/cryptomath-2026-problem3-final-submission` |
-| source_commit | `76e745869bd033407ad1b3e448813ff94595ddd9` |
-| source_tree_sha | `26535e4bbb8e6c687109d9cbe09df0312ef9f1ae` |
-| generated_at_utc | `2026-06-29T15:12:40Z` |
+| source_commit | `0759ac8bc6781775c71a8033bcc987e1cd8b932d` |
+| source_tree_sha | `1615a7420e30afcf10438ca63dde1168cadbb3b7` |
+| generated_at_utc | `2026-06-29T16:45:33Z` |
 | pdf_preflight_status | `FINAL_PACKAGE_PREFLIGHT_PENDING` |
 | figure_preflight_status | `FINAL_PACKAGE_PREFLIGHT_PENDING` |
 | submit_sha256 | `7b0f638ba8678462ee8d6c12bc0c5b89d7354b4a095b31330f3ba495acfe2e2e` |
@@ -16,10 +16,10 @@ Status: `FINAL_PACKAGE_PREFLIGHT_PENDING`.
 | package_dir | `submission_final/` |
 | package_file_count | `274` |
 | package_sha256s | `submission_final/SHA256SUMS.txt` |
-| package_sha256s_sha256 | `524e5e0f0ce2fa526f557453e5e47e5688a4b0ad312b9bebec5a55ba7a0fcecd` |
+| package_sha256s_sha256 | `93ca5eb2ccd36cc877cc32addcea9912ca4e16df001e811427f4e82b1a696e5b` |
 | archive | `submission_final.zip` |
-| archive_bytes | `4924528` |
-| archive_sha256 | `c80a1f219ef77975d5565542f055f9772b304e96012f52d6b2408168d93d9c2b` |
+| archive_bytes | `4922668` |
+| archive_sha256 | `9524449158cee48832cd53f1e1b12488a0fa755d604bd09c084e0d8c1376607f` |
 | archive_command | `python3 -X utf8 scripts/build_final_package.py --clean` |
 
 ## Inclusion Boundary
@@ -120,7 +120,7 @@ vt_provenance_closed=false
 - `source/apps/score.cpp`
 - `source/experiments/SOURCE_MANIFEST.csv`
 - `source/experiments/build_submit_from_sources.py`
-- `source/experiments/check_submission.py`
+- `source/experiments/check_submission_package.py`
 - `source/experiments/new_sweeps/r3_active2_lat/r3_active2_lat_cert_u2020_u4040_top64_beam200k_trans100k.csv`
 - `source/experiments/new_sweeps/r3_active2_lat/r3_active2_lat_cert_u2020shift_u4040shift_top64_beam200k_trans100k.csv`
 - `source/experiments/new_sweeps/r3_active2_lat/r3_active2_lat_cert_u60600000_u006060_top64_beam200k_trans100k.csv`

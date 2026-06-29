@@ -19,6 +19,7 @@ make clean && make -j2
 python3 -X utf8 experiments/build_submit_from_sources.py --source-submit ../submit.txt --out /tmp/rebuilt_submission_final.txt
 cmp ../submit.txt /tmp/rebuilt_submission_final.txt
 ./score --dedup uv --positive-only ../submit.txt
+python3 -X utf8 experiments/check_submission_package.py --submit ../submit.txt
 ```
 
 ## Frozen Result
@@ -33,7 +34,9 @@ cmp ../submit.txt /tmp/rebuilt_submission_final.txt
 - Strategy-B Stage-A evidence is included only as bounded way-1 toolchain evidence.
 - Historical candidate-discovery helpers are excluded from `source/`; the final
   package rebuild consumes saved certified source CSVs and does not rerun
-  legacy or discovery-only utilities.
+  legacy or discovery-only utilities. In `experiments/SOURCE_MANIFEST.csv`,
+  `generation_command` remains a historical discovery label rather than a
+  runnable final-package command.
 - Full raw exact-way2 archives, CI artifacts, temporary logs, build outputs,
   and font files are intentionally excluded.
 

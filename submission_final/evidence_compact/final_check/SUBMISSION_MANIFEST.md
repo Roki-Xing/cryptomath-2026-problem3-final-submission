@@ -36,7 +36,7 @@ evidence chain. Complete way-1 `VT` provenance has not yet been closed.
 ## 最终结果重建
 
 - `experiments/build_submit_from_sources.py`：从一轮枚举和已保存的方式二认证来源 CSV 重建最终结果。
-- `experiments/SOURCE_MANIFEST.csv`：构造脚本默认来源的逐文件参数、行数与 SHA-256。
+- `experiments/SOURCE_MANIFEST.csv`：构造脚本默认来源的逐文件参数、行数与 SHA-256；其中 `generation_command` 字段记录历史候选发现标签，不表示 final package 内必须可运行的命令。
 - `experiments/r2_active*.csv`、`experiments/r3_active1_emit_all.csv`、`experiments/new_sweeps/r3_active2_lat/*.csv`：最终构造所需全部认证来源。
 
 本包支持由已保存认证来源进行字节级重建，但不声称提供从零重新执行全部历史候选搜索的单命令流程。
@@ -68,7 +68,7 @@ evidence chain. Complete way-1 `VT` provenance has not yet been closed.
 | category | included files | package treatment |
 |---|---|---|
 | required submission artifacts | `submit.txt`; `REPORT.md`; `参赛论文/参赛论文_赛题三_稳稳接住.pdf`; `参赛论文/参赛论文_赛题三_稳稳接住.tex`; `README.md`; `提交说明.md`; `FINAL_CHECK.md`; `SUBMISSION_MANIFEST.md` | 进入最终比赛提交包 |
-| runnable submit rebuild program | `Makefile`; `include/`; `src/`; `apps/`; `experiments/build_submit_from_sources.py`; source CSVs listed by `experiments/SOURCE_MANIFEST.csv`; `score`; `experiments/check_submission.py` | 进入最终比赛提交包 |
+| runnable submit rebuild program | `Makefile`; `include/`; `src/`; `apps/`; `experiments/build_submit_from_sources.py`; source CSVs listed by `experiments/SOURCE_MANIFEST.csv`; `score`; `experiments/check_submission_package.py` | 进入最终比赛提交包 |
 | way-2 exact evidence | `artifacts/way2_exact/full/SUMMARY.json`; `COMPARE.json`; `FULL_RUN_AUTHORIZATION.json`; `PROVENANCE.json`; `MANIFEST.json`; `SHA256SUMS.txt`; `RAW_EVIDENCE_INDEX.json` | compact evidence may be included; raw archives are referenced, not embedded |
 | Strategy-B Stage-A evidence | `artifacts/strategy_b/stage_a/STAGE_A_SUMMARY.json`; `PROTOCOL.md`; `MANIFEST.json`; `SHA256SUMS.txt`; `docs/STRATEGY_B_STAGE_A_PROTOCOL.md` | included as bounded way-1 tooling evidence only |
 | repository-only raw evidence | full exact-way2 tar.zst release assets; large diagnostic logs; CI artifacts; benchmark raw logs | repository/release evidence only, not final competition package payload |
@@ -101,6 +101,13 @@ python3 -X utf8 experiments/build_submit_from_sources.py --out /tmp/submit_rebui
 cmp submit.txt /tmp/submit_rebuilt.txt
 ./score --dedup uv --positive-only submit.txt
 python3 experiments/check_submission.py --submit submit.txt
+
+cd submission_final/source
+make clean && make -j2
+python3 -X utf8 experiments/build_submit_from_sources.py --source-submit ../submit.txt --out /tmp/rebuilt_submission_final.txt
+cmp ../submit.txt /tmp/rebuilt_submission_final.txt
+./score --dedup uv --positive-only ../submit.txt
+python3 -X utf8 experiments/check_submission_package.py --submit ../submit.txt
 ```
 
 预期：

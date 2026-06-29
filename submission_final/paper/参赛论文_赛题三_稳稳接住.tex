@@ -695,6 +695,8 @@ valid_count = 138338
 total_score = 105843.622442471292742994
 \end{verbatim}
 
+复现材料中的逐行审计记录以顶层字段 \texttt{certified\_no\_truncation} 表示定义 1 的三项结构条件是否同时满足. 每轮 \texttt{round\_stats} 记录 \texttt{branch\_truncated\_states}, \texttt{tuple\_truncated\_states} 与 \texttt{beam\_pruned}. 在本文最终结果对应的审计记录中, 三项条件分别表现为局部分支截断数为 0, S 层元组截断数为 0, 未发生状态剪枝. 上述字段是定义 1 的实现审计证据, 不作为新的数学假设.
+
 当前证据状态边界为:
 \begin{verbatim}
 FULL_EXACT_WAY2_CLOSED
