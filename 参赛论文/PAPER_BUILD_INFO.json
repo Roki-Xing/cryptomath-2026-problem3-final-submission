@@ -3,13 +3,13 @@
     "latexmk -xelatex -interaction=nonstopmode -halt-on-error 参赛论文_赛题三_稳稳接住.tex",
     "latexmk -xelatex -interaction=nonstopmode -halt-on-error 参赛论文_赛题三_稳稳接住.tex"
   ],
-  "build_end_utc": "2026-06-29T15:11:03Z",
-  "build_start_utc": "2026-06-29T15:10:58Z",
+  "build_end_utc": "2026-06-29T16:31:49Z",
+  "build_start_utc": "2026-06-29T16:31:44Z",
   "latexmk_version": "Latexmk, John Collins, 31 Jan. 2024. Version 4.83",
   "pdf": "参赛论文_赛题三_稳稳接住.pdf",
-  "pdf_sha256": "78f7f33e0d032e2d859d32ee4e71fad99523987ab9ccd930741a68ee3b846bbd",
+  "pdf_sha256": "c73b6f8e74c3d4bd2079c9e9a9dbbe4fd5b420757d062f2c35fd8ee74f7bdbf4",
   "schema": "paper-build-info-v1",
   "tex": "参赛论文_赛题三_稳稳接住.tex",
-  "tex_sha256": "25c627d6a4a6d45f455a3b6a3e026bc20de108839d6072592c1e37523ed9823b",
+  "tex_sha256": "613086b933670c09b81a051693de1a2296768cde3b04ecdb75db9c5269215204",
   "xelatex_version": "XeTeX 3.141592653-2.6-0.999995 (TeX Live 2023/Debian)"
 }

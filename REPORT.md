@@ -619,7 +619,7 @@ T_{\mathrm{way2}}(r,u)
 
 | 论文声明                                  | 数学依据                                  | 代码级或实验产物依据                                         |
 | ----------------------------------------- | ----------------------------------------- | ------------------------------------------------------------ |
-| 无截断认证下 \(A_r[v]=M(r)[v,u]\)           | 定理 1，证明 \(A_r=R^r e_u\)                | 顶层 `certified_no_truncation=1`；每行 `round_stats` 中三项截断条件均满足 |
+| 无截断认证下 \(A_r[v]=M(r)[v,u]\)           | 定理 1，证明 \(A_r=R^r e_u\)                | 逐轮审计摘要；具体字段映射见附录 B |
 | 138338 条自评分有效记录                   | 评测有效性规则与评分程序                  | `./score --dedup uv --positive-only submit.txt`              |
 | 总分为 105843.622442471292742994          | 单条分数累加                              | `./score --dedup uv --positive-only submit.txt`              |
 | 全部记录通过无截断认证                    | 定义 1 与定理 1 的假设                    | `experiments/submit_audit.csv` 与 `experiments/audit/submit_audit_summary.md` |
@@ -722,6 +722,8 @@ cmp submit.txt /tmp/submit_rebuilt.txt
 ./score --dedup uv --positive-only submit.txt
 python3 experiments/check_submission.py --submit submit.txt
 ```
+
+复现材料中的逐行审计记录以顶层字段 `certified_no_truncation` 表示定义 1 的三项结构条件是否同时满足。每轮 `round_stats` 记录 `branch_truncated_states`、`tuple_truncated_states` 与 `beam_pruned`。在本文最终结果对应的审计记录中，三项条件分别表现为局部分支截断数为 0、S 层元组截断数为 0、未发生状态剪枝。上述字段是定义 1 的实现审计证据，不作为新的数学假设。
 
 期望评分：
 

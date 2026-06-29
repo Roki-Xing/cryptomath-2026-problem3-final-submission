@@ -46,6 +46,23 @@ python3 experiments/check_submission.py --submit submit.txt
 `check_submission.py` performs score and summary-artifact checks by default. It does not run the full audit unless
 `--run-full-audit` is explicitly provided.
 
+For the release-candidate package under `submission_final/source`, use the
+package-safe checker instead of the repository checker:
+
+```bash
+cd submission_final/source
+make clean && make -j2
+python3 -X utf8 experiments/build_submit_from_sources.py --source-submit ../submit.txt --out /tmp/rebuilt_submission_final.txt
+cmp ../submit.txt /tmp/rebuilt_submission_final.txt
+./score --dedup uv --positive-only ../submit.txt
+python3 -X utf8 experiments/check_submission_package.py --submit ../submit.txt
+```
+
+Within the final package, `experiments/SOURCE_MANIFEST.csv` records the saved
+certified CSV inputs used by `build_submit_from_sources.py`. Its
+`generation_command` column is a historical candidate-discovery label, not a
+claim that the final package reruns repository-only discovery helpers.
+
 ## Freeze Final Query Baseline
 
 Generate deterministic query-only artifacts directly from the unchanged `submit.txt`:
