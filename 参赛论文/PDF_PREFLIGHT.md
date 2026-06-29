@@ -29,8 +29,9 @@ unchecked; do not mark items complete unless a human has inspected the PDF.
 - [ ] 参考文献内容为四号宋体。
 - [ ] 正文引用参考文献使用上角标。
 - [ ] 无乱码、缺字、文字溢出或空白页。
-- [ ] `FULL_EXACT_WAY2_CLOSED` 表述存在且语义正确。
-- [ ] Strategy-B Stage-A 表述存在且语义正确。
+- [ ] 主文表述为“全部冻结端点的方式二精确复算已完成”, 不把该结果写成方式一全量来源链已闭合。
+- [ ] 主文表述为“方式一批处理工具链小域一致性验证”, 不写成 Stage-B 已启动。
+- [ ] 附录状态字段 `FULL_EXACT_WAY2_CLOSED` 和 `Strategy-B Stage-A = STAGE_A_PASS` 存在且语义正确。
 - [ ] `vt_provenance_closed=false` 表述存在。
 - [ ] `valid_count=138338` 正确。
 - [ ] `total_score=105843.622442471292742994` 正确。
