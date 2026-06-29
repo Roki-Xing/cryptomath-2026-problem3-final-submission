@@ -1,0 +1,16 @@
+{
+  "by_r": {
+    "1": 2,
+    "2": 8,
+    "3": 8
+  },
+  "count": 18,
+  "e06_active2_query_count": 4,
+  "e06_active2_query_count_source": "experiments/spotcheck/exact_spotcheck_queries.csv category=r3_active2_e06",
+  "max_abs_err": 0.0,
+  "max_rel_err": 0.0,
+  "mismatch_count": 0,
+  "mismatches": [],
+  "queries": "experiments/spotcheck/exact_spotcheck_queries.csv",
+  "tolerance": 1e-18
+}

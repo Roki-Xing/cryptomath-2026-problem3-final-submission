@@ -1,5 +1,7 @@
 # Figure Manuscript Preflight Checklist
 
+Status: `FINAL_PACKAGE_PREFLIGHT_PENDING`.
+
 The template requires all figures to be collected in a separate Word figure
 manuscript. The repository contains:
 
