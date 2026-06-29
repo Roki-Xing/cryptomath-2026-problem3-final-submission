@@ -545,6 +545,12 @@ E06 活跃二字负值 & 3 & \code{0x00006060} & \code{0x08008008} & -0.125 & -0
 \end{tabularx}
 \end{table}
 
+\subsection{Full exact-way2 与 Strategy-B Stage-A 证据}
+
+最终收口阶段追加了 full exact-way2 双后端重算证据。该证据对冻结结果中的 4760 个唯一 $(r,u)$ 列分别运行 \code{cpp\_int} 与 \code{int128\_checked} exact dyadic 后端，并对 138338 个 frozen endpoint 进行精确整数比较。结果为：两个后端均完成 4760 列，两个后端的 exact certificate 和 Parseval 检查均为 4760/4760；138338 个 endpoint 全部为 \code{EXACT\_EQUAL}，\code{NOT\_EQUAL}、\code{PARSE\_ERROR} 和 \code{MISSING\_ENDPOINT} 均为 0；cross-backend mismatch counters 均为 0。该证据闭合的是方式二数学与数值证据链，产物位于 \code{artifacts/way2\_exact/full/}。
+
+同时，Strategy-B Stage-A 对方式一 batch 工具链进行了小域正确性验证。Stage-A 覆盖 current、grouped-u 和 grouped-uv 三种实现、uniform / frozen-subset / synthetic-frozen-shaped 查询族、shard reducer 负例、GCC / Clang / UBSan / ASan / TSan 与 $-O0/-O3$ 一致性 gate。结果为 A0、A1、A2 和 toolchain 均 PASS，numerator mismatch count 为 0，shard negative tests 为 12。该阶段没有运行完整 $2^{32}$ 明文域，没有运行全量 138338 查询 way-1，也没有生成 Strategy-B final file；因此它不构成 full way-1 $VT$ provenance。
+
 \subsection{路线壳聚合机制示例}
 
 一个最高单条分数样本为 $(r,u,v)=(2,\mathtt{0x00002000},\mathtt{0x08880000})$，其路线壳求和值为 1。该值不是由单条绝对值为 1 的路线产生，而是由四条同号路线在共同端点处聚合得到，如图~\ref{fig:hull-aggregation} 所示。
@@ -608,6 +614,8 @@ E06 复核不匹配数 & 0 \\
 唯一 $(r,u)=4760$ & 命题 2 的统计口径 & 复杂度摘要 \\
 最大生成非零转移数 7578152 & 路线空间结构计数 & 复杂度摘要 \\
 18 条精确抽样复核且不匹配数为 0 & 独立验证 & 精确复核摘要 \\
+full exact-way2 双后端完成 4760 列 & exact dyadic 完整列重算与 endpoint 比较 & full exact-way2 摘要 \\
+Strategy-B Stage-A 已 PASS & 小域 way-1 batch 工具链验证 & Stage-A 摘要 \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -620,7 +628,7 @@ E06 复核不匹配数 & 0 \\
 
 \section{评测输出字段来源}
 
-最终结果文件包含评测格式要求的两个数字字段 $VT$ 与 $VE$。对无截断认证记录，方式二完整路线壳求和已经给出 $\bm{M}(r)[v,u]$ 的数值，因此这两个字段在这些记录中具有相同数值。该数值的来源是方式二的可认证路线壳求和，而不是方式一明文枚举输出。方式一程序只在结果生成后用于抽样对照，不参与候选生成、候选排序、候选筛选或最终结果文件构造。
+最终结果文件包含评测格式要求的两个数字字段 $VT$ 与 $VE$。对无截断认证记录，方式二完整路线壳求和得到的数值等于目标相关矩阵坐标。因此，当前冻结结果文件中的两个数字字段具有相同数值。该数值来自方式二的可认证完整路线壳求和，不是复制方式一明文枚举输出。方式一全量 $VT$ provenance 尚未闭合；当前方式一证据包括 18 条独立抽样复核和 Strategy-B Stage-A 工具链验证。
 
 \section{局限性与未来工作}
 
@@ -634,7 +642,7 @@ E06 复核不匹配数 & 0 \\
 
 本文提出 SPN 型置换相关矩阵坐标的可认证稀疏路线壳求和方法。该方法利用 S 盒层克罗内克积结构和线性层转置传播关系，在掩码路线空间中枚举非零路线前缀，并按后继掩码进行带符号聚合。无截断认证把候选搜索与最终数值生成严格区分开来；定理 1 证明认证运行满足 $A_r=\bm{R}^{r}e_u$，因而输出等于完整线性壳和 $\bm{M}(r)[v,u]$。
 
-在评测实例上，最终结果集包含 138338 条有效记录，总分为 \seqsplit{105843.622442471292742994}。全部记录均通过无截断认证，方式二审计复现不匹配数为 0，不存在零掩码、零值和重复端点；18 条方式一独立抽样复核与方式二认证值完全一致。该结果由数学模型、正确性定理、按唯一 $(r,u)$ 的复杂度分析、全量审计和独立抽样复核共同支撑。
+在评测实例上，最终结果集包含 138338 条有效记录，总分为 \seqsplit{105843.622442471292742994}。全部记录均通过无截断认证，方式二审计复现不匹配数为 0，不存在零掩码、零值和重复端点；full exact-way2 双后端重算完成 4760 列并确认 138338 个 endpoint 全部 \code{EXACT\_EQUAL}；18 条方式一独立抽样复核与方式二认证值完全一致；Strategy-B Stage-A 验证了 bounded way-1 batch 工具链，但尚未启动 full $2^{32}$ 或全量 138338 查询 way-1。因此，当前结果由数学模型、正确性定理、按唯一 $(r,u)$ 的复杂度分析、全量审计、full exact-way2 证据和独立抽样复核共同支撑，同时不声称 full way-1 $VT$ provenance 已闭合。
 
 % 参考文献
 \section*{参考文献}
@@ -660,7 +668,7 @@ E06 复核不匹配数 & 0 \\
 \section*{附录 II\quad 复现材料与独立复核}
 \addcontentsline{toc}{section}{附录 II 复现材料与独立复核}
 
-复现流程包括编译与测试、结果文件重建、评分、全量审计、复杂度摘要和方式一抽样复核。主要命令如下：
+复现流程包括编译与测试、结果文件重建、评分、全量审计、复杂度摘要、full exact-way2 证据检查、Strategy-B Stage-A 证据检查和方式一抽样复核。主要命令如下：
 
 \begin{verbatim}
 make clean && make -j

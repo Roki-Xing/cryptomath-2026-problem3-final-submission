@@ -561,7 +561,13 @@ T_{\mathrm{way2}}(r,u)
 
 复核查询数、不匹配数、最大绝对误差和最大相对误差由精确复核摘要文件给出；其中 4 条 E06 活跃二字样本由复核查询文件中的分类字段统计得到。这些精确复核在最终结果文件已经生成后执行，只用于抽样对照，不参与候选生成、候选排序、候选筛选或数值写入。
 
-### 7.5 高分路线壳示例
+### 7.5 Full exact-way2 与 Strategy-B Stage-A 证据
+
+在最终提交包收口阶段，仓库追加了 full exact-way2 双后端重算证据。该证据对冻结结果中的 4760 个唯一 \((r,u)\) 列分别运行 `cpp_int` 与 `int128_checked` exact dyadic 后端，并对 138338 个 frozen endpoint 进行精确整数比较。结果为：两个后端均完成 4760 列，两个后端的 exact certificate 和 Parseval 检查均为 4760 / 4760；138338 个 endpoint 全部为 `EXACT_EQUAL`，`NOT_EQUAL`、`PARSE_ERROR` 和 `MISSING_ENDPOINT` 均为 0；cross-backend mismatch counters 均为 0。该证据闭合的是方式二数学与数值证据链，产物位于 `artifacts/way2_exact/full/`。
+
+同时，Strategy-B Stage-A 对方式一 batch 工具链进行了小域正确性验证。Stage-A 覆盖 current、grouped-u 和 grouped-uv 三种实现、uniform / frozen-subset / synthetic-frozen-shaped 查询族、shard reducer 负例、GCC / Clang / UBSan / ASan / TSan 与 \(-O0/-O3\) 一致性 gate。结果为 A0、A1、A2 和 toolchain 均 PASS，numerator mismatch count 为 0，shard negative tests 为 12。该阶段没有运行完整 \(2^{32}\) 明文域，没有运行全量 138338 查询 way-1，也没有生成 Strategy-B final file；因此它不构成 full way-1 \(VT\) provenance。
+
+### 7.6 高分路线壳示例
 
 一个最高单条分数样本为
 
@@ -615,6 +621,8 @@ T_{\mathrm{way2}}(r,u)
 | E06 合入 384 条记录                       | 方式二候选合并与去重                      | E06 候选来源、最终结果交集与 `experiments/manifests/E13_final_integration.md` |
 | 精确抽样复核 18 条且不匹配数为 0          | 方式一仅作独立验证                        | `experiments/spotcheck/exact_spotcheck_summary.md` 与对应 JSON 摘要 |
 | E06 精确抽样复核 4 条                     | 复核查询分类统计                          | `experiments/spotcheck/exact_spotcheck_queries.csv` 中 `category=r3_active2_e06` 的统计 |
+| full exact-way2 双后端完成 4760 列          | exact dyadic 完整列重算与任意精度 endpoint 比较 | `artifacts/way2_exact/full/SUMMARY.json` 与 `COMPARE.json` |
+| Strategy-B Stage-A 已 PASS                 | 小域 way-1 batch 工具链、shard reducer 和 sanitizer/compiler gate | `artifacts/strategy_b/stage_a/STAGE_A_SUMMARY.json` |
 
 ## 10. 消融讨论
 
@@ -624,9 +632,7 @@ T_{\mathrm{way2}}(r,u)
 
 ## 11. 评测输出数值来源
 
-评测格式要求每条记录包含两个数字字段 \(VT\) 与 \(VE\)。对无截断认证记录，方式二完整路线壳求和得到的数值已经等于 \(\mathsf{M}(r)[v,u]\)。因此，评测格式要求的两个数字字段 \(VT\) 与 \(VE\) 在这些记录上具有相同数值。
-
-该数值来自方式二的可认证完整路线壳求和，不是复制方式一明文枚举输出。方式一精确程序只用于独立抽样复核，不参与候选生成、候选排序、候选筛选或最终结果文件构造。
+评测格式要求每条记录包含两个数字字段 \(VT\) 与 \(VE\)。对无截断认证记录，方式二完整路线壳求和得到的数值等于目标相关矩阵坐标。因此，当前冻结结果文件中的两个数字字段具有相同数值。该数值来自方式二的可认证完整路线壳求和，不是复制方式一明文枚举输出。方式一全量 \(VT\) provenance 尚未闭合；当前方式一证据包括 18 条独立抽样复核和 Strategy-B Stage-A 工具链验证。
 
 ## 12. 局限性与未来工作
 
@@ -648,7 +654,7 @@ A_r=R^r e_u,
 M(r)[v,u].
 \]
 
-最终结果集包含 138338 条有效记录，总分为 105843.622442471292742994。所有记录均通过无截断认证，方式二审计复现不匹配数为 0，不存在零掩码、零值和重复端点；18 条方式一独立抽样复核与方式二认证值完全一致。该结果由数学定理、代码级无截断证据、复杂度审计和复现材料共同支撑。
+最终结果集包含 138338 条有效记录，总分为 105843.622442471292742994。所有记录均通过无截断认证，方式二审计复现不匹配数为 0，不存在零掩码、零值和重复端点；full exact-way2 双后端重算完成 4760 列并确认 138338 个 endpoint 全部 `EXACT_EQUAL`；18 条方式一独立抽样复核与方式二认证值完全一致；Strategy-B Stage-A 验证了 bounded way-1 batch 工具链，但尚未启动 full \(2^{32}\) 或全量 138338 查询 way-1。因此，当前结果由数学定理、代码级无截断证据、复杂度审计、full exact-way2 证据和抽样复核共同支撑，同时不声称 full way-1 \(VT\) provenance 已闭合。
 
 ## 参考文献
 
@@ -694,6 +700,8 @@ M(r)=M_{3r-1}M_{3r-2}\cdots M_0.
 
 ```text
 experiments/manifests/E13_final_integration.md
+artifacts/way2_exact/full/SUMMARY.json
+artifacts/strategy_b/stage_a/STAGE_A_SUMMARY.json
 ```
 
 快速检查：

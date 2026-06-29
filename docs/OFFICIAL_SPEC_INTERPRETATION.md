@@ -41,6 +41,15 @@ The page map constrains what the repository may claim. In particular, the
 official allowance of "approximate first, then verify" does not establish that
 an exact certified way-2 value can replace an actually executed way-1 `VT`.
 
+Current repository status after full exact-way2 and Strategy-B Stage-A:
+
+- `FULL_EXACT_WAY2_CLOSED`: closes the way-2 mathematical and numerical
+  evidence chain for the frozen values.
+- `STRATEGY_B_STAGE_A` / `STAGE_A_PASS`: validates bounded way-1 batch
+  tooling, query families, shard reducer, compiler, and sanitizer gates.
+- `UNRESOLVED-VT-PROVENANCE` remains unresolved: no full `2^32` way-1 run and
+  no full 138338-query way-1 run has been started.
+
 ## OFFICIAL_EXPLICIT
 
 - **`OFFICIAL_EXPLICIT-FIVE-FIELDS`**: The submitted tuple has five fields:

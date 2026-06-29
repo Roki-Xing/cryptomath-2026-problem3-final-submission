@@ -1,9 +1,10 @@
 # Submission Manifest
 
-Status: this manifest describes the frozen pre-Strategy-B baseline. The
-`valid_count=138338` and `total_score=105843.622442471292742994` values are the
-historical frozen self-score baseline. Complete way-1 `VT` provenance has not
-yet been closed.
+Status: `FULL_EXACT_WAY2_CLOSED` with Strategy-B Stage-A `STAGE_A_PASS`.
+The `valid_count=138338` and `total_score=105843.622442471292742994` values are
+the frozen self-score results for the unchanged `submit.txt`. Full exact-way2
+dual-backend recomputation closed the way-2 mathematical and numerical
+evidence chain. Complete way-1 `VT` provenance has not yet been closed.
 
 ## 包级交付物
 
@@ -13,8 +14,8 @@ yet been closed.
 - `submit.txt`：最终 138338 条有效记录，自算分 105843.622442471292742994。
 - `REPORT.md`：论文 Markdown 源及方法、证明、实验文本备份。
 - `FINAL_CHECK.md`：最终得分、审计、复杂度与抽样摘要。
-- `参赛论文/参赛论文_赛题三_稳稳接住.pdf`：最终论文阅读版本，共 17 页。
-- `参赛论文/参赛论文_赛题三_稳稳接住.tex`：最终论文 TeX 源文件。
+- `参赛论文/参赛论文_赛题三_稳稳接住.pdf`：论文阅读版本；本次收口未能在本机重导出，提交前需由完整 TeX 字体环境人工重导出并检查。
+- `参赛论文/参赛论文_赛题三_稳稳接住.tex`：已同步当前证据状态的最终论文 TeX 源文件。
 - `参赛论文/figures/`：TeX 源文件引用的三组 PDF/SVG 图。
 - `第十一届0000002243图稿/`：独立图稿 Word 文件和三组 SVG/PDF。
 
@@ -50,9 +51,41 @@ yet been closed.
 - `docs/CLAIMS_AND_EVIDENCE.md`：论文声明到 artifact 的映射。
 - `docs/OFFICIAL_SPEC_INTERPRETATION.md`：官方明确、仓库保守解释与未决问题的唯一分类入口。
 - `references/official/README.md`、`SOURCES.json`、`PAGE_MAP.json`：官方来源边界、已验证本地文件哈希、下载链接和页码映射。
+- `artifacts/way2_exact/full/SUMMARY.json`、`COMPARE.json`、`FULL_RUN_AUTHORIZATION.json`、`PROVENANCE.json`、`MANIFEST.json`、`SHA256SUMS.txt`：full exact-way2 4760 列双后端重算的 compact evidence。
+- `artifacts/way2_exact/full/RAW_EVIDENCE_INDEX.json`：full exact-way2 raw archive 的可移植索引；raw archives 不进入比赛提交包。
+- `artifacts/strategy_b/stage_a/STAGE_A_SUMMARY.json`、`PROTOCOL.md`、`MANIFEST.json`、`SHA256SUMS.txt`：Strategy-B Stage-A 小域 way-1 batch 工具链证据；它不是 full way-1 `VT` provenance。
 - `.github/workflows/ci.yml`：在 pull request 和 hardening/main push 上执行构建、测试、重建、评分与包检查。
 
 正式 `PACKAGE_SOURCE_COMMIT.txt` 只在 release staging 目录中生成，不在源码树中预置，也不伪装为尚未存在的最终 release commit。
+
+## 提交包边界
+
+| category | included files | package treatment |
+|---|---|---|
+| required submission artifacts | `submit.txt`; `REPORT.md`; `参赛论文/参赛论文_赛题三_稳稳接住.pdf`; `参赛论文/参赛论文_赛题三_稳稳接住.tex`; `README.md`; `提交说明.md`; `FINAL_CHECK.md`; `SUBMISSION_MANIFEST.md` | 进入最终比赛提交包 |
+| runnable submit rebuild program | `Makefile`; `include/`; `src/`; `apps/`; `experiments/build_submit_from_sources.py`; source CSVs listed by `experiments/SOURCE_MANIFEST.csv`; `score`; `experiments/check_submission.py` | 进入最终比赛提交包 |
+| way-2 exact evidence | `artifacts/way2_exact/full/SUMMARY.json`; `COMPARE.json`; `FULL_RUN_AUTHORIZATION.json`; `PROVENANCE.json`; `MANIFEST.json`; `SHA256SUMS.txt`; `RAW_EVIDENCE_INDEX.json` | compact evidence may be included; raw archives are referenced, not embedded |
+| Strategy-B Stage-A evidence | `artifacts/strategy_b/stage_a/STAGE_A_SUMMARY.json`; `PROTOCOL.md`; `MANIFEST.json`; `SHA256SUMS.txt`; `docs/STRATEGY_B_STAGE_A_PROTOCOL.md` | included as bounded way-1 tooling evidence only |
+| repository-only raw evidence | full exact-way2 tar.zst release assets; large diagnostic logs; CI artifacts; benchmark raw logs | repository/release evidence only, not final competition package payload |
+| excluded artifacts | temporary logs; `__pycache__`; build outputs; stale superseded artifacts; raw archives; CI-only artifacts; legacy helpers not required by rebuild | excluded from final competition package unless explicitly archived as not part of submission |
+
+## Current evidence state
+
+| state | result |
+|---|---|
+| `FULL_EXACT_WAY2_CLOSED` | full exact-way2 dual backend completed all 4760 unique `(r,u)` columns; 138338 frozen endpoints are `EXACT_EQUAL`; mismatch counters are 0 |
+| `STRATEGY_B_STAGE_A` | bounded way-1 batch toolchain passed A0/A1/A2/toolchain gates; numerator mismatch count is 0; shard negative tests passed 12 |
+| way-1 `VT` provenance | unresolved; no full `2^32` run and no full 138338-query way-1 run has been started |
+
+```text
+stage_b_authorized=false
+full_2_32_run_started=false
+full_138338_way1_started=false
+new_way1_run_started=false
+strategy_b_final_file_generated=false
+submit_txt_modified=false
+vt_provenance_closed=false
+```
 
 ## Final gate
 
