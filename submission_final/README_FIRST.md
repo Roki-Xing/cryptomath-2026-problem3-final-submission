@@ -9,8 +9,8 @@ provenance is closed.
 ## Required Checks
 
 ```bash
-sha256sum -c SHA256SUMS.txt
-cd source
+sha256sum -c submission_final/SHA256SUMS.txt
+cd submission_final/source
 make clean && make -j2
 python3 -X utf8 experiments/build_submit_from_sources.py --source-submit ../submit.txt --out /tmp/rebuilt_submission_final.txt
 cmp ../submit.txt /tmp/rebuilt_submission_final.txt
@@ -27,6 +27,9 @@ cmp ../submit.txt /tmp/rebuilt_submission_final.txt
 
 - Full exact-way2 evidence is included as compact summaries and manifests.
 - Strategy-B Stage-A evidence is included only as bounded way-1 toolchain evidence.
+- Historical candidate-discovery helpers are excluded from `source/`; the final
+  package rebuild consumes saved certified source CSVs and does not rerun
+  legacy or discovery-only utilities.
 - Full raw exact-way2 archives, CI artifacts, temporary logs, build outputs,
   and font files are intentionally excluded.
 

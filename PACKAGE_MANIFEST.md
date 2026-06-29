@@ -5,19 +5,19 @@ Status: `FINAL_PACKAGE_PREFLIGHT_PENDING`.
 | field | value |
 |---|---|
 | repository | `Roki-Xing/cryptomath-2026-problem3-final-submission` |
-| source_commit | `8fe08464ebc473e85182aa293d5b9fe408dcf50c` |
-| source_tree_sha | `aada34a70e1ad34ad4d5c9477c4123b449fa6554` |
-| generated_at_utc | `2026-06-29T05:56:46Z` |
+| source_commit | `e1d5cd6b1803b1ed9194d5de5922915b065f7500` |
+| source_tree_sha | `5f065c820ca88e6dd192a011bb601a3963fef191` |
+| generated_at_utc | `2026-06-29T07:18:15Z` |
 | submit_sha256 | `7b0f638ba8678462ee8d6c12bc0c5b89d7354b4a095b31330f3ba495acfe2e2e` |
 | valid_count | `138338` |
 | total_score | `105843.622442471292742994` |
 | package_dir | `submission_final/` |
 | package_file_count | `274` |
 | package_sha256s | `submission_final/SHA256SUMS.txt` |
-| package_sha256s_sha256 | `6fa0d8ec093ea6de6504bca5de8d16b847d736a1a945c7178f3c4dcf314fed00` |
+| package_sha256s_sha256 | `450e6bd7eab08a5ffcfd897a63566d5a41184124f1c5bd78b0416df696d2d91c` |
 | archive | `submission_final.zip` |
-| archive_bytes | `4930983` |
-| archive_sha256 | `62033ab0ffeeb0817d8ea0ef592458e9baa460f659149708874a8048569353cc` |
+| archive_bytes | `4924927` |
+| archive_sha256 | `188904ac9c7aead3c8c7402fba9e4b914e225f9fa30ee538f331fd831e2ca140` |
 | archive_command | `python3 -X utf8 scripts/build_final_package.py --clean` |
 
 ## Inclusion Boundary
@@ -29,7 +29,13 @@ Status: `FINAL_PACKAGE_PREFLIGHT_PENDING`.
 | way-2 exact evidence | compact summaries/manifests included under `evidence_compact/way2_exact_full/` |
 | Strategy-B Stage-A evidence | bounded toolchain summaries/manifests included under `evidence_compact/strategy_b_stage_a/` |
 | repository-only raw evidence | excluded: full raw archives, CI artifacts, diagnostic logs |
-| excluded artifacts | excluded: build outputs, `__pycache__`, temporary logs, fonts, superseded snapshots |
+| excluded artifacts | excluded: build outputs, `__pycache__`, temporary logs, fonts, superseded snapshots, legacy helpers |
+
+## Source Boundary Notes
+
+- `source/apps/search_candidates.cpp` is excluded as a legacy helper and is not part of the final rebuild chain.
+- `source/apps/candidate_miner_approx.cpp` is excluded because the frozen final `submit.txt` is rebuilt from saved certified CSV sources, not by rerunning historical candidate discovery.
+- The final package does not rerun Strategy-B, does not run new way-1 computation, and does not regenerate `submit.txt` from candidate search tools.
 
 ## Evidence State
 
@@ -68,6 +74,7 @@ vt_provenance_closed=false
 - `evidence_compact/strategy_b_stage_a/PROTOCOL.md`
 - `evidence_compact/strategy_b_stage_a/QUERY_FAMILY_SUMMARY.json`
 - `evidence_compact/strategy_b_stage_a/REDUCER_NEGATIVE_TEST_SUMMARY.json`
+- `evidence_compact/strategy_b_stage_a/SHA256SUMS.txt`
 - `evidence_compact/strategy_b_stage_a/STAGE_A_SUMMARY.json`
 - `evidence_compact/strategy_b_stage_a/STRATEGY_B_STAGE_A_PROTOCOL.md`
 - `evidence_compact/way2_exact_full/COMPARE.json`
@@ -77,6 +84,7 @@ vt_provenance_closed=false
 - `evidence_compact/way2_exact_full/PROVENANCE.json`
 - `evidence_compact/way2_exact_full/RAW_EVIDENCE_INDEX.json`
 - `evidence_compact/way2_exact_full/RAW_EVIDENCE_MANIFEST.json`
+- `evidence_compact/way2_exact_full/SHA256SUMS.txt`
 - `evidence_compact/way2_exact_full/SUMMARY.json`
 - `evidence_compact/way2_exact_full/SUMMARY.md`
 - `figure_manuscript/图0000002243.1.pdf`
@@ -96,7 +104,6 @@ vt_provenance_closed=false
 - `paper/参赛论文_赛题三_稳稳接住.tex`
 - `score_report.txt`
 - `source/Makefile`
-- `source/apps/candidate_miner_approx.cpp`
 - `source/apps/enumerate_r1_positive.cpp`
 - `source/apps/estimator.cpp`
 - `source/apps/estimator_exact.cpp`
@@ -109,7 +116,6 @@ vt_provenance_closed=false
 - `source/apps/recompute_frozen_exact.cpp`
 - `source/apps/reduce_exact_parts.cpp`
 - `source/apps/score.cpp`
-- `source/apps/search_candidates.cpp`
 - `source/experiments/SOURCE_MANIFEST.csv`
 - `source/experiments/build_submit_from_sources.py`
 - `source/experiments/check_submission.py`

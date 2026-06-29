@@ -18,11 +18,30 @@ ROOT = Path(__file__).resolve().parents[1]
 PACKAGE_DIR = ROOT / "submission_final"
 ARCHIVE_PATH = ROOT / "submission_final.zip"
 PACKAGE_MANIFEST = ROOT / "PACKAGE_MANIFEST.md"
+ROOT_SHA256SUMS = ROOT / "SHA256SUMS.txt"
 REPOSITORY = "Roki-Xing/cryptomath-2026-problem3-final-submission"
 SUBMIT_SHA = "7b0f638ba8678462ee8d6c12bc0c5b89d7354b4a095b31330f3ba495acfe2e2e"
 VALID_COUNT = "138338"
 TOTAL_SCORE = "105843.622442471292742994"
 ZIP_TIMESTAMP = (1980, 1, 1, 0, 0, 0)
+PACKAGE_SOURCE_APP_FILES = [
+    "apps/enumerate_r1_positive.cpp",
+    "apps/estimator.cpp",
+    "apps/estimator_exact.cpp",
+    "apps/exact_batch_current.cpp",
+    "apps/exact_batch_grouped_u.cpp",
+    "apps/exact_batch_grouped_uv.cpp",
+    "apps/exact_batch_mt.cpp",
+    "apps/exact_batch_variant_app.hpp",
+    "apps/exact_oracle.cpp",
+    "apps/recompute_frozen_exact.cpp",
+    "apps/reduce_exact_parts.cpp",
+    "apps/score.cpp",
+]
+EXCLUDED_SOURCE_HELPERS = [
+    "source/apps/search_candidates.cpp",
+    "source/apps/candidate_miner_approx.cpp",
+]
 
 
 def sha256_file(path: Path) -> str:
@@ -51,6 +70,76 @@ def git_output(args: list[str]) -> str:
         Stripped command stdout.
     """
     return subprocess.check_output(["git", *args], cwd=ROOT, text=True).strip()
+
+
+def package_source_makefile() -> str:
+    """Return the package-safe Makefile content for ``submission_final/source``."""
+    return "\n".join(
+        [
+            "CXX ?= g++",
+            "CXXFLAGS ?= -O3 -std=c++17 -Wall -Wextra -pedantic -pthread",
+            "CPPFLAGS := -Iinclude $(EXTRA_CPPFLAGS)",
+            "",
+            "BUILD_DIR := build",
+            "APPROX_OBJS := $(BUILD_DIR)/sbox_corr.o $(BUILD_DIR)/linear_layer.o $(BUILD_DIR)/beam_search.o",
+            "EXACT_OBJS := $(APPROX_OBJS) $(BUILD_DIR)/exact.o",
+            "EXACT_DYADIC_OBJS := $(BUILD_DIR)/sbox_corr.o $(BUILD_DIR)/linear_layer.o \\",
+            "\t$(BUILD_DIR)/exact_cartesian.o $(BUILD_DIR)/exact_dyadic.o",
+            "",
+            ".PHONY: all clean test",
+            "",
+            "# Package-safe target set: final rebuild, scoring, exact-way2, and bounded way-1 validation tools only.",
+            "# Historical candidate-discovery helpers are intentionally excluded from the final competition package.",
+            "all: estimator estimator_exact recompute_frozen_exact exact_oracle exact_batch_mt exact_batch_current exact_batch_grouped_u exact_batch_grouped_uv reduce_exact_parts enumerate_r1_positive score",
+            "",
+            "$(BUILD_DIR):",
+            "\tmkdir -p $(BUILD_DIR)",
+            "",
+            "$(BUILD_DIR)/%.o: src/%.cpp | $(BUILD_DIR)",
+            "\t$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $<",
+            "",
+            "estimator: apps/estimator.cpp $(APPROX_OBJS)",
+            "\t$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $^",
+            "",
+            "estimator_exact: apps/estimator_exact.cpp $(EXACT_DYADIC_OBJS)",
+            "\t$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $^",
+            "",
+            "recompute_frozen_exact: apps/recompute_frozen_exact.cpp $(EXACT_DYADIC_OBJS)",
+            "\t$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $^",
+            "",
+            "exact_oracle: apps/exact_oracle.cpp $(EXACT_OBJS)",
+            "\t$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $^",
+            "",
+            "exact_batch_mt: apps/exact_batch_mt.cpp $(EXACT_OBJS)",
+            "\t$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $^",
+            "",
+            "exact_batch_current: apps/exact_batch_current.cpp $(EXACT_OBJS)",
+            "\t$(CXX) $(CPPFLAGS) $(CXXFLAGS) -Iapps -o $@ $^",
+            "",
+            "exact_batch_grouped_u: apps/exact_batch_grouped_u.cpp $(EXACT_OBJS)",
+            "\t$(CXX) $(CPPFLAGS) $(CXXFLAGS) -Iapps -o $@ $^",
+            "",
+            "exact_batch_grouped_uv: apps/exact_batch_grouped_uv.cpp $(EXACT_OBJS)",
+            "\t$(CXX) $(CPPFLAGS) $(CXXFLAGS) -Iapps -o $@ $^",
+            "",
+            "reduce_exact_parts: apps/reduce_exact_parts.cpp",
+            "\t$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $^",
+            "",
+            "enumerate_r1_positive: apps/enumerate_r1_positive.cpp $(BUILD_DIR)/sbox_corr.o $(BUILD_DIR)/linear_layer.o",
+            "\t$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $^",
+            "",
+            "score: apps/score.cpp $(APPROX_OBJS)",
+            "\t$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $^",
+            "",
+            "test: all",
+            "\t@test \"$$(sha256sum ../submit.txt | cut -d' ' -f1)\" = \"" + SUBMIT_SHA + "\"",
+            "",
+            "clean:",
+            "\trm -rf $(BUILD_DIR)",
+            "\trm -f estimator estimator_exact recompute_frozen_exact exact_oracle exact_batch_mt exact_batch_current exact_batch_grouped_u exact_batch_grouped_uv reduce_exact_parts enumerate_r1_positive score",
+            "",
+        ]
+    )
 
 
 def copy_file(src: str | Path, dst: str | Path) -> None:
@@ -154,11 +243,11 @@ def copy_submission_artifacts() -> None:
 
 def copy_source_tree() -> None:
     """Copy runnable submit rebuild source into the package."""
-    copy_file("Makefile", "source/Makefile")
     copy_file("requirements-dev.txt", "source/requirements-dev.txt")
     copy_tree("include", "source/include")
     copy_tree("src", "source/src")
-    copy_tree("apps", "source/apps")
+    for path in PACKAGE_SOURCE_APP_FILES:
+        copy_file(path, f"source/{path}")
     for path in [
         "experiments/build_submit_from_sources.py",
         "experiments/SOURCE_MANIFEST.csv",
@@ -167,6 +256,7 @@ def copy_source_tree() -> None:
         copy_file(path, f"source/{path}")
     for path in source_manifest_paths():
         copy_file(path, f"source/{path}")
+    (PACKAGE_DIR / "source" / "Makefile").write_text(package_source_makefile(), encoding="utf-8")
 
 
 def write_text_files(generated_at: str, source_commit: str, source_tree: str) -> None:
@@ -191,8 +281,8 @@ def write_text_files(generated_at: str, source_commit: str, source_tree: str) ->
                 "## Required Checks",
                 "",
                 "```bash",
-                "sha256sum -c SHA256SUMS.txt",
-                "cd source",
+                "sha256sum -c submission_final/SHA256SUMS.txt",
+                "cd submission_final/source",
                 "make clean && make -j2",
                 "python3 -X utf8 experiments/build_submit_from_sources.py --source-submit ../submit.txt --out /tmp/rebuilt_submission_final.txt",
                 "cmp ../submit.txt /tmp/rebuilt_submission_final.txt",
@@ -209,6 +299,9 @@ def write_text_files(generated_at: str, source_commit: str, source_tree: str) ->
                 "",
                 "- Full exact-way2 evidence is included as compact summaries and manifests.",
                 "- Strategy-B Stage-A evidence is included only as bounded way-1 toolchain evidence.",
+                "- Historical candidate-discovery helpers are excluded from `source/`; the final",
+                "  package rebuild consumes saved certified source CSVs and does not rerun",
+                "  legacy or discovery-only utilities.",
                 "- Full raw exact-way2 archives, CI artifacts, temporary logs, build outputs,",
                 "  and font files are intentionally excluded.",
                 "",
@@ -265,8 +358,8 @@ def write_package_sha256s() -> list[Path]:
     Returns:
         Sorted package file paths relative to ``submission_final``.
     """
-    files = sorted(path for path in PACKAGE_DIR.rglob("*") if path.is_file() and path.name != "SHA256SUMS.txt")
-    rows = [f"{sha256_file(path)}  {path.relative_to(PACKAGE_DIR).as_posix()}" for path in files]
+    files = sorted(path for path in PACKAGE_DIR.rglob("*") if path.is_file() and path != PACKAGE_DIR / "SHA256SUMS.txt")
+    rows = [f"{sha256_file(path)}  submission_final/{path.relative_to(PACKAGE_DIR).as_posix()}" for path in files]
     (PACKAGE_DIR / "SHA256SUMS.txt").write_text("\n".join(rows) + "\n", encoding="utf-8")
     return [path.relative_to(PACKAGE_DIR) for path in files] + [Path("SHA256SUMS.txt")]
 
@@ -343,7 +436,13 @@ def write_manifest(
                 "| way-2 exact evidence | compact summaries/manifests included under `evidence_compact/way2_exact_full/` |",
                 "| Strategy-B Stage-A evidence | bounded toolchain summaries/manifests included under `evidence_compact/strategy_b_stage_a/` |",
                 "| repository-only raw evidence | excluded: full raw archives, CI artifacts, diagnostic logs |",
-                "| excluded artifacts | excluded: build outputs, `__pycache__`, temporary logs, fonts, superseded snapshots |",
+                "| excluded artifacts | excluded: build outputs, `__pycache__`, temporary logs, fonts, superseded snapshots, legacy helpers |",
+                "",
+                "## Source Boundary Notes",
+                "",
+                "- `source/apps/search_candidates.cpp` is excluded as a legacy helper and is not part of the final rebuild chain.",
+                "- `source/apps/candidate_miner_approx.cpp` is excluded because the frozen final `submit.txt` is rebuilt from saved certified CSV sources, not by rerunning historical candidate discovery.",
+                "- The final package does not rerun Strategy-B, does not run new way-1 computation, and does not regenerate `submit.txt` from candidate search tools.",
                 "",
                 "## Evidence State",
                 "",
@@ -365,6 +464,18 @@ def write_manifest(
         ),
         encoding="utf-8",
     )
+
+
+def write_root_sha256s() -> None:
+    """Write the repository-root SHA256SUMS manifest for tracked files."""
+    tracked = subprocess.check_output(["git", "ls-files", "-z"], cwd=ROOT)
+    paths = sorted(
+        Path(raw.decode("utf-8"))
+        for raw in tracked.split(b"\0")
+        if raw and raw.decode("utf-8") != "SHA256SUMS.txt" and (ROOT / raw.decode("utf-8")).is_file()
+    )
+    rows = [f"{sha256_file(ROOT / path)}  {path.as_posix()}" for path in paths]
+    ROOT_SHA256SUMS.write_text("\n".join(rows) + "\n", encoding="utf-8")
 
 
 def parse_args() -> argparse.Namespace:
@@ -401,6 +512,7 @@ def main() -> None:
     package_files = write_package_sha256s()
     archive_sha, archive_size = build_archive()
     write_manifest(generated_at, source_commit, source_tree, package_files, archive_sha, archive_size)
+    write_root_sha256s()
 
     print(f"package_dir={PACKAGE_DIR.relative_to(ROOT)}")
     print(f"package_files={len(package_files)}")
