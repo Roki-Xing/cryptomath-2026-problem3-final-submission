@@ -1,5 +1,7 @@
 # PDF Preflight Checklist
 
+Status: `FINAL_PACKAGE_PREFLIGHT_PENDING`.
+
 This checklist is for manual review after regenerating
 `参赛论文_赛题三_稳稳接住.pdf` from the current TeX source. It is intentionally
 unchecked; do not mark items complete unless a human has inspected the PDF.

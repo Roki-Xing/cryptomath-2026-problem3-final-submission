@@ -1,0 +1,33 @@
+{
+  "comparison_elapsed_wall": 4.984833890004666,
+  "cpp_int_columns": 4760,
+  "cross_backend_canonical_column_digest_mismatch": 0,
+  "cross_backend_certified_exact_dyadic_mismatch": 0,
+  "cross_backend_certified_no_truncation_mismatch": 0,
+  "cross_backend_completed_rounds_mismatch": 0,
+  "cross_backend_denominator_exp2_mismatch": 0,
+  "cross_backend_endpoint_numerator_mismatch": 0,
+  "cross_backend_expected_sum_squares_mismatch": 0,
+  "cross_backend_parseval_pass_mismatch": 0,
+  "cross_backend_state_count_mismatch": 0,
+  "cross_backend_sum_squares_mismatch": 0,
+  "cross_backend_way1_normalized_numerator_mismatch": 0,
+  "duplicate_backend_artifact": 0,
+  "duplicate_column_key": 0,
+  "duplicate_row_id": 0,
+  "duplicate_ruv": 0,
+  "extra_row": 0,
+  "frozen_comparison": {
+    "EXACT_EQUAL": 138338,
+    "MISSING_ENDPOINT": 0,
+    "NOT_EQUAL": 0,
+    "PARSE_ERROR": 0
+  },
+  "int128_columns": 4760,
+  "missing_row": 0,
+  "schema": "exact-way2-pilot-compare-v2",
+  "selected_columns": 4760,
+  "selected_endpoint_rows": 138338,
+  "way1_spotcheck_mismatch": 0,
+  "way1_spotcheck_rows": 18
+}
