@@ -1,13 +1,14 @@
 # Final Submission Package Release Candidate
 
-Status: `FINAL_PACKAGE_RELEASE_CANDIDATE_READY`.
+Status: `FINAL_PACKAGE_PREFLIGHT_PENDING`.
 
 This package preserves the frozen way-2 result file. It does not start Stage-B,
 does not run a new way-1 computation, and does not claim full way-1 `VT`
 provenance is closed.
-Manual PDF and figure-manuscript preflight were completed before this
-release-candidate package was staged; see `docs/SUBMISSION_MANIFEST.md`
-for the recorded package state.
+PDF preflight status: `FINAL_PACKAGE_PREFLIGHT_PENDING`.
+Figure-manuscript preflight status: `FINAL_PACKAGE_PREFLIGHT_PENDING`.
+See `docs/SUBMISSION_MANIFEST.md` for the recorded package state and
+current manual-review boundary.
 
 ## Required Checks
 
