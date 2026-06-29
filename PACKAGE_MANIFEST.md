@@ -1,23 +1,23 @@
 # Final Package Manifest
 
-Status: `FINAL_PACKAGE_PREFLIGHT_PENDING`.
+Status: `FINAL_PACKAGE_RELEASE_CANDIDATE_READY`.
 
 | field | value |
 |---|---|
 | repository | `Roki-Xing/cryptomath-2026-problem3-final-submission` |
-| source_commit | `2185aa25c933a54fdbe3cd2bece068f3a21f4620` |
-| source_tree_sha | `b9074140ffe518891c2c2ab5fbeca4ae05fa804d` |
-| generated_at_utc | `2026-06-29T08:37:36Z` |
+| source_commit | `7c5c5ee0bb4261e7c568ba3e4048a008ea6d454d` |
+| source_tree_sha | `1f8cd58f3595da55bf05ca2ef73a6154c0f6ac2f` |
+| generated_at_utc | `2026-06-29T11:56:33Z` |
 | submit_sha256 | `7b0f638ba8678462ee8d6c12bc0c5b89d7354b4a095b31330f3ba495acfe2e2e` |
 | valid_count | `138338` |
 | total_score | `105843.622442471292742994` |
 | package_dir | `submission_final/` |
 | package_file_count | `274` |
 | package_sha256s | `submission_final/SHA256SUMS.txt` |
-| package_sha256s_sha256 | `4b949aa7d916de03d2de71592826e3cc0798b908ffdce3352b05f21e1894a96b` |
+| package_sha256s_sha256 | `3bc807f8f2dd085c663ad4e268a6d82ad711c064554c5093af5e02d48618d1ef` |
 | archive | `submission_final.zip` |
-| archive_bytes | `4924920` |
-| archive_sha256 | `536c6df654c50b11455bff1e7f8469d1dd3c18fdfe54aaff191d4082143285d8` |
+| archive_bytes | `4925201` |
+| archive_sha256 | `0e78589492b9ff8894aad6e5f7c3a3c618870da8af9de162415b778fe0dbf9fb` |
 | archive_command | `python3 -X utf8 scripts/build_final_package.py --clean` |
 
 ## Inclusion Boundary
