@@ -14,7 +14,7 @@ evidence chain. Complete way-1 `VT` provenance has not yet been closed.
 - `submit.txt`：最终 138338 条有效记录，自算分 105843.622442471292742994。
 - `REPORT.md`：论文 Markdown 源及方法、证明、实验文本备份。
 - `FINAL_CHECK.md`：最终得分、审计、复杂度与抽样摘要。
-- `参赛论文/参赛论文_赛题三_稳稳接住.pdf`：论文阅读版本；本次收口未能在本机重导出，提交前需由完整 TeX 字体环境人工重导出并检查。
+- `参赛论文/参赛论文_赛题三_稳稳接住.pdf`：由当前 TeX 在 XeLaTeX 环境中重导出的论文阅读版本；人工逐页检查仍按 `参赛论文/PDF_PREFLIGHT.md` 执行。
 - `参赛论文/参赛论文_赛题三_稳稳接住.tex`：已同步当前证据状态的最终论文 TeX 源文件。
 - `参赛论文/figures/`：TeX 源文件引用的三组 PDF/SVG 图。
 - `第十一届0000002243图稿/`：独立图稿 Word 文件和三组 SVG/PDF。

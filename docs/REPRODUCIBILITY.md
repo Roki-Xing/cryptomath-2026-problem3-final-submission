@@ -301,6 +301,6 @@ See `experiments/manifests/E04_toy_exact_compare.md`.
 - `参赛论文/figures/`
 
 当前 TeX 源文件已同步 `FULL_EXACT_WAY2_CLOSED` 与 Strategy-B Stage-A 状态。PDF
-未在本机重导出：本环境执行 `latexmk -xelatex` 时，`xdvipdfmx` 因缺少
-`ntx-Regular-tlf-ot1r` 字体映射失败。提交前应在具备完整 TeX 字体映射的 XeLaTeX
-环境中重导出 PDF，并人工检查首页、公式、表格、图片、页码、参考文献和最终分数。
+已由当前 TeX 使用 `bash 参赛论文/build_paper.sh` 重导出。构建信息记录在
+`参赛论文/PAPER_BUILD_INFO.json`，人工逐页检查清单记录在
+`参赛论文/PDF_PREFLIGHT.md`。
