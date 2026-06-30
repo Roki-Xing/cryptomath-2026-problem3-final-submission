@@ -528,12 +528,24 @@ def write_manifest(
 
 def write_root_sha256s() -> None:
     """Write the repository-root SHA256SUMS manifest for tracked files."""
-    tracked = subprocess.check_output(["git", "ls-files", "-z"], cwd=ROOT)
-    paths = sorted(
-        Path(raw.decode("utf-8"))
-        for raw in tracked.split(b"\0")
-        if raw and raw.decode("utf-8") != "SHA256SUMS.txt" and (ROOT / raw.decode("utf-8")).is_file()
+    tracked = subprocess.check_output(
+        ["git", "-c", "core.quotePath=false", "ls-files", "-z"],
+        cwd=ROOT,
+        text=True,
     )
+    tracked_paths = {
+        Path(raw)
+        for raw in tracked.split("\0")
+        if raw and raw != "SHA256SUMS.txt" and (ROOT / raw).is_file()
+    }
+    generated_paths = {
+        path.relative_to(ROOT)
+        for path in PACKAGE_DIR.rglob("*")
+        if path.is_file()
+    }
+    if ARCHIVE_PATH.is_file():
+        generated_paths.add(ARCHIVE_PATH.relative_to(ROOT))
+    paths = sorted(tracked_paths | generated_paths, key=lambda path: path.as_posix())
     rows = [f"{sha256_file(ROOT / path)}  {path.as_posix()}" for path in paths]
     ROOT_SHA256SUMS.write_text("\n".join(rows) + "\n", encoding="utf-8")
 

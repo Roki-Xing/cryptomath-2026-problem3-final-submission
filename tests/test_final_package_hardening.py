@@ -34,6 +34,16 @@ def require(condition: bool, message: str) -> None:
         raise AssertionError(message)
 
 
+def root_sha_entries() -> set[str]:
+    entries: set[str] = set()
+    for line in (ROOT / "SHA256SUMS.txt").read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        _, path = line.split("  ", 1)
+        entries.add(path)
+    return entries
+
+
 def load_checker_module():
     spec = importlib.util.spec_from_file_location("check_submission_package", ROOT_CHECKER)
     assert spec and spec.loader
@@ -254,10 +264,33 @@ def test_paper_field_mapping_moved_to_appendix() -> None:
         require(field in report_appendix, f"engineering field mapping missing from REPORT appendix: {field}")
 
 
+def test_root_sha_manifest_covers_tracked_files() -> None:
+    tracked = subprocess.check_output(
+        ["git", "-c", "core.quotePath=false", "ls-files", "-z"],
+        cwd=ROOT,
+        text=True,
+    ).split("\0")
+    expected = {
+        path
+        for path in tracked
+        if path and path != "SHA256SUMS.txt" and (ROOT / path).is_file()
+    }
+    entries = root_sha_entries()
+    require(
+        entries == expected,
+        "root SHA256SUMS.txt does not exactly cover tracked files",
+    )
+    require(
+        "submission_final/source/experiments/check_submission_package.py" in entries,
+        "root SHA256SUMS.txt is missing the package-safe checker",
+    )
+
+
 def main() -> int:
     test_package_checker_fixture()
     test_committed_package_boundary()
     test_paper_field_mapping_moved_to_appendix()
+    test_root_sha_manifest_covers_tracked_files()
     print("final package hardening tests passed")
     return 0
 
