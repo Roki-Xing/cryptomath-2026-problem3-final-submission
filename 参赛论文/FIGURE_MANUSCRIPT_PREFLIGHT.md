@@ -15,8 +15,8 @@ manuscript. The repository contains:
 
 ```text
 reviewed_by = human reviewer
-reviewed_at_utc = 2026-06-29T11:52:17Z
-reviewed_pdf_sha256 = f92ecc521e719da3b0f4aff49111d0016138f0f527c4dc93d61992042d6066b5
+reviewed_at_utc = 2026-06-30T07:46:54Z
+reviewed_pdf_sha256 = fd38001b30b2ff2ac74e96e77dc2080316d0de1d846bcd48c5772505f207d732
 reviewed_figure_manuscript_sha256 = 4da2425f5ea49f15873d583d9fe00e7fb61b9716e630fd3e4774aef8b61731a7
 submit_sha256 = 7b0f638ba8678462ee8d6c12bc0c5b89d7354b4a095b31330f3ba495acfe2e2e
 ```

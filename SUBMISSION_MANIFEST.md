@@ -4,9 +4,9 @@ Status: full exact-way2 dual-backend recomputation completed all 4760 unique
 `(r,u)` columns; the compact summary artifact status is
 `FULL_EXACT_WAY2_REVIEW`. Strategy-B Stage-A compact artifact status is
 `STAGE_A_PASS`.
-Final package status: `FINAL_PACKAGE_PREFLIGHT_PENDING`.
-Any new paper PDF rebuilt from updated TeX must be manually rechecked before the
-final package is treated as release-ready again.
+Final package status: `FINAL_PACKAGE_RELEASE_CANDIDATE_READY`.
+The current paper PDF and figure manuscript have been manually rechecked for
+the package revision shipped with this submission candidate.
 The `valid_count=138338` and `total_score=105843.622442471292742994` values are
 the frozen self-score results for the unchanged `submit.txt`. Full exact-way2
 dual-backend recomputation closed the way-2 mathematical and numerical
