@@ -1,23 +1,27 @@
 # Final Submission Package Release Candidate
 
-Status: `FINAL_PACKAGE_RELEASE_CANDIDATE_READY`.
+Status: `FINAL_PACKAGE_PREFLIGHT_PENDING`.
 
-This package preserves the frozen way-2 result file. It does not start Stage-B,
-does not run a new way-1 computation, and does not claim full way-1 `VT`
-provenance is closed.
-Manual PDF and figure-manuscript preflight were completed before this
-release-candidate package was staged; see `docs/SUBMISSION_MANIFEST.md`
-for the recorded package state.
+This package contains the frozen final submission file, the paper, the
+package-level rebuild source tree, and compact evidence.
+The way-2 mathematical and numerical evidence chain is closed.
+Way-1 evidence is included only as bounded tooling validation and
+spotcheck validation; full way-1 `VT` provenance is not claimed.
+See `docs/EVIDENCE_SCOPE.md`.
+PDF preflight status: `FINAL_PACKAGE_PREFLIGHT_PENDING`.
+Figure-manuscript preflight status: `FINAL_PACKAGE_PREFLIGHT_PASSED`.
+See `docs/SUBMISSION_MANIFEST.md` for the recorded package state.
 
 ## Required Checks
 
 ```bash
-sha256sum -c submission_final/SHA256SUMS.txt
-cd submission_final/source
+sha256sum -c SHA256SUMS.txt
+cd source
 make clean && make -j2
 python3 -X utf8 experiments/build_submit_from_sources.py --source-submit ../submit.txt --out /tmp/rebuilt_submission_final.txt
 cmp ../submit.txt /tmp/rebuilt_submission_final.txt
 ./score --dedup uv --positive-only ../submit.txt
+python3 -X utf8 experiments/check_submission_package.py --submit ../submit.txt
 ```
 
 ## Frozen Result
@@ -25,23 +29,3 @@ cmp ../submit.txt /tmp/rebuilt_submission_final.txt
 - `valid_count = 138338`
 - `total_score = 105843.622442471292742994`
 - `submit_sha256 = 7b0f638ba8678462ee8d6c12bc0c5b89d7354b4a095b31330f3ba495acfe2e2e`
-
-## Evidence Boundaries
-
-- Full exact-way2 evidence is included as compact summaries and manifests.
-- Strategy-B Stage-A evidence is included only as bounded way-1 toolchain evidence.
-- Historical candidate-discovery helpers are excluded from `source/`; the final
-  package rebuild consumes saved certified source CSVs and does not rerun
-  legacy or discovery-only utilities.
-- Full raw exact-way2 archives, CI artifacts, temporary logs, build outputs,
-  and font files are intentionally excluded.
-
-```text
-stage_b_authorized=false
-full_2_32_run_started=false
-full_138338_way1_started=false
-new_way1_run_started=false
-strategy_b_final_file_generated=false
-submit_txt_modified=false
-vt_provenance_closed=false
-```

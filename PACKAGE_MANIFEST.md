@@ -1,23 +1,25 @@
 # Final Package Manifest
 
-Status: `FINAL_PACKAGE_RELEASE_CANDIDATE_READY`.
+Status: `FINAL_PACKAGE_PREFLIGHT_PENDING`.
 
 | field | value |
 |---|---|
 | repository | `Roki-Xing/cryptomath-2026-problem3-final-submission` |
-| source_commit | `7c5c5ee0bb4261e7c568ba3e4048a008ea6d454d` |
-| source_tree_sha | `1f8cd58f3595da55bf05ca2ef73a6154c0f6ac2f` |
-| generated_at_utc | `2026-06-29T11:56:33Z` |
+| source_commit | `c773a23dd8e7897e77365240c20ebb243e8ba98e` |
+| source_tree_sha | `2da5b97893b36f47d3e6ed0e5127032578877fb9` |
+| generated_at_utc | `2026-06-30T03:29:15Z` |
+| pdf_preflight_status | `FINAL_PACKAGE_PREFLIGHT_PENDING` |
+| figure_preflight_status | `FINAL_PACKAGE_PREFLIGHT_PASSED` |
 | submit_sha256 | `7b0f638ba8678462ee8d6c12bc0c5b89d7354b4a095b31330f3ba495acfe2e2e` |
 | valid_count | `138338` |
 | total_score | `105843.622442471292742994` |
 | package_dir | `submission_final/` |
-| package_file_count | `274` |
+| package_file_count | `275` |
 | package_sha256s | `submission_final/SHA256SUMS.txt` |
-| package_sha256s_sha256 | `3bc807f8f2dd085c663ad4e268a6d82ad711c064554c5093af5e02d48618d1ef` |
+| package_sha256s_sha256 | `c2bfab65637f2e61c22a29c3b77212790779b4feae09a4abf5c56a1c86afbaf2` |
 | archive | `submission_final.zip` |
-| archive_bytes | `4925201` |
-| archive_sha256 | `0e78589492b9ff8894aad6e5f7c3a3c618870da8af9de162415b778fe0dbf9fb` |
+| archive_bytes | `4917435` |
+| archive_sha256 | `88a273dd67cdd7caee18a02af93f8389bcc96072f173780b607e490849c2fcc7` |
 | archive_command | `python3 -X utf8 scripts/build_final_package.py --clean` |
 
 ## Inclusion Boundary
@@ -36,6 +38,7 @@ Status: `FINAL_PACKAGE_RELEASE_CANDIDATE_READY`.
 - Legacy and discovery-only helper programs are excluded from the final competition package and are not part of the final rebuild chain.
 - The frozen final `submit.txt` is rebuilt from saved certified CSV sources, not by rerunning historical candidate discovery.
 - The final package does not rerun Strategy-B, does not run new way-1 computation, and does not regenerate `submit.txt` from excluded helper utilities.
+- The compact full exact-way2 summary bundled under `submission_final/evidence_compact/way2_exact_full/SUMMARY.json` retains its artifact status code `FULL_EXACT_WAY2_REVIEW`; this package uses that completed dual-backend run only to describe closure of the way-2 mathematical and numerical evidence.
 
 ## Evidence State
 
@@ -55,6 +58,7 @@ vt_provenance_closed=false
 - `PACKAGE_SOURCE_COMMIT.txt`
 - `PACKAGE_SOURCE_TREE.txt`
 - `README_FIRST.md`
+- `docs/EVIDENCE_SCOPE.md`
 - `docs/FINAL_CHECK.md`
 - `docs/OFFICIAL_SPEC_INTERPRETATION.md`
 - `docs/REPRODUCIBILITY.md`
@@ -118,7 +122,7 @@ vt_provenance_closed=false
 - `source/apps/score.cpp`
 - `source/experiments/SOURCE_MANIFEST.csv`
 - `source/experiments/build_submit_from_sources.py`
-- `source/experiments/check_submission.py`
+- `source/experiments/check_submission_package.py`
 - `source/experiments/new_sweeps/r3_active2_lat/r3_active2_lat_cert_u2020_u4040_top64_beam200k_trans100k.csv`
 - `source/experiments/new_sweeps/r3_active2_lat/r3_active2_lat_cert_u2020shift_u4040shift_top64_beam200k_trans100k.csv`
 - `source/experiments/new_sweeps/r3_active2_lat/r3_active2_lat_cert_u60600000_u006060_top64_beam200k_trans100k.csv`

@@ -1,10 +1,13 @@
 # Final Submission Check
 
-Status: `FULL_EXACT_WAY2_CLOSED` with Strategy-B Stage-A `STAGE_A_PASS`.
+Status: full exact-way2 dual-backend recomputation completed all 4760 unique
+`(r,u)` columns; the compact summary artifact status is
+`FULL_EXACT_WAY2_REVIEW`. Strategy-B Stage-A compact artifact status is
+`STAGE_A_PASS`.
 The `valid_count=138338` and `total_score=105843.622442471292742994` values are
 the frozen self-score results for the unchanged `submit.txt`. Full exact-way2
 dual-backend recomputation closed the way-2 mathematical and numerical
-evidence chain. Complete way-1 `VT` provenance has not yet been closed.
+evidence chain. Evidence scope is summarized in `../../docs/EVIDENCE_SCOPE.md`.
 
 ## Score
 
@@ -57,7 +60,7 @@ total_score=105843.622442471292742994
 
 | item | result |
 |---|---:|
-| full exact-way2 status | FULL_EXACT_WAY2_CLOSED |
+| full exact-way2 summary artifact status | FULL_EXACT_WAY2_REVIEW |
 | selected unique `(r,u)` columns | 4760 |
 | `cpp_int` completed columns | 4760 |
 | `int128_checked` completed columns | 4760 |
