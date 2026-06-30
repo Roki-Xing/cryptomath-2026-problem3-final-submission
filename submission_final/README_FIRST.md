@@ -1,6 +1,6 @@
 # Final Submission Package Release Candidate
 
-Status: `FINAL_PACKAGE_PREFLIGHT_PENDING`.
+Status: `FINAL_PACKAGE_RELEASE_CANDIDATE_READY`.
 
 This package contains the frozen final submission file, the paper, the
 package-level rebuild source tree, and compact evidence.
@@ -8,7 +8,7 @@ The way-2 mathematical and numerical evidence chain is closed.
 Way-1 evidence is included only as bounded tooling validation and
 spotcheck validation; full way-1 `VT` provenance is not claimed.
 See `docs/EVIDENCE_SCOPE.md`.
-PDF preflight status: `FINAL_PACKAGE_PREFLIGHT_PENDING`.
+PDF preflight status: `FINAL_PACKAGE_PREFLIGHT_PASSED`.
 Figure-manuscript preflight status: `FINAL_PACKAGE_PREFLIGHT_PASSED`.
 See `docs/SUBMISSION_MANIFEST.md` for the recorded package state.
 

@@ -1,7 +1,7 @@
 # Submission Package Manifest
 
-Status: `FINAL_PACKAGE_PREFLIGHT_PENDING`.
-PDF preflight status: `FINAL_PACKAGE_PREFLIGHT_PENDING`.
+Status: `FINAL_PACKAGE_RELEASE_CANDIDATE_READY`.
+PDF preflight status: `FINAL_PACKAGE_PREFLIGHT_PASSED`.
 Figure-manuscript preflight status: `FINAL_PACKAGE_PREFLIGHT_PASSED`.
 Way-2 exact compact summary artifact status: `FULL_EXACT_WAY2_REVIEW`.
 Strategy-B Stage-A compact artifact status: `STAGE_A_PASS`.

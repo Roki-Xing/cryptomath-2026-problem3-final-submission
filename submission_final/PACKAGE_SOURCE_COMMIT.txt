@@ -1,7 +1,7 @@
 schema: package-source-metadata-v1
 repository: Roki-Xing/cryptomath-2026-problem3-final-submission
 release_ref: hardening/final-package-release-candidate
-release_commit: c773a23dd8e7897e77365240c20ebb243e8ba98e
-package_generated_at_utc: 2026-06-30T03:29:15Z
-submit_source_commit: c773a23dd8e7897e77365240c20ebb243e8ba98e
+release_commit: 8454e8c4ea5041bbf7972e4079091a9ac76fa345
+package_generated_at_utc: 2026-06-30T07:48:47Z
+submit_source_commit: 8454e8c4ea5041bbf7972e4079091a9ac76fa345
 submit_sha256: 7b0f638ba8678462ee8d6c12bc0c5b89d7354b4a095b31330f3ba495acfe2e2e
