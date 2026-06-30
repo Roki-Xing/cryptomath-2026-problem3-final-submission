@@ -2,17 +2,21 @@
 
 This repository contains the final package for Challenge 3, "Approximation of Matrix-Chain Elements".  The main method is **Route-Shell Guided Sparse Dynamic Programming**: it models `M(r)[v,u]` as the linear correlation of `HS(r)` and evaluates selected coordinates by propagating masks through S-box correlation branches and deterministic linear layers.
 
-Status: `FULL_EXACT_WAY2_CLOSED` with Strategy-B Stage-A `STAGE_A_PASS`.
+Status: full exact-way2 dual-backend recomputation completed all 4760 unique
+`(r,u)` columns; the compact summary artifact status is
+`FULL_EXACT_WAY2_REVIEW`. Strategy-B Stage-A compact artifact status is
+`STAGE_A_PASS`.
 
 The displayed `138338` rows and `105843.622442471292742994` score remain the
 frozen self-score results for the unchanged `submit.txt`. Full exact-way2
 dual-backend recomputation has closed the way-2 mathematical and numerical
-evidence chain. Full way-1 `VT` provenance remains unresolved.
+evidence chain. Evidence scope is summarized in `docs/EVIDENCE_SCOPE.md`.
 
-当前仓库状态为 `FULL_EXACT_WAY2_CLOSED`，且 Strategy-B Stage-A 已通过。
-`138338` 条与 `105843.622442471292742994` 仍是未修改 `submit.txt` 的冻结
-自评分口径；full exact-way2 双后端重算已闭合方式二数学与数值证据链，
-但全量方式一 `VT` 来源链尚未闭合。
+当前仓库的 full exact-way2 双后端重算已完成全部 4760 个唯一 `(r,u)` 列，
+其 compact summary artifact status 为 `FULL_EXACT_WAY2_REVIEW`；基于这组已完
+成证据，仓库文档只声明方式二数学与数值证据链闭合。证据边界统一汇总于
+`docs/EVIDENCE_SCOPE.md`。Strategy-B Stage-A compact artifact status 为
+`STAGE_A_PASS`。
 
 See `REPORT.md` for the full method, proof, complexity analysis, compliance boundary, experiment tables, and ablation discussion.  See `SUBMISSION_MANIFEST.md` for the final file manifest.
 
@@ -100,11 +104,10 @@ For certified no-truncation sparse-DP rows, the way-2 route-shell dynamic progra
 
 Full exact-way2 evidence is stored under `artifacts/way2_exact/full/`: both
 `cpp_int` and `int128_checked` completed all 4760 unique `(r,u)` columns, and
-all 138338 frozen endpoints compare as `EXACT_EQUAL`. This closes the way-2
-value evidence only. Strategy-B Stage-A evidence under
-`artifacts/strategy_b/stage_a/` validates bounded way-1 batch tooling, shard
-reduction, compiler and sanitizer gates, but it does not run the full `2^32`
-domain or all 138338 way-1 queries.
+all 138338 frozen endpoints compare as `EXACT_EQUAL`. Strategy-B Stage-A
+evidence under `artifacts/strategy_b/stage_a/` validates bounded way-1 batch
+tooling, shard reduction, compiler and sanitizer gates. See
+`docs/EVIDENCE_SCOPE.md` for the precise boundary statement.
 
 ## No-truncation certificate
 
@@ -127,17 +130,7 @@ Under these conditions, the sparse dynamic program keeps every nonzero linear ro
 - `artifacts/strategy_b/stage_a/`: bounded Strategy-B Stage-A way-1 batch tooling evidence; not full way-1 `VT` provenance.
 - `experiments/manifests/E13_final_integration.md`: final authority after E06; supersedes historical pre-E06 snapshots for final numbers.
 
-Current explicit non-goals:
-
-```text
-stage_b_authorized = false
-full_2_32_run_started = false
-full_138338_way1_started = false
-new_way1_run_started = false
-strategy_b_final_file_generated = false
-submit_txt_modified = false
-vt_provenance_closed = false
-```
+Current boundary flags are listed in `docs/EVIDENCE_SCOPE.md`.
 
 ## Bit and nibble convention
 

@@ -3,6 +3,7 @@
 This document is the canonical repository authority for classifying statements
 as official, conservative repository behavior, or unresolved. It does not turn
 repository behavior into an official rule.
+Evidence scope for the final package is summarized in `EVIDENCE_SCOPE.md`.
 
 ## Source Boundary
 

@@ -3,24 +3,17 @@
 This repository provides a reproducible **way-2** pipeline to generate `submit.txt`
 from algorithmic sources. The current historical `VT` field is frozen as a
 submitted-field snapshot; this repository does not claim that it was produced
-by an actually executed way-1 run. See `docs/VT_VE_COMPLIANCE.md`.
+by an actually executed way-1 run. Evidence scope is summarized in
+`EVIDENCE_SCOPE.md`. See `VT_VE_COMPLIANCE.md`.
 
 The frozen query authority is `experiments/frozen/BASELINE.json`; the historical integration evidence remains
 `experiments/manifests/E13_final_integration.md`.
 
 Current evidence state:
 
-```text
-FULL_EXACT_WAY2_CLOSED
-Strategy-B Stage-A = STAGE_A_PASS
-stage_b_authorized=false
-full_2_32_run_started=false
-full_138338_way1_started=false
-new_way1_run_started=false
-strategy_b_final_file_generated=false
-submit_txt_modified=false
-vt_provenance_closed=false
-```
+- full exact-way2 compact summary artifact status = `FULL_EXACT_WAY2_REVIEW`
+- Strategy-B Stage-A compact artifact status = `STAGE_A_PASS`
+- package-level boundary flags are listed in `EVIDENCE_SCOPE.md`
 
 ## Requirements
 
@@ -45,6 +38,23 @@ python3 experiments/check_submission.py --submit submit.txt
 
 `check_submission.py` performs score and summary-artifact checks by default. It does not run the full audit unless
 `--run-full-audit` is explicitly provided.
+
+For the final package under `submission_final/source`, use the package-safe
+checker instead of the repository checker:
+
+```bash
+cd submission_final/source
+make clean && make -j2
+python3 -X utf8 experiments/build_submit_from_sources.py --source-submit ../submit.txt --out /tmp/rebuilt_submission_final.txt
+cmp ../submit.txt /tmp/rebuilt_submission_final.txt
+./score --dedup uv --positive-only ../submit.txt
+python3 -X utf8 experiments/check_submission_package.py --submit ../submit.txt
+```
+
+Within the final package, `experiments/SOURCE_MANIFEST.csv` records the saved
+certified CSV inputs used by `build_submit_from_sources.py`. Its
+`generation_command` column is a historical candidate-discovery label, not a
+claim that the final package reruns repository-only discovery helpers.
 
 ## Freeze Final Query Baseline
 
@@ -300,7 +310,7 @@ See `experiments/manifests/E04_toy_exact_compare.md`.
 - `参赛论文/参赛论文_赛题三_稳稳接住.tex`
 - `参赛论文/figures/`
 
-当前 TeX 源文件已同步 `FULL_EXACT_WAY2_CLOSED` 与 Strategy-B Stage-A 状态。PDF
-已由当前 TeX 使用 `bash 参赛论文/build_paper.sh` 重导出。构建信息记录在
-`参赛论文/PAPER_BUILD_INFO.json`，人工逐页检查清单记录在
-`参赛论文/PDF_PREFLIGHT.md`。
+当前 TeX 源文件已同步全部冻结端点的方式二精确复算结论与 Strategy-B
+Stage-A 边界状态。PDF 已由当前 TeX 使用 `bash 参赛论文/build_paper.sh`
+重导出。构建信息记录在 `参赛论文/PAPER_BUILD_INFO.json`，人工逐页检查
+清单记录在 `参赛论文/PDF_PREFLIGHT.md`。

@@ -17,7 +17,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 PACKAGE_DIR = ROOT / "submission_final"
 ARCHIVE_PATH = ROOT / "submission_final.zip"
-FINAL_PACKAGE_STATUS = "FINAL_PACKAGE_RELEASE_CANDIDATE_READY"
+FINAL_PACKAGE_READY = "FINAL_PACKAGE_RELEASE_CANDIDATE_READY"
+FINAL_PACKAGE_PENDING = "FINAL_PACKAGE_PREFLIGHT_PENDING"
 PACKAGE_MANIFEST = ROOT / "PACKAGE_MANIFEST.md"
 ROOT_SHA256SUMS = ROOT / "SHA256SUMS.txt"
 REPOSITORY = "Roki-Xing/cryptomath-2026-problem3-final-submission"
@@ -25,6 +26,9 @@ SUBMIT_SHA = "7b0f638ba8678462ee8d6c12bc0c5b89d7354b4a095b31330f3ba495acfe2e2e"
 VALID_COUNT = "138338"
 TOTAL_SCORE = "105843.622442471292742994"
 ZIP_TIMESTAMP = (1980, 1, 1, 0, 0, 0)
+PDF_PREFLIGHT = ROOT / "参赛论文" / "PDF_PREFLIGHT.md"
+FIGURE_PREFLIGHT = ROOT / "参赛论文" / "FIGURE_MANUSCRIPT_PREFLIGHT.md"
+ROOT_EVIDENCE_SCOPE = ROOT / "docs" / "EVIDENCE_SCOPE.md"
 PACKAGE_SOURCE_APP_FILES = [
     "apps/enumerate_r1_positive.cpp",
     "apps/estimator.cpp",
@@ -71,6 +75,26 @@ def git_output(args: list[str]) -> str:
         Stripped command stdout.
     """
     return subprocess.check_output(["git", *args], cwd=ROOT, text=True).strip()
+
+
+def extract_status(path: Path) -> str:
+    """Extract the Markdown status token from a preflight file."""
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if line.startswith("Status: `") and line.endswith("`."):
+            return line[len("Status: `") : -2]
+    raise SystemExit(f"missing status line in {path}")
+
+
+def final_package_status() -> tuple[str, str, str]:
+    """Derive package readiness from the current preflight files."""
+    pdf_status = extract_status(PDF_PREFLIGHT)
+    figure_status = extract_status(FIGURE_PREFLIGHT)
+    if (
+        pdf_status == "FINAL_PACKAGE_PREFLIGHT_PASSED"
+        and figure_status == "FINAL_PACKAGE_PREFLIGHT_PASSED"
+    ):
+        return FINAL_PACKAGE_READY, pdf_status, figure_status
+    return FINAL_PACKAGE_PENDING, pdf_status, figure_status
 
 
 def package_source_makefile() -> str:
@@ -200,16 +224,8 @@ def copy_submission_artifacts() -> None:
     copy_tree("参赛论文/figures", "paper/figures")
     copy_tree("第十一届0000002243图稿", "figure_manuscript")
 
-    for doc in [
-        "SUBMISSION_MANIFEST.md",
-        "FINAL_CHECK.md",
-        "docs/REPRODUCIBILITY.md",
-        "docs/OFFICIAL_SPEC_INTERPRETATION.md",
-    ]:
-        copy_file(doc, f"docs/{Path(doc).name}")
-
-    copy_file("FINAL_CHECK.md", "evidence_compact/final_check/FINAL_CHECK.md")
-    copy_file("SUBMISSION_MANIFEST.md", "evidence_compact/final_check/SUBMISSION_MANIFEST.md")
+    copy_file("docs/OFFICIAL_SPEC_INTERPRETATION.md", "docs/OFFICIAL_SPEC_INTERPRETATION.md")
+    copy_file("docs/EVIDENCE_SCOPE.md", "docs/EVIDENCE_SCOPE.md")
     for path in [
         "experiments/manifests/E13_final_integration.md",
         "experiments/audit/submit_audit_summary.json",
@@ -252,7 +268,7 @@ def copy_source_tree() -> None:
     for path in [
         "experiments/build_submit_from_sources.py",
         "experiments/SOURCE_MANIFEST.csv",
-        "experiments/check_submission.py",
+        "experiments/check_submission_package.py",
     ]:
         copy_file(path, f"source/{path}")
     for path in source_manifest_paths():
@@ -260,37 +276,189 @@ def copy_source_tree() -> None:
     (PACKAGE_DIR / "source" / "Makefile").write_text(package_source_makefile(), encoding="utf-8")
 
 
-def write_text_files(generated_at: str, source_commit: str, source_tree: str) -> None:
+def write_package_submission_manifest(
+    package_status: str,
+    pdf_preflight_status: str,
+    figure_preflight_status: str,
+) -> str:
+    """Return the package-internal submission manifest content."""
+    return "\n".join(
+        [
+            "# Submission Package Manifest",
+            "",
+            f"Status: `{package_status}`.",
+            f"PDF preflight status: `{pdf_preflight_status}`.",
+            f"Figure-manuscript preflight status: `{figure_preflight_status}`.",
+            "Way-2 exact compact summary artifact status: `FULL_EXACT_WAY2_REVIEW`.",
+            "Strategy-B Stage-A compact artifact status: `STAGE_A_PASS`.",
+            "Evidence scope is summarized in `EVIDENCE_SCOPE.md`.",
+            "",
+            "## Included package structure",
+            "",
+            "- `README_FIRST.md`: package entry and frozen result summary.",
+            "- `PACKAGE_SOURCE_COMMIT.txt` / `PACKAGE_SOURCE_TREE.txt`: clean committed source provenance for this package build.",
+            "- `submit.txt`: unchanged frozen final submit file.",
+            "- `score_report.txt`: frozen self-score summary.",
+            "- `paper/`: final PDF, TeX, and figure assets used by the paper build.",
+            "- `figure_manuscript/`: Word figure manuscript plus figure source exports.",
+            "- `source/`: package-safe rebuild source tree and saved certified source CSV inputs.",
+            "- `docs/EVIDENCE_SCOPE.md`: single authority for the way-1 / way-2 boundary statement.",
+            "- `evidence_compact/`: compact way-2 exact evidence, Strategy-B Stage-A evidence, and final integration summaries.",
+            "- `SHA256SUMS.txt`: package-local SHA-256 manifest.",
+            "",
+            "## Runnable package rebuild chain",
+            "",
+            "```bash",
+            "cd source",
+            "make clean && make -j2",
+            "python3 -X utf8 experiments/build_submit_from_sources.py --source-submit ../submit.txt --out /tmp/rebuilt_submission_final.txt",
+            "cmp ../submit.txt /tmp/rebuilt_submission_final.txt",
+            "./score --dedup uv --positive-only ../submit.txt",
+            "python3 -X utf8 experiments/check_submission_package.py --submit ../submit.txt",
+            "```",
+            "",
+            "Expected frozen result:",
+            "",
+            "```text",
+            f"valid_count={VALID_COUNT}",
+            f"total_score={TOTAL_SCORE}",
+            f"submit_sha256={SUBMIT_SHA}",
+            "```",
+            "",
+            "## SOURCE_MANIFEST boundary",
+            "",
+            "- `source/experiments/SOURCE_MANIFEST.csv` records saved certified source CSV inputs used by the final rebuild chain.",
+            "- Its `generation_command` field is a historical discovery label, not a runnable final-package command.",
+            "- `candidate_miner_approx` is a repository-only historical discovery helper and is excluded from this package.",
+            "- `search_candidates` is a legacy helper and is excluded from this package.",
+            "- The final package rebuild path is `source/experiments/build_submit_from_sources.py` consuming the saved certified CSVs.",
+            "",
+            "## Evidence boundaries",
+            "",
+            "- The full exact-way2 rerun closes the way-2 mathematical and numerical evidence only.",
+            "- `evidence_compact/way2_exact_full/` contains compact summaries, compare outputs, provenance, and manifest files for the completed full exact-way2 rerun.",
+            "- `evidence_compact/strategy_b_stage_a/` contains bounded way-1 batch toolchain evidence only; it is not full way-1 `VT` provenance.",
+            "- Raw full exact-way2 archives, CI artifacts, benchmark logs, temporary logs, build outputs, `__pycache__`, fonts, and repository-only discovery helpers are excluded from this package.",
+            "",
+            "```text",
+            "stage_b_authorized=false",
+            "full_2_32_run_started=false",
+            "full_138338_way1_started=false",
+            "new_way1_run_started=false",
+            "strategy_b_final_file_generated=false",
+            "submit_txt_modified=false",
+            "vt_provenance_closed=false",
+            "```",
+            "",
+        ]
+    )
+
+
+def write_package_reproducibility() -> str:
+    """Return the package-internal reproducibility guide."""
+    return "\n".join(
+        [
+            "# Final Package Reproducibility",
+            "",
+            "This document applies only to the extracted `submission_final/` package.",
+            "It does not claim that repository-only discovery helpers or raw exact-way2",
+            "archives are present inside the package.",
+            "Evidence scope is summarized in `EVIDENCE_SCOPE.md`.",
+            "",
+            "## Requirements",
+            "",
+            "- Linux / WSL2",
+            "- `make` and a C++17 compiler",
+            "- `python3`",
+            "- `python3 -m pip install -r source/requirements-dev.txt` if additional Python helpers are needed",
+            "",
+            "## Package-safe validation commands",
+            "",
+            "```bash",
+            "sha256sum -c SHA256SUMS.txt",
+            "cd source",
+            "make clean && make -j2",
+            "python3 -X utf8 experiments/build_submit_from_sources.py --source-submit ../submit.txt --out /tmp/rebuilt_submission_final.txt",
+            "cmp ../submit.txt /tmp/rebuilt_submission_final.txt",
+            "./score --dedup uv --positive-only ../submit.txt",
+            "python3 -X utf8 experiments/check_submission_package.py --submit ../submit.txt",
+            "```",
+            "",
+            "The package-safe checker validates only files that actually exist in the final",
+            "package. It does not require repository-only tests, CI workflows,",
+            "`freeze_baseline.py`, `audit_submit.py`, `candidate_miner_approx.cpp`, or",
+            "`search_candidates.cpp`.",
+            "",
+            "## SOURCE_MANIFEST semantics",
+            "",
+            "- `source/experiments/SOURCE_MANIFEST.csv` lists saved certified source CSV inputs used by the final package rebuild chain.",
+            "- `generation_command` records a historical discovery label for provenance; it is not a command that the final package promises to rerun.",
+            "- `source/experiments/build_submit_from_sources.py` is the runnable final-package generator.",
+            "",
+            "## Evidence included vs excluded",
+            "",
+            "- Included compact evidence: `evidence_compact/way2_exact_full/`, `evidence_compact/strategy_b_stage_a/`, `evidence_compact/final_check/`, and `evidence_compact/claims_and_evidence/`.",
+            "- Excluded repository-only evidence: full exact-way2 raw archives, CI artifacts, benchmark raw logs, temporary logs, build outputs, and fonts.",
+            "",
+        ]
+    )
+
+
+def write_package_evidence_scope() -> str:
+    """Return the package-local evidence-scope statement."""
+    return ROOT_EVIDENCE_SCOPE.read_text(encoding="utf-8")
+
+
+def rewrite_markdown_for_package(relative_target: str, text: str) -> str:
+    """Adjust root-relative docs links for package-local copies."""
+    return text.replace("`docs/EVIDENCE_SCOPE.md`", f"`{relative_target}`")
+
+
+def write_text_files(
+    generated_at: str,
+    source_commit: str,
+    source_tree: str,
+    package_status: str,
+    pdf_preflight_status: str,
+    figure_preflight_status: str,
+) -> None:
     """Write package-local README, score report, and source metadata.
 
     Args:
         generated_at: RFC3339 UTC generation time.
         source_commit: Source commit used for the package.
         source_tree: Git tree SHA for the source commit.
+        package_status: Release-candidate readiness status for the package.
+        pdf_preflight_status: Current PDF preflight status.
+        figure_preflight_status: Current figure-manuscript preflight status.
     """
     (PACKAGE_DIR / "README_FIRST.md").write_text(
         "\n".join(
             [
                 "# Final Submission Package Release Candidate",
                 "",
-                f"Status: `{FINAL_PACKAGE_STATUS}`.",
+                f"Status: `{package_status}`.",
                 "",
-                "This package preserves the frozen way-2 result file. It does not start Stage-B,",
-                "does not run a new way-1 computation, and does not claim full way-1 `VT`",
-                "provenance is closed.",
-                "Manual PDF and figure-manuscript preflight were completed before this",
-                "release-candidate package was staged; see `docs/SUBMISSION_MANIFEST.md`",
-                "for the recorded package state.",
+                "This package contains the frozen final submission file, the paper, the",
+                "package-level rebuild source tree, and compact evidence.",
+                "The way-2 mathematical and numerical evidence chain is closed.",
+                "Way-1 evidence is included only as bounded tooling validation and",
+                "spotcheck validation; full way-1 `VT` provenance is not claimed.",
+                "See `docs/EVIDENCE_SCOPE.md`.",
+                f"PDF preflight status: `{pdf_preflight_status}`.",
+                f"Figure-manuscript preflight status: `{figure_preflight_status}`.",
+                "See `docs/SUBMISSION_MANIFEST.md` for the recorded package state.",
                 "",
                 "## Required Checks",
                 "",
                 "```bash",
-                "sha256sum -c submission_final/SHA256SUMS.txt",
-                "cd submission_final/source",
+                "sha256sum -c SHA256SUMS.txt",
+                "cd source",
                 "make clean && make -j2",
                 "python3 -X utf8 experiments/build_submit_from_sources.py --source-submit ../submit.txt --out /tmp/rebuilt_submission_final.txt",
                 "cmp ../submit.txt /tmp/rebuilt_submission_final.txt",
                 "./score --dedup uv --positive-only ../submit.txt",
+                "python3 -X utf8 experiments/check_submission_package.py --submit ../submit.txt",
                 "```",
                 "",
                 "## Frozen Result",
@@ -299,28 +467,38 @@ def write_text_files(generated_at: str, source_commit: str, source_tree: str) ->
                 f"- `total_score = {TOTAL_SCORE}`",
                 f"- `submit_sha256 = {SUBMIT_SHA}`",
                 "",
-                "## Evidence Boundaries",
-                "",
-                "- Full exact-way2 evidence is included as compact summaries and manifests.",
-                "- Strategy-B Stage-A evidence is included only as bounded way-1 toolchain evidence.",
-                "- Historical candidate-discovery helpers are excluded from `source/`; the final",
-                "  package rebuild consumes saved certified source CSVs and does not rerun",
-                "  legacy or discovery-only utilities.",
-                "- Full raw exact-way2 archives, CI artifacts, temporary logs, build outputs,",
-                "  and font files are intentionally excluded.",
-                "",
-                "```text",
-                "stage_b_authorized=false",
-                "full_2_32_run_started=false",
-                "full_138338_way1_started=false",
-                "new_way1_run_started=false",
-                "strategy_b_final_file_generated=false",
-                "submit_txt_modified=false",
-                "vt_provenance_closed=false",
-                "```",
-                "",
             ]
         ),
+        encoding="utf-8",
+    )
+    package_submission_manifest = write_package_submission_manifest(
+        package_status,
+        pdf_preflight_status,
+        figure_preflight_status,
+    )
+    (PACKAGE_DIR / "docs" / "SUBMISSION_MANIFEST.md").write_text(
+        package_submission_manifest,
+        encoding="utf-8",
+    )
+    (PACKAGE_DIR / "evidence_compact" / "final_check" / "SUBMISSION_MANIFEST.md").write_text(
+        package_submission_manifest,
+        encoding="utf-8",
+    )
+    (PACKAGE_DIR / "docs" / "REPRODUCIBILITY.md").write_text(
+        write_package_reproducibility(),
+        encoding="utf-8",
+    )
+    (PACKAGE_DIR / "docs" / "EVIDENCE_SCOPE.md").write_text(
+        write_package_evidence_scope(),
+        encoding="utf-8",
+    )
+    final_check_root = (ROOT / "FINAL_CHECK.md").read_text(encoding="utf-8")
+    (PACKAGE_DIR / "docs" / "FINAL_CHECK.md").write_text(
+        rewrite_markdown_for_package("EVIDENCE_SCOPE.md", final_check_root),
+        encoding="utf-8",
+    )
+    (PACKAGE_DIR / "evidence_compact" / "final_check" / "FINAL_CHECK.md").write_text(
+        rewrite_markdown_for_package("../../docs/EVIDENCE_SCOPE.md", final_check_root),
         encoding="utf-8",
     )
     (PACKAGE_DIR / "score_report.txt").write_text(
@@ -394,6 +572,9 @@ def write_manifest(
     package_files: list[Path],
     archive_sha: str,
     archive_size: int,
+    package_status: str,
+    pdf_preflight_status: str,
+    figure_preflight_status: str,
 ) -> None:
     """Write the root package manifest.
 
@@ -404,6 +585,9 @@ def write_manifest(
         package_files: Package file list relative to ``submission_final``.
         archive_sha: SHA-256 of the generated archive.
         archive_size: Archive byte size.
+        package_status: Release-candidate readiness status for the package.
+        pdf_preflight_status: Current PDF preflight status.
+        figure_preflight_status: Current figure-manuscript preflight status.
     """
     package_sha = sha256_file(PACKAGE_DIR / "SHA256SUMS.txt")
     PACKAGE_MANIFEST.write_text(
@@ -411,7 +595,7 @@ def write_manifest(
             [
                 "# Final Package Manifest",
                 "",
-                f"Status: `{FINAL_PACKAGE_STATUS}`.",
+                f"Status: `{package_status}`.",
                 "",
                 "| field | value |",
                 "|---|---|",
@@ -419,6 +603,8 @@ def write_manifest(
                 f"| source_commit | `{source_commit}` |",
                 f"| source_tree_sha | `{source_tree}` |",
                 f"| generated_at_utc | `{generated_at}` |",
+                f"| pdf_preflight_status | `{pdf_preflight_status}` |",
+                f"| figure_preflight_status | `{figure_preflight_status}` |",
                 f"| submit_sha256 | `{SUBMIT_SHA}` |",
                 f"| valid_count | `{VALID_COUNT}` |",
                 f"| total_score | `{TOTAL_SCORE}` |",
@@ -447,6 +633,7 @@ def write_manifest(
                 "- Legacy and discovery-only helper programs are excluded from the final competition package and are not part of the final rebuild chain.",
                 "- The frozen final `submit.txt` is rebuilt from saved certified CSV sources, not by rerunning historical candidate discovery.",
                 "- The final package does not rerun Strategy-B, does not run new way-1 computation, and does not regenerate `submit.txt` from excluded helper utilities.",
+                "- The compact full exact-way2 summary bundled under `submission_final/evidence_compact/way2_exact_full/SUMMARY.json` retains its artifact status code `FULL_EXACT_WAY2_REVIEW`; this package uses that completed dual-backend run only to describe closure of the way-2 mathematical and numerical evidence.",
                 "",
                 "## Evidence State",
                 "",
@@ -472,12 +659,24 @@ def write_manifest(
 
 def write_root_sha256s() -> None:
     """Write the repository-root SHA256SUMS manifest for tracked files."""
-    tracked = subprocess.check_output(["git", "ls-files", "-z"], cwd=ROOT)
-    paths = sorted(
-        Path(raw.decode("utf-8"))
-        for raw in tracked.split(b"\0")
-        if raw and raw.decode("utf-8") != "SHA256SUMS.txt" and (ROOT / raw.decode("utf-8")).is_file()
+    tracked = subprocess.check_output(
+        ["git", "-c", "core.quotePath=false", "ls-files", "-z"],
+        cwd=ROOT,
+        text=True,
     )
+    tracked_paths = {
+        Path(raw)
+        for raw in tracked.split("\0")
+        if raw and raw != "SHA256SUMS.txt" and (ROOT / raw).is_file()
+    }
+    generated_paths = {
+        path.relative_to(ROOT)
+        for path in PACKAGE_DIR.rglob("*")
+        if path.is_file()
+    }
+    if ARCHIVE_PATH.is_file():
+        generated_paths.add(ARCHIVE_PATH.relative_to(ROOT))
+    paths = sorted(tracked_paths | generated_paths, key=lambda path: path.as_posix())
     rows = [f"{sha256_file(ROOT / path)}  {path.as_posix()}" for path in paths]
     ROOT_SHA256SUMS.write_text("\n".join(rows) + "\n", encoding="utf-8")
 
@@ -509,13 +708,31 @@ def main() -> None:
     generated_at = args.generated_at_utc or datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     source_commit = git_output(["rev-parse", "HEAD"])
     source_tree = git_output(["rev-parse", "HEAD^{tree}"])
+    package_status, pdf_preflight_status, figure_preflight_status = final_package_status()
 
     copy_submission_artifacts()
     copy_source_tree()
-    write_text_files(generated_at, source_commit, source_tree)
+    write_text_files(
+        generated_at,
+        source_commit,
+        source_tree,
+        package_status,
+        pdf_preflight_status,
+        figure_preflight_status,
+    )
     package_files = write_package_sha256s()
     archive_sha, archive_size = build_archive()
-    write_manifest(generated_at, source_commit, source_tree, package_files, archive_sha, archive_size)
+    write_manifest(
+        generated_at,
+        source_commit,
+        source_tree,
+        package_files,
+        archive_sha,
+        archive_size,
+        package_status,
+        pdf_preflight_status,
+        figure_preflight_status,
+    )
     write_root_sha256s()
 
     print(f"package_dir={PACKAGE_DIR.relative_to(ROOT)}")

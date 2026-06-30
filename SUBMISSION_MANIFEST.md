@@ -1,13 +1,16 @@
 # Submission Manifest
 
-Status: `FULL_EXACT_WAY2_CLOSED` with Strategy-B Stage-A `STAGE_A_PASS`.
-Final package status: `FINAL_PACKAGE_RELEASE_CANDIDATE_READY`.
-Manual PDF and figure-manuscript preflight have been completed and reflected in
-the final package release-candidate state recorded by this manifest.
+Status: full exact-way2 dual-backend recomputation completed all 4760 unique
+`(r,u)` columns; the compact summary artifact status is
+`FULL_EXACT_WAY2_REVIEW`. Strategy-B Stage-A compact artifact status is
+`STAGE_A_PASS`.
+Final package status: `FINAL_PACKAGE_PREFLIGHT_PENDING`.
+Any new paper PDF rebuilt from updated TeX must be manually rechecked before the
+final package is treated as release-ready again.
 The `valid_count=138338` and `total_score=105843.622442471292742994` values are
 the frozen self-score results for the unchanged `submit.txt`. Full exact-way2
 dual-backend recomputation closed the way-2 mathematical and numerical
-evidence chain. Complete way-1 `VT` provenance has not yet been closed.
+evidence chain. Evidence scope is summarized in `docs/EVIDENCE_SCOPE.md`.
 
 ## 包级交付物
 
@@ -17,10 +20,10 @@ evidence chain. Complete way-1 `VT` provenance has not yet been closed.
 - `submit.txt`：最终 138338 条有效记录，自算分 105843.622442471292742994。
 - `REPORT.md`：论文 Markdown 源及方法、证明、实验文本备份。
 - `FINAL_CHECK.md`：最终得分、审计、复杂度与抽样摘要。
-- `参赛论文/参赛论文_赛题三_稳稳接住.pdf`：由当前 TeX 在 XeLaTeX 环境中重导出的论文阅读版本；人工逐页检查已完成。
+- `参赛论文/参赛论文_赛题三_稳稳接住.pdf`：由当前 TeX 在 XeLaTeX 环境中重导出的论文阅读版本；若 PDF 因后续文档修订发生 SHA 变化，则需重新人工逐页检查。
 - `参赛论文/参赛论文_赛题三_稳稳接住.tex`：已同步当前证据状态的最终论文 TeX 源文件。
 - `参赛论文/figures/`：TeX 源文件引用的三组 PDF/SVG 图。
-- `第十一届0000002243图稿/`：独立图稿 Word 文件和三组 SVG/PDF；人工检查已完成。
+- `第十一届0000002243图稿/`：独立图稿 Word 文件和三组 SVG/PDF；若论文 PDF 更新，则需重新核对图稿与当前 PDF 的一致性。
 
 ## 可运行源码
 
@@ -34,7 +37,7 @@ evidence chain. Complete way-1 `VT` provenance has not yet been closed.
 ## 最终结果重建
 
 - `experiments/build_submit_from_sources.py`：从一轮枚举和已保存的方式二认证来源 CSV 重建最终结果。
-- `experiments/SOURCE_MANIFEST.csv`：构造脚本默认来源的逐文件参数、行数与 SHA-256。
+- `experiments/SOURCE_MANIFEST.csv`：构造脚本默认来源的逐文件参数、行数与 SHA-256；其中 `generation_command` 字段记录历史候选发现标签，不表示 final package 内必须可运行的命令。
 - `experiments/r2_active*.csv`、`experiments/r3_active1_emit_all.csv`、`experiments/new_sweeps/r3_active2_lat/*.csv`：最终构造所需全部认证来源。
 
 本包支持由已保存认证来源进行字节级重建，但不声称提供从零重新执行全部历史候选搜索的单命令流程。
@@ -66,7 +69,7 @@ evidence chain. Complete way-1 `VT` provenance has not yet been closed.
 | category | included files | package treatment |
 |---|---|---|
 | required submission artifacts | `submit.txt`; `REPORT.md`; `参赛论文/参赛论文_赛题三_稳稳接住.pdf`; `参赛论文/参赛论文_赛题三_稳稳接住.tex`; `README.md`; `提交说明.md`; `FINAL_CHECK.md`; `SUBMISSION_MANIFEST.md` | 进入最终比赛提交包 |
-| runnable submit rebuild program | `Makefile`; `include/`; `src/`; `apps/`; `experiments/build_submit_from_sources.py`; source CSVs listed by `experiments/SOURCE_MANIFEST.csv`; `score`; `experiments/check_submission.py` | 进入最终比赛提交包 |
+| runnable submit rebuild program | `Makefile`; `include/`; `src/`; `apps/`; `experiments/build_submit_from_sources.py`; source CSVs listed by `experiments/SOURCE_MANIFEST.csv`; `score`; `experiments/check_submission_package.py` | 进入最终比赛提交包 |
 | way-2 exact evidence | `artifacts/way2_exact/full/SUMMARY.json`; `COMPARE.json`; `FULL_RUN_AUTHORIZATION.json`; `PROVENANCE.json`; `MANIFEST.json`; `SHA256SUMS.txt`; `RAW_EVIDENCE_INDEX.json` | compact evidence may be included; raw archives are referenced, not embedded |
 | Strategy-B Stage-A evidence | `artifacts/strategy_b/stage_a/STAGE_A_SUMMARY.json`; `PROTOCOL.md`; `MANIFEST.json`; `SHA256SUMS.txt`; `docs/STRATEGY_B_STAGE_A_PROTOCOL.md` | included as bounded way-1 tooling evidence only |
 | repository-only raw evidence | full exact-way2 tar.zst release assets; large diagnostic logs; CI artifacts; benchmark raw logs | repository/release evidence only, not final competition package payload |
@@ -76,7 +79,7 @@ evidence chain. Complete way-1 `VT` provenance has not yet been closed.
 
 | state | result |
 |---|---|
-| `FULL_EXACT_WAY2_CLOSED` | full exact-way2 dual backend completed all 4760 unique `(r,u)` columns; 138338 frozen endpoints are `EXACT_EQUAL`; mismatch counters are 0 |
+| full exact-way2 dual backend completed all 4760 unique `(r,u)` columns | compact summary artifact status = `FULL_EXACT_WAY2_REVIEW`; 138338 frozen endpoints are `EXACT_EQUAL`; mismatch counters are 0 |
 | `STRATEGY_B_STAGE_A` | bounded way-1 batch toolchain passed A0/A1/A2/toolchain gates; numerator mismatch count is 0; shard negative tests passed 12 |
 | way-1 `VT` provenance | unresolved; no full `2^32` run and no full 138338-query way-1 run has been started |
 
@@ -98,7 +101,7 @@ make test
 python3 -X utf8 experiments/build_submit_from_sources.py --out /tmp/submit_rebuilt.txt
 cmp submit.txt /tmp/submit_rebuilt.txt
 ./score --dedup uv --positive-only submit.txt
-python3 experiments/check_submission.py --submit submit.txt
+python3 -X utf8 experiments/check_submission_package.py --submit submit.txt --source-root .
 ```
 
 预期：
