@@ -5,9 +5,9 @@ Status: `FINAL_PACKAGE_PREFLIGHT_PENDING`.
 | field | value |
 |---|---|
 | repository | `Roki-Xing/cryptomath-2026-problem3-final-submission` |
-| source_commit | `0759ac8bc6781775c71a8033bcc987e1cd8b932d` |
-| source_tree_sha | `1615a7420e30afcf10438ca63dde1168cadbb3b7` |
-| generated_at_utc | `2026-06-29T16:45:33Z` |
+| source_commit | `11e7006026efe518b30b53343b518186498a2046` |
+| source_tree_sha | `580cbae618b0a964fbb2977c9010037dcdf246e9` |
+| generated_at_utc | `2026-06-30T01:14:41Z` |
 | pdf_preflight_status | `FINAL_PACKAGE_PREFLIGHT_PENDING` |
 | figure_preflight_status | `FINAL_PACKAGE_PREFLIGHT_PENDING` |
 | submit_sha256 | `7b0f638ba8678462ee8d6c12bc0c5b89d7354b4a095b31330f3ba495acfe2e2e` |
@@ -16,10 +16,10 @@ Status: `FINAL_PACKAGE_PREFLIGHT_PENDING`.
 | package_dir | `submission_final/` |
 | package_file_count | `274` |
 | package_sha256s | `submission_final/SHA256SUMS.txt` |
-| package_sha256s_sha256 | `93ca5eb2ccd36cc877cc32addcea9912ca4e16df001e811427f4e82b1a696e5b` |
+| package_sha256s_sha256 | `f8a9a5418d3c463959fa604192c0ed43e0e1bd5e62ffa5f1f2f6fb690cc8ace9` |
 | archive | `submission_final.zip` |
 | archive_bytes | `4922668` |
-| archive_sha256 | `9524449158cee48832cd53f1e1b12488a0fa755d604bd09c084e0d8c1376607f` |
+| archive_sha256 | `c6331852cafec325364923abbcc8abad35e476e65aa054163bc173a722bc292b` |
 | archive_command | `python3 -X utf8 scripts/build_final_package.py --clean` |
 
 ## Inclusion Boundary
